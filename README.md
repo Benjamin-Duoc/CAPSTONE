@@ -73,6 +73,7 @@ La carpeta `/docs` centraliza la información técnica y estratégica necesaria 
 * Definición de perfiles de usuario y permisos.
 * Diagramas de arquitectura y decisiones de diseño.
 * Actas de proyecto.
+* Videos explicativos, por ejemplo, como ejecutar en vscode y agregarle API Key nivel gratuito para programar con IA
 
 ---
 
