@@ -51,6 +51,12 @@ Para iniciar el servidor de desarrollo:
 npm run dev
 ```
 
+### 5. Link a Capacitaciones de Triskeledu
+
+**[Capacitaciones Triskeledu](https://drive.google.com/open?id=1fzHEnogxmpAsyVEF6oz1IJBLUt3H7yUq&usp=drive_fs)**
+
+
+
 # 🚀 Detalles del Proyecto CiPress
 
 ## 🏗️ Alcance del Proyecto (Módulos)
