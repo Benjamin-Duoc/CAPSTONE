@@ -40,3 +40,26 @@ export const insertUser = (user: Omit<User, 'id'>): { success: boolean; message:
 export const getAllUsers = (): User[] => {
     return JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
 };
+
+// Login user
+export const loginUser = (email: string, password: string): { success: boolean; message: string } => {
+  try {
+    const users: User[] = JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
+    
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+      return { success: false, message: 'El correo electrónico no está registrado.' };
+    }
+    
+    if (user.password !== password) {
+      return { success: false, message: 'La contraseña es incorrecta.' };
+    }
+    
+    console.log('Database: Inicio de sesión exitoso', user);
+    return { success: true, message: 'Inicio de sesión exitoso.' };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { success: false, message: 'Error al iniciar sesión.' };
+  }
+};

@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
     <>
         <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
+            <div className="flex items-center justify-between h-40"> {/* MODIFICAR H-40 PARA AJUSTAR ALTURA DEL HEADER */}
             <div className="flex-shrink-0">
                 <Logo onNavigate={onNavigate} />
             </div>
@@ -72,7 +72,11 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
                     Ver Usuarios DB
                 </button>
 
-                <a href="#" className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block">
+                <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); onNavigate('login'); }}
+                    className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block"
+                >
                 Ingresar
                 </a>
                 <a 

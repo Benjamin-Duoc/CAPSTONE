@@ -28,6 +28,7 @@ import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
+import LoginPage from './components/LoginPage';
 import type { Page, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
 import { initDatabase } from './utils/db';
 
@@ -540,6 +541,8 @@ const App: React.FC = () => {
         />;
       case 'register':
         return <RegistrationPage onNavigate={handleNavigate} />;
+      case 'login':
+        return <LoginPage onNavigate={handleNavigate} />;
       case 'home':
       default:
         return <HomePage 
@@ -581,13 +584,13 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
-      {currentPage !== 'register' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} />}
+      {currentPage !== 'register' && currentPage !== 'login' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} />}
       
       <main className="flex-grow">
         {renderPage()}
       </main>
       {/* Hide footer on detail page for a more focused view */}
-      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
+      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && currentPage !== 'login' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
     </div>
   );
 };
