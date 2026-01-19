@@ -6,9 +6,10 @@ import Logo from './Logo';
 
 interface RegistrationPageProps {
     onNavigate: (page: Page) => void;
+    onLogin: (user: any) => void;
 }
 
-const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
+const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,7 +29,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
             return;
@@ -46,8 +47,17 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
         if (result.success) {
             setSuccess(true);
             setTimeout(() => {
-                onNavigate('home');
-            }, 2000);
+                // Simulate login with the new user data
+                const newUser = {
+                    id: Date.now(), // In a real app, this would come from the DB result
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    region: formData.region,
+                    email: formData.email,
+                    password: formData.password
+                };
+                onLogin(newUser);
+            }, 1500);
         } else {
             setError(result.message);
         }
@@ -55,7 +65,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
 
     if (success) {
         return (
-             <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
                 <div className="bg-surface p-8 rounded-lg shadow-xl text-center max-w-md w-full border border-gray-200">
                     <div className="text-green-500 mb-4">
                         <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -72,7 +82,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
             <div className="mb-8">
                 <Logo onNavigate={onNavigate} />
             </div>
-            
+
             <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-lg shadow-xl border border-gray-200">
                 <div className="text-center">
                     <h2 className="mt-2 text-3xl font-extrabold text-text-primary font-serif">Crea tu cuenta</h2>
@@ -86,7 +96,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
                             <p>{error}</p>
                         </div>
                     )}
-                    
+
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
                             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">Nombre(s)</label>
