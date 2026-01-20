@@ -1,63 +1,77 @@
-
 import type { User } from '../types';
+import { supabase } from './supabaseClient';
 
-const DB_USERS_KEY = 'cipress_db_users';
-
-// Initialize the "table"
+// Initialize the "table" - No-op for Supabase as table is pre-created
 export const initDatabase = () => {
-  if (!localStorage.getItem(DB_USERS_KEY)) {
-    localStorage.setItem(DB_USERS_KEY, JSON.stringify([]));
-    console.log('Database: Tabla "usuario" creada.');
-  }
+  console.log('Database: Connected to Supabase (users table managed in cloud).');
 };
 
 // Insert a user
-export const insertUser = (user: Omit<User, 'id'>): { success: boolean; message: string } => {
+export const insertUser = async (user: Omit<User, 'id'>): Promise<{ success: boolean; message: string }> => {
   try {
-    const users: User[] = JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
-    
-    // Check for duplicate email
-    if (users.some(u => u.email === user.email)) {
+    // Check for duplicate email directly in Supabase? 
+    // Although the unique constraint will handle it, it's nice to check or catch the error.
+    // Let's rely on the unique constraint error from Supabase for simplicity and speed.
+
+    const { error } = await supabase
+      .from('users')
+      .insert([
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          region: user.region,
+          password: user.password
+        }
+      ]);
+
+    if (error) {
+      if (error.code === '23505') { // Postgres unique violation code
         return { success: false, message: 'El correo electrónico ya está registrado.' };
+      }
+      console.error('Supabase Error:', error);
+      return { success: false, message: 'Error al guardar en la base de datos.' };
     }
 
-    const newUser: User = {
-      ...user,
-      id: Date.now(), // Simple ID generation
-    };
-
-    users.push(newUser);
-    localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
-    console.log('Database: Usuario insertado con éxito', newUser);
+    console.log('Database: Usuario insertado con éxito en Supabase');
     return { success: true, message: 'Usuario registrado exitosamente.' };
   } catch (error) {
     console.error('Database Error:', error);
-    return { success: false, message: 'Error al guardar en la base de datos.' };
+    return { success: false, message: 'Error inesperado al guardar usuario.' };
   }
 };
 
 // Get all users (for debugging or admin)
-export const getAllUsers = (): User[] => {
-    return JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
+export const getAllUsers = async (): Promise<User[]> => {
+  const { data, error } = await supabase.from('users').select('*');
+  if (error) {
+    console.error('Supabase Error:', error);
+    return [];
+  }
+  return data as User[];
 };
 
 // Login user
-export const loginUser = (email: string, password: string): { success: boolean; message: string } => {
+export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
   try {
-    const users: User[] = JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
-    
-    const user = users.find(u => u.email === email);
-    
-    if (!user) {
-      return { success: false, message: 'El correo electrónico no está registrado.' };
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error || !data) {
+      // Could be 'PGRST116' if no rows found
+      return { success: false, message: 'El correo electrónico no está registrado o hubo un error.' };
     }
-    
-    if (user.password !== password) {
+
+    // In a real app, use Supabase Auth or bcrypt. Here we compare plain text as per ERS simulation.
+    if (data.password !== password) {
       return { success: false, message: 'La contraseña es incorrecta.' };
     }
-    
-    console.log('Database: Inicio de sesión exitoso', user);
-    return { success: true, message: 'Inicio de sesión exitoso.' };
+
+    console.log('Database: Inicio de sesión exitoso', data);
+    return { success: true, message: 'Inicio de sesión exitoso.', user: data as User };
   } catch (error) {
     console.error('Database Error:', error);
     return { success: false, message: 'Error al iniciar sesión.' };

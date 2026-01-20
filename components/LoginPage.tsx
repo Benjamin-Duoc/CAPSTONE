@@ -22,10 +22,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         setError(''); // Clear error on typing
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        const result = loginUser(formData.email, formData.password);
+
+        const result = await loginUser(formData.email, formData.password);
 
         if (result.success) {
             setSuccess(true);
@@ -39,7 +39,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
     if (success) {
         return (
-             <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
                 <div className="bg-surface p-8 rounded-lg shadow-xl text-center max-w-md w-full border border-gray-200">
                     <div className="text-green-500 mb-4">
                         <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -56,7 +56,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <div className="mb-8">
                 <Logo onNavigate={onNavigate} />
             </div>
-            
+
             <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-lg shadow-xl border border-gray-200">
                 <div className="text-center">
                     <h2 className="mt-2 text-3xl font-extrabold text-text-primary font-serif">Inicia sesión</h2>
@@ -70,7 +70,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                             <p>{error}</p>
                         </div>
                     )}
-                    
+
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
@@ -122,9 +122,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                     <div className="text-center">
                         <p className="text-sm text-text-secondary">
                             ¿No tienes una cuenta?{' '}
-                            <button 
-                                type="button" 
-                                onClick={() => onNavigate('register')} 
+                            <button
+                                type="button"
+                                onClick={() => onNavigate('register')}
                                 className="font-medium text-primary hover:text-orange-600"
                             >
                                 Regístrate aquí

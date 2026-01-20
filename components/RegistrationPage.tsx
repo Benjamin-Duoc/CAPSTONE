@@ -26,16 +26,16 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
         setError(''); // Clear error on typing
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
             return;
         }
 
         // Call the database utility
-        const result = insertUser({
+        const result = await insertUser({
             firstName: formData.firstName,
             lastName: formData.lastName,
             region: formData.region,
@@ -55,7 +55,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
 
     if (success) {
         return (
-             <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
                 <div className="bg-surface p-8 rounded-lg shadow-xl text-center max-w-md w-full border border-gray-200">
                     <div className="text-green-500 mb-4">
                         <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -72,7 +72,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
             <div className="mb-8">
                 <Logo onNavigate={onNavigate} />
             </div>
-            
+
             <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-lg shadow-xl border border-gray-200">
                 <div className="text-center">
                     <h2 className="mt-2 text-3xl font-extrabold text-text-primary font-serif">Crea tu cuenta</h2>
@@ -86,7 +86,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
                             <p>{error}</p>
                         </div>
                     )}
-                    
+
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
                             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">Nombre(s)</label>
