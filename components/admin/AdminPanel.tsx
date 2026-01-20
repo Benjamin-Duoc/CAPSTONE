@@ -24,6 +24,7 @@ import SettingsForm from './SettingsForm';
 import { SearchIcon } from '../icons';
 
 interface AdminPanelProps {
+    initialSection?: string | null;
     courses: Course[];
     onAddCourse: (course: Omit<Course, 'id'>) => void;
     onUpdateCourse: (course: Course) => void;
@@ -105,7 +106,7 @@ interface AdminPanelProps {
 type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | null;
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
-    const [selectedSection, setSelectedSection] = useState<ManagedSection>('settings');
+    const [selectedSection, setSelectedSection] = useState<ManagedSection>((props.initialSection as ManagedSection) || 'settings');
     
     // Course states
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);

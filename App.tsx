@@ -29,7 +29,7 @@ import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
 import type { Page, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase } from './utils/db';
+import { initDatabase, loadNewsArticles, saveNewsArticles, loadCourses, saveCourses, loadJobs, saveJobs, loadEntrepreneurs, saveEntrepreneurs, loadSponsors, saveSponsors, loadPressReleases, savePressReleases, loadPhotojournalismPosts, savePhotojournalismPosts, loadFundingOpportunities, saveFundingOpportunities, loadSpecialists, saveSpecialists, loadShareablePhotos, saveShareablePhotos, loadShortCollaborations, saveShortCollaborations, loadEntrepreneurshipTips, saveEntrepreneurshipTips, loadSponsoredAds, saveSponsoredAds, loadCommunityPosts, saveCommunityPosts, loadSpecialAds, saveSpecialAds, loadEvents, saveEvents, loadStats, saveStats } from './utils/db';
 
 import * as data from './data/mockData';
 
@@ -41,34 +41,85 @@ const App: React.FC = () => {
   const [selectedNewsArticle, setSelectedNewsArticle] = useState<NewsArticle | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null); // State for selected course
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
 
-  // Centralized data state for the entire application
-  const [courses, setCourses] = useState(data.courses);
-  const [jobs, setJobs] = useState(data.jobs);
-  const [entrepreneurs, setEntrepreneurs] = useState(data.entrepreneurs);
-  const [newsArticles, setNewsArticles] = useState(data.newsArticles);
-  const [pressReleases, setPressReleases] = useState(data.pressReleases);
+  // Centralized data state for the entire application - Load from localStorage or use mockData
+  const [courses, setCourses] = useState<Course[]>(() => {
+    const saved = loadCourses();
+    return saved.length > 0 ? saved : data.courses;
+  });
+  const [jobs, setJobs] = useState<Job[]>(() => {
+    const saved = loadJobs();
+    return saved.length > 0 ? saved : data.jobs;
+  });
+  const [entrepreneurs, setEntrepreneurs] = useState<Entrepreneurship[]>(() => {
+    const saved = loadEntrepreneurs();
+    return saved.length > 0 ? saved : data.entrepreneurs;
+  });
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
+    const saved = loadNewsArticles();
+    return saved.length > 0 ? saved : data.newsArticles;
+  });
+  const [pressReleases, setPressReleases] = useState<PressRelease[]>(() => {
+    const saved = loadPressReleases();
+    return saved.length > 0 ? saved : data.pressReleases;
+  });
   const [ngoSpotlight, setNgoSpotlight] = useState(data.ngoSpotlight);
   const [freelanceServices, setFreelanceServices] = useState(data.freelanceServices);
   const [communityAds, setCommunityAds] = useState(data.communityAds);
-  const [premiumSponsors, setPremiumSponsors] = useState(data.premiumSponsors);
+  const [premiumSponsors, setPremiumSponsors] = useState<PremiumSponsor[]>(() => {
+    const saved = loadSponsors();
+    return saved.length > 0 ? saved : data.premiumSponsors;
+  });
   const [promoVideos, setPromoVideos] = useState(data.promoVideos);
-  const [communityPosts, setCommunityPosts] = useState(data.communityPosts);
-  const [photojournalismPosts, setPhotojournalismPosts] = useState(data.photojournalismPosts);
-  const [specialists, setSpecialists] = useState(data.specialists);
-  const [shareablePhotos, setShareablePhotos] = useState(data.shareablePhotos);
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => {
+    const saved = loadCommunityPosts();
+    return saved.length > 0 ? saved : data.communityPosts;
+  });
+  const [photojournalismPosts, setPhotojournalismPosts] = useState<PhotojournalismPost[]>(() => {
+    const saved = loadPhotojournalismPosts();
+    return saved.length > 0 ? saved : data.photojournalismPosts;
+  });
+  const [specialists, setSpecialists] = useState<Specialist[]>(() => {
+    const saved = loadSpecialists();
+    return saved.length > 0 ? saved : data.specialists;
+  });
+  const [shareablePhotos, setShareablePhotos] = useState<ShareablePhoto[]>(() => {
+    const saved = loadShareablePhotos();
+    return saved.length > 0 ? saved : data.shareablePhotos;
+  });
   const [resources, setResources] = useState(data.resources);
-  const [fundingOpportunities, setFundingOpportunities] = useState(data.fundingOpportunities);
-  const [events, setEvents] = useState(data.events);
+  const [fundingOpportunities, setFundingOpportunities] = useState<FundingOpportunity[]>(() => {
+    const saved = loadFundingOpportunities();
+    return saved.length > 0 ? saved : data.fundingOpportunities;
+  });
+  const [events, setEvents] = useState<Event[]>(() => {
+    const saved = loadEvents();
+    return saved.length > 0 ? saved : data.events;
+  });
   const [legalTopics, setLegalTopics] = useState(data.legalTopics);
   const [heroHeading, setHeroHeading] = useState(data.heroHeading);
-  const [shortCollaborations, setShortCollaborations] = useState(data.shortCollaborations);
-  const [entrepreneurshipTips, setEntrepreneurshipTips] = useState(data.entrepreneurshipTips);
-  const [sponsoredAds, setSponsoredAds] = useState(data.sponsoredAds);
-  const [specialAds, setSpecialAds] = useState(data.specialAds);
-  const [stats, setStats] = useState(data.siteStats);
+  const [shortCollaborations, setShortCollaborations] = useState<ShortCollaboration[]>(() => {
+    const saved = loadShortCollaborations();
+    return saved.length > 0 ? saved : data.shortCollaborations;
+  });
+  const [entrepreneurshipTips, setEntrepreneurshipTips] = useState<EntrepreneurshipTip[]>(() => {
+    const saved = loadEntrepreneurshipTips();
+    return saved.length > 0 ? saved : data.entrepreneurshipTips;
+  });
+  const [sponsoredAds, setSponsoredAds] = useState<SponsoredAd[]>(() => {
+    const saved = loadSponsoredAds();
+    return saved.length > 0 ? saved : data.sponsoredAds;
+  });
+  const [specialAds, setSpecialAds] = useState<SpecialAd[]>(() => {
+    const saved = loadSpecialAds();
+    return saved.length > 0 ? saved : data.specialAds;
+  });
+  const [stats, setStats] = useState<SiteStat[]>(() => {
+    const saved = loadStats();
+    return saved.length > 0 ? saved : data.siteStats;
+  });
   const [partnerLogos, setPartnerLogos] = useState(data.partnerLogos);
   const [talentProfiles, setTalentProfiles] = useState(data.talentProfiles);
   const [rotationInterval, setRotationInterval] = useState(data.rotationInterval);
@@ -76,6 +127,75 @@ const App: React.FC = () => {
   useEffect(() => {
     initDatabase();
   }, []);
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    saveNewsArticles(newsArticles);
+  }, [newsArticles]);
+
+  useEffect(() => {
+    saveCourses(courses);
+  }, [courses]);
+
+  useEffect(() => {
+    saveJobs(jobs);
+  }, [jobs]);
+
+  useEffect(() => {
+    saveEntrepreneurs(entrepreneurs);
+  }, [entrepreneurs]);
+
+  useEffect(() => {
+    saveSponsors(premiumSponsors);
+  }, [premiumSponsors]);
+
+  useEffect(() => {
+    savePressReleases(pressReleases);
+  }, [pressReleases]);
+
+  useEffect(() => {
+    savePhotojournalismPosts(photojournalismPosts);
+  }, [photojournalismPosts]);
+
+  useEffect(() => {
+    saveFundingOpportunities(fundingOpportunities);
+  }, [fundingOpportunities]);
+
+  useEffect(() => {
+    saveSpecialists(specialists);
+  }, [specialists]);
+
+  useEffect(() => {
+    saveShareablePhotos(shareablePhotos);
+  }, [shareablePhotos]);
+
+  useEffect(() => {
+    saveShortCollaborations(shortCollaborations);
+  }, [shortCollaborations]);
+
+  useEffect(() => {
+    saveEntrepreneurshipTips(entrepreneurshipTips);
+  }, [entrepreneurshipTips]);
+
+  useEffect(() => {
+    saveSponsoredAds(sponsoredAds);
+  }, [sponsoredAds]);
+
+  useEffect(() => {
+    saveCommunityPosts(communityPosts);
+  }, [communityPosts]);
+
+  useEffect(() => {
+    saveSpecialAds(specialAds);
+  }, [specialAds]);
+
+  useEffect(() => {
+    saveEvents(events);
+  }, [events]);
+
+  useEffect(() => {
+    saveStats(stats);
+  }, [stats]);
 
   const handleNavigate = (page: Page, subPage?: string) => {
     setSelectedEntrepreneur(null); // Reset detail page when navigating
@@ -414,6 +534,7 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'admin':
         return <AdminPanel 
+          initialSection={initialTab}
           courses={courses}
           onAddCourse={handleAddCourse}
           onUpdateCourse={handleUpdateCourse}

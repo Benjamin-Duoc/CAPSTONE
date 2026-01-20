@@ -733,8 +733,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     </div>
   );
 
-  const mainNewsArticle = newsArticles[0];
-  const otherNewsArticles = newsArticles.slice(1, 3);
+  const sortedNewsArticles = [...newsArticles].sort((a, b) => b.id - a.id);
+  const mainNewsArticle = sortedNewsArticles[0];
+  const otherNewsArticles = sortedNewsArticles.slice(1, 3);
   const entrepreneurshipTip = [...entrepreneurshipTips].sort((a, b) => b.id - a.id)[0];
   const legalAd = specialAds.find(ad => ad.id === 'legal');
   const entrepreneurshipAd = specialAds.find(ad => ad.id === 'entrepreneurship');
@@ -788,7 +789,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <div className="flex justify-between items-center border-b-2 border-primary pb-2 mb-6">
                         <h2 className="text-3xl font-bold font-serif text-text-primary">Innovación para el Periodismo Emprendedor</h2>
                         <button onClick={() => onNavigate('analysis')} className="font-semibold text-primary hover:underline">Ver todo &rarr;</button>
-                        {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
+                        {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'news')} />}
                     </div>
                     {mainNewsArticle && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
