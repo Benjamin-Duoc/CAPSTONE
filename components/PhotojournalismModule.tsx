@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { entrepreneurs } from '../data/mockData'; // Fallback / unused for now
 import type { PhotojournalismPost, User } from '../types';
 import { WhatsAppIcon } from './icons';
-import { getPhotoPosts, insertPhotoPost } from '../utils/db';
+import { getPhotoPosts, insertPhotoPost, updatePhotoPost, uploadImage } from '../utils/db';
 
 interface PhotojournalismModuleProps {
     posts?: PhotojournalismPost[];
@@ -10,12 +10,31 @@ interface PhotojournalismModuleProps {
     currentUser?: User | null;
 }
 
-const PhotoCard: React.FC<{ post: PhotojournalismPost; onClick?: () => void }> = ({ post, onClick }) => {
+const PhotoCard: React.FC<{
+    post: PhotojournalismPost;
+    onClick?: () => void;
+    canEdit?: boolean;
+    onEdit?: (e: React.MouseEvent) => void;
+}> = ({ post, onClick, canEdit, onEdit }) => {
     return (
         <div
-            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col h-full cursor-pointer"
+            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col h-full cursor-pointer relative"
             onClick={onClick}
         >
+            {canEdit && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(e);
+                    }}
+                    className="absolute top-2 right-2 z-10 bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-primary hover:text-orange-600 transition-colors"
+                    title="Editar publicación"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                </button>
+            )}
             <img src={post.imageUrl} alt={post.title} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="p-4 flex flex-col flex-grow">
                 <h3 className="font-bold font-serif text-lg text-text-primary mt-1 mb-2 group-hover:text-primary transition-colors">{post.title}</h3>
@@ -40,6 +59,8 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [dbPosts, setDbPosts] = useState<PhotojournalismPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editingPost, setEditingPost] = useState<PhotojournalismPost | null>(null);
+
     const ITEMS_PER_PAGE = 9;
 
     // Fetch posts from Supabase on mount
@@ -78,39 +99,103 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
 
     const handleUploadSuccess = () => {
         setIsPhotojournalismModalOpen(false);
+        setEditingPost(null);
         // Refetch posts to show new one
         getPhotoPosts().then(setDbPosts);
     };
 
+    const handleModalClose = () => {
+        setIsPhotojournalismModalOpen(false);
+        setEditingPost(null);
+    }
+
+    const openUploadModal = () => {
+        setEditingPost(null);
+        setIsPhotojournalismModalOpen(true);
+    };
+
+    const handleEditPost = (post: PhotojournalismPost) => {
+        setEditingPost(post);
+        setIsPhotojournalismModalOpen(true);
+    }
+
     const PhotojournalismPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         const [uploadForm, setUploadForm] = useState({
-            title: '',
-            imageUrl: '',
-            caption: '',
-            dateTaken: new Date().toISOString().split('T')[0],
-            whatsappContact: '',
+            title: editingPost?.title || '',
+            imageUrl: editingPost?.imageUrl || '',
+            caption: editingPost?.caption || '',
+            dateTaken: editingPost?.dateTaken ? editingPost.dateTaken.split('T')[0] : new Date().toISOString().split('T')[0],
+            whatsappContact: editingPost?.whatsappContact || '',
         });
+        const [imageFile, setImageFile] = useState<File | null>(null);
         const [isSubmitting, setIsSubmitting] = useState(false);
+        const [uploadError, setUploadError] = useState<string | null>(null);
+
+        const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.files && e.target.files[0]) {
+                setImageFile(e.target.files[0]);
+                // Clear URL if file is selected, or keep it as preview? 
+                // Let's clear it to avoid confusion, or perhaps showing a preview would be better.
+                // For now, simple logic:
+            }
+        };
 
         const handleSubmit = async (e: React.FormEvent) => {
             e.preventDefault();
             if (!currentUser) return;
 
             setIsSubmitting(true);
-            const newPost: Omit<PhotojournalismPost, 'id' | 'dateAdded'> = {
-                ...uploadForm,
-                photographerName: `${currentUser.firstName} ${currentUser.lastName}`,
-                photographerAvatarUrl: `https://ui-avatars.com/api/?name=${currentUser.firstName}+${currentUser.lastName}&background=random`,
-            };
+            setUploadError(null);
 
-            const result = await insertPhotoPost(newPost);
-            setIsSubmitting(false);
+            let finalImageUrl = uploadForm.imageUrl;
 
-            if (result.success) {
-                handleUploadSuccess();
-            } else {
-                alert(result.message || 'Error al subir la foto');
+            if (imageFile) {
+                const uploadResult = await uploadImage(imageFile);
+                if (uploadResult.success && uploadResult.url) {
+                    finalImageUrl = uploadResult.url;
+                } else {
+                    setUploadError(uploadResult.message || 'Error al subir la imagen.');
+                    setIsSubmitting(false);
+                    return;
+                }
             }
+
+            if (!finalImageUrl) {
+                setUploadError('Por favor sube una imagen o proporciona una URL.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            if (editingPost) {
+                const updatedPost: PhotojournalismPost = {
+                    ...editingPost,
+                    ...uploadForm,
+                    imageUrl: finalImageUrl,
+                };
+                const result = await updatePhotoPost(updatedPost);
+                if (result.success) {
+                    handleUploadSuccess();
+                } else {
+                    setUploadError(result.message || 'Error al actualizar la publicación.');
+                }
+            } else {
+                const newPost: Omit<PhotojournalismPost, 'id' | 'dateAdded'> = {
+                    ...uploadForm,
+                    imageUrl: finalImageUrl,
+                    photographerName: `${currentUser.firstName} ${currentUser.lastName}`,
+                    photographerAvatarUrl: `https://ui-avatars.com/api/?name=${currentUser.firstName}+${currentUser.lastName}&background=random`,
+                    createdBy: currentUser.email,
+                };
+
+                const result = await insertPhotoPost(newPost);
+
+                if (result.success) {
+                    handleUploadSuccess();
+                } else {
+                    setUploadError(result.message || 'Error al subir la foto.');
+                }
+            }
+            setIsSubmitting(false);
         };
 
         if (!currentUser) {
@@ -134,7 +219,15 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in overflow-y-auto" onClick={onClose}>
                 <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg relative" onClick={e => e.stopPropagation()}>
                     <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
-                    <h3 className="text-2xl font-bold font-serif text-primary mb-6">Subir Fotografía</h3>
+                    <h3 className="text-2xl font-bold font-serif text-primary mb-6">
+                        {editingPost ? 'Editar Fotografía' : 'Subir Fotografía'}
+                    </h3>
+
+                    {uploadError && (
+                        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                            {uploadError}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
@@ -147,17 +240,34 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                 onChange={e => setUploadForm({ ...uploadForm, title: e.target.value })}
                             />
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">URL de la Imagen</label>
-                            <input
-                                required
-                                type="url"
-                                placeholder="https://..."
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2"
-                                value={uploadForm.imageUrl}
-                                onChange={e => setUploadForm({ ...uploadForm, imageUrl: e.target.value })}
-                            />
+                            <label className="block text-sm font-medium text-gray-700">Imagen</label>
+                            <div className="mt-1 flex flex-col gap-2">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="block w-full text-sm text-gray-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-primary file:text-white
+                                        hover:file:bg-orange-600
+                                    "
+                                />
+                                <div className="text-center text-gray-400 text-xs">- O -</div>
+                                <input
+                                    type="url"
+                                    placeholder="https://... (URL de imagen externa)"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2"
+                                    value={uploadForm.imageUrl}
+                                    onChange={e => setUploadForm({ ...uploadForm, imageUrl: e.target.value })}
+                                />
+                                <p className="text-xs text-gray-500">Sube un archivo o pega una URL.</p>
+                            </div>
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Descripción / Epígrafe</label>
                             <textarea
@@ -197,7 +307,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                 disabled={isSubmitting}
                                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                             >
-                                {isSubmitting ? 'Publicando...' : 'Publicar'}
+                                {isSubmitting ? (editingPost ? 'Guardando...' : 'Publicando...') : (editingPost ? 'Guardar Cambios' : 'Publicar')}
                             </button>
                         </div>
                     </form>
@@ -220,7 +330,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                         <p className="text-xs text-orange-800">Con tu suscripción gratuita, publica tu acierto y dale difusión a tu perspectiva.</p>
                     </div>
                     <button
-                        onClick={() => setIsPhotojournalismModalOpen(true)}
+                        onClick={openUploadModal}
                         className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm"
                     >
                         Sube tu foto
@@ -239,6 +349,8 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                     key={post.id}
                                     post={post}
                                     onClick={() => onSelectPost?.(post)}
+                                    canEdit={!!currentUser && !!post.createdBy && currentUser.email === post.createdBy}
+                                    onEdit={() => handleEditPost(post)}
                                 />
                             ))}
                         </div>
@@ -267,7 +379,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                     </>
                 )}
             </div>
-            {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
+            {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={handleModalClose} />}
         </div>
     );
 };

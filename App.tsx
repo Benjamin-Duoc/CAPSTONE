@@ -612,7 +612,19 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
-      {currentPage !== 'register' && currentPage !== 'login' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} />}
+      {currentPage !== 'register' && currentPage !== 'login' && (
+        <Header
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          isAdminMode={isAdminMode}
+          currentUser={currentUser}
+          onLogout={() => {
+            setCurrentUser(null);
+            localStorage.removeItem('cipress_user');
+            handleNavigate('home');
+          }}
+        />
+      )}
 
       <main className="flex-grow">
         {renderPage()}

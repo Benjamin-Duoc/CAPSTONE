@@ -80,6 +80,43 @@ export const insertPhotoPost = async (post: Omit<PhotojournalismPost, 'id' | 'da
   return { success: true };
 };
 
+export const updatePhotoPost = async (post: PhotojournalismPost): Promise<{ success: boolean; message?: string }> => {
+  const { error } = await supabase
+    .from('photojournalism')
+    .update({
+      title: post.title,
+      caption: post.caption,
+      imageUrl: post.imageUrl,
+      dateTaken: post.dateTaken,
+      whatsappContact: post.whatsappContact
+    })
+    .eq('id', post.id);
+
+  if (error) {
+    console.error('Error updating photo post:', error);
+    return { success: false, message: 'Error al actualizar la publicación.' };
+  }
+  return { success: true };
+};
+
+export const uploadImage = async (file: File): Promise<{ success: boolean; url?: string; message?: string }> => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('photos')
+    .upload(filePath, file);
+
+  if (uploadError) {
+    console.error('Error uploading image:', uploadError);
+    return { success: false, message: `Error al subir la imagen: ${uploadError.message}` };
+  }
+
+  const { data } = supabase.storage.from('photos').getPublicUrl(filePath);
+  return { success: true, url: data.publicUrl };
+};
+
 // Login user
 export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
   try {

@@ -8,9 +8,11 @@ interface HeaderProps {
     currentPage: Page;
     onNavigate: (page: Page, subPage?: string) => void;
     isAdminMode: boolean;
+    currentUser?: User | null;
+    onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode }) => {
+const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout }) => {
     const [showUsersModal, setShowUsersModal] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
 
@@ -19,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
         { page: 'courses', label: 'Capacitación' },
         { page: 'funding', label: 'Fondos' },
         { page: 'photo-gallery', label: 'Galería Fotográfica' },
+        { page: 'photojournalism', label: 'Fotoperiodismo' },
     ];
 
     const handleShowUsers = async () => {
@@ -31,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
         <>
             <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-40"> {/* MODIFICAR H-40 PARA AJUSTAR ALTURA DEL HEADER */}
+                    <div className="flex items-center justify-between h-20">
                         <div className="flex-shrink-0">
                             <Logo onNavigate={onNavigate} />
                         </div>
@@ -64,26 +67,43 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
                             {/* DB View Button */}
                             <button
                                 onClick={handleShowUsers}
-                                className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors"
+                                className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors hidden lg:block"
                                 title="Ver tabla 'usuario' de la base de datos"
                             >
-                                Ver Usuarios DB
+                                DB
                             </button>
 
-                            <a
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); onNavigate('login'); }}
-                                className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block"
-                            >
-                                Ingresar
-                            </a>
-                            <a
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
-                                className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-lg shadow-primary/20"
-                            >
-                                Registrarme
-                            </a>
+                            {currentUser ? (
+                                <div className="flex items-center space-x-3">
+                                    <div className="text-right hidden sm:block">
+                                        <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
+                                        <p className="text-xs text-text-secondary">{currentUser.email}</p>
+                                    </div>
+                                    <button
+                                        onClick={onLogout}
+                                        className="text-sm font-medium text-red-600 hover:text-red-800 border border-red-200 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors"
+                                    >
+                                        Salir
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <a
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); onNavigate('login'); }}
+                                        className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block"
+                                    >
+                                        Ingresar
+                                    </a>
+                                    <a
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
+                                        className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-lg shadow-primary/20"
+                                    >
+                                        Registrarme
+                                    </a>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
