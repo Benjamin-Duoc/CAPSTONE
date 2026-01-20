@@ -1,4 +1,4 @@
-import type { User } from '../types';
+import type { User, PhotojournalismPost } from '../types';
 import { supabase } from './supabaseClient';
 
 // Initialize the "table" - No-op for Supabase as table is pre-created
@@ -49,6 +49,35 @@ export const getAllUsers = async (): Promise<User[]> => {
     return [];
   }
   return data as User[];
+};
+
+// Photojournalism Functions
+export const getPhotoPosts = async (): Promise<PhotojournalismPost[]> => {
+  const { data, error } = await supabase
+    .from('photojournalism')
+    .select('*')
+    .order('dateAdded', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching photo posts:', error);
+    return [];
+  }
+  return data as PhotojournalismPost[];
+};
+
+export const insertPhotoPost = async (post: Omit<PhotojournalismPost, 'id' | 'dateAdded'>): Promise<{ success: boolean; message?: string }> => {
+  const { error } = await supabase
+    .from('photojournalism')
+    .insert([{
+      ...post,
+      dateAdded: new Date().toISOString()
+    }]);
+
+  if (error) {
+    console.error('Error inserting photo post:', error);
+    return { success: false, message: 'Error al guardar la publicación.' };
+  }
+  return { success: true };
 };
 
 // Login user

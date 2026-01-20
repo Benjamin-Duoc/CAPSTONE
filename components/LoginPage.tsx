@@ -8,7 +8,7 @@ interface LoginPageProps {
     onNavigate: (page: Page) => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -27,8 +27,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
         const result = await loginUser(formData.email, formData.password);
 
-        if (result.success) {
+        if (result.success && result.user) {
             setSuccess(true);
+            if (onLoginSuccess) {
+                onLoginSuccess(result.user);
+            }
             setTimeout(() => {
                 onNavigate('home');
             }, 2000);

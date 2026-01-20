@@ -29,7 +29,8 @@ import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
-import type { Page, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
+import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
+import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
 import { initDatabase } from './utils/db';
 
 import * as data from './data/mockData';
@@ -43,7 +44,9 @@ const App: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null); // State for selected course
+  const [selectedPhotoPost, setSelectedPhotoPost] = useState<PhotojournalismPost | null>(null); // State for selected photo post
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null); // Persistent user state
 
   // Centralized data state for the entire application
   const [courses, setCourses] = useState(data.courses);
@@ -76,6 +79,16 @@ const App: React.FC = () => {
 
   useEffect(() => {
     initDatabase();
+    // Check for persisted user
+    const savedUser = localStorage.getItem('cipress_user');
+    if (savedUser) {
+      try {
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error('Error restoring session:', e);
+        localStorage.removeItem('cipress_user');
+      }
+    }
   }, []);
 
   const handleNavigate = (page: Page, subPage?: string) => {
@@ -85,39 +98,45 @@ const App: React.FC = () => {
     setSelectedJob(null);
     setSelectedPressRelease(null);
     setSelectedCourse(null);
+    setSelectedPhotoPost(null);
     setCurrentPage(page);
     setInitialTab(subPage || null);
     window.scrollTo(0, 0); // Scroll to top on navigation
   };
-  
+
   const handleSelectEntrepreneur = (entrepreneur: Entrepreneurship) => {
-      setSelectedEntrepreneur(entrepreneur);
-      window.scrollTo(0, 0);
+    setSelectedEntrepreneur(entrepreneur);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectSponsor = (sponsor: PremiumSponsor) => {
-      setSelectedSponsor(sponsor);
-      window.scrollTo(0, 0);
+    setSelectedSponsor(sponsor);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectNewsArticle = (article: NewsArticle) => {
-      setSelectedNewsArticle(article);
-      window.scrollTo(0, 0);
+    setSelectedNewsArticle(article);
+    window.scrollTo(0, 0);
   };
 
   const handleSelectJob = (job: Job) => {
-      setSelectedJob(job);
-      window.scrollTo(0, 0);
+    setSelectedJob(job);
+    window.scrollTo(0, 0);
   };
 
   const handleSelectPressRelease = (pressRelease: PressRelease) => {
-      setSelectedPressRelease(pressRelease);
-      window.scrollTo(0, 0);
+    setSelectedPressRelease(pressRelease);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectCourse = (course: Course) => {
-      setSelectedCourse(course);
-      window.scrollTo(0, 0);
+    setSelectedCourse(course);
+    window.scrollTo(0, 0);
+  };
+
+  const handleSelectPhotoPost = (post: PhotojournalismPost) => {
+    setSelectedPhotoPost(post);
+    window.scrollTo(0, 0);
   };
 
   // CRUD Operations for Courses
@@ -128,7 +147,7 @@ const App: React.FC = () => {
     setCourses(prev => prev.map(c => c.id === updatedCourse.id ? updatedCourse : c));
   };
   const handleDeleteCourse = (courseId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este curso?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este curso?')) {
       setCourses(prev => prev.filter(c => c.id !== courseId));
     }
   };
@@ -141,7 +160,7 @@ const App: React.FC = () => {
     setJobs(prev => prev.map(j => j.id === updatedJob.id ? updatedJob : j));
   };
   const handleDeleteJob = (jobId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
       setJobs(prev => prev.filter(j => j.id !== jobId));
     }
   };
@@ -154,11 +173,11 @@ const App: React.FC = () => {
     setEntrepreneurs(prev => prev.map(e => e.id === updatedEntrepreneur.id ? updatedEntrepreneur : e));
   };
   const handleDeleteEntrepreneur = (entrepreneurId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este emprendimiento?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este emprendimiento?')) {
       setEntrepreneurs(prev => prev.filter(e => e.id !== entrepreneurId));
     }
   };
-  
+
   // CRUD Operations for News Articles
   const handleAddNewsArticle = (newArticle: Omit<NewsArticle, 'id'>) => {
     setNewsArticles(prev => [{ ...newArticle, id: Date.now() }, ...prev]);
@@ -167,7 +186,7 @@ const App: React.FC = () => {
     setNewsArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
   };
   const handleDeleteNewsArticle = (articleId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
       setNewsArticles(prev => prev.filter(a => a.id !== articleId));
     }
   };
@@ -180,7 +199,7 @@ const App: React.FC = () => {
     setPremiumSponsors(prev => prev.map(s => s.id === updatedSponsor.id ? updatedSponsor : s));
   };
   const handleDeleteSponsor = (sponsorId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este sponsor?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este sponsor?')) {
       setPremiumSponsors(prev => prev.filter(s => s.id !== sponsorId));
     }
   };
@@ -223,45 +242,45 @@ const App: React.FC = () => {
       setFundingOpportunities(prev => prev.filter(f => f.id !== fundingId));
     }
   };
-  
+
   // CRUD for Specialists
   const handleAddSpecialist = (newSpecialist: Omit<Specialist, 'id' | 'dateAdded'>) => {
     setSpecialists(prev => [{ ...newSpecialist, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
   };
   const handleUpdateSpecialist = (updatedSpecialist: Specialist) => {
-      setSpecialists(prev => prev.map(s => s.id === updatedSpecialist.id ? updatedSpecialist : s));
+    setSpecialists(prev => prev.map(s => s.id === updatedSpecialist.id ? updatedSpecialist : s));
   };
   const handleDeleteSpecialist = (specialistId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este especialista?')) {
-          setSpecialists(prev => prev.filter(s => s.id !== specialistId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este especialista?')) {
+      setSpecialists(prev => prev.filter(s => s.id !== specialistId));
+    }
   };
 
   // CRUD for Shareable Photos
   const handleAddShareablePhoto = (newPhoto: Omit<ShareablePhoto, 'id' | 'dateAdded'>) => {
-      setShareablePhotos(prev => [{ ...newPhoto, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
+    setShareablePhotos(prev => [{ ...newPhoto, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
   };
   const handleUpdateShareablePhoto = (updatedPhoto: ShareablePhoto) => {
-      setShareablePhotos(prev => prev.map(p => p.id === updatedPhoto.id ? updatedPhoto : p));
+    setShareablePhotos(prev => prev.map(p => p.id === updatedPhoto.id ? updatedPhoto : p));
   };
   const handleDeleteShareablePhoto = (photoId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar esta foto?')) {
-          setShareablePhotos(prev => prev.filter(p => p.id !== photoId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta foto?')) {
+      setShareablePhotos(prev => prev.filter(p => p.id !== photoId));
+    }
   };
 
   // CRUD for Community Posts
   const handleAddCommunityPost = (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
     const newCommunityPost: CommunityPost = {
-        ...newPost,
-        id: Date.now(),
-        authorName: 'Usuario Activo', // Hardcoded for now
-        authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
+      ...newPost,
+      id: Date.now(),
+      authorName: 'Usuario Activo', // Hardcoded for now
+      authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
     };
     setCommunityPosts(prev => [newCommunityPost, ...prev]);
   };
   const handleAddCommunityPostAdmin = (newPost: Omit<CommunityPost, 'id'>) => {
-    setCommunityPosts(prev => [{...newPost, id: Date.now()}, ...prev]);
+    setCommunityPosts(prev => [{ ...newPost, id: Date.now() }, ...prev]);
   };
   const handleUpdateCommunityPost = (updatedPost: CommunityPost) => {
     setCommunityPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
@@ -277,14 +296,14 @@ const App: React.FC = () => {
     setShortCollaborations(prev => [{ ...newCollaboration, id: Date.now() }, ...prev]);
   };
   const handleUpdateShortCollaboration = (updatedCollaboration: ShortCollaboration) => {
-      setShortCollaborations(prev => prev.map(c => c.id === updatedCollaboration.id ? updatedCollaboration : c));
+    setShortCollaborations(prev => prev.map(c => c.id === updatedCollaboration.id ? updatedCollaboration : c));
   };
   const handleDeleteShortCollaboration = (collaborationId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar esta colaboración?')) {
-          setShortCollaborations(prev => prev.filter(c => c.id !== collaborationId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta colaboración?')) {
+      setShortCollaborations(prev => prev.filter(c => c.id !== collaborationId));
+    }
   };
-  
+
   // CRUD for Entrepreneurship Tips
   const handleAddEntrepreneurshipTip = (newTip: Omit<EntrepreneurshipTip, 'id'>) => {
     setEntrepreneurshipTips(prev => [{ ...newTip, id: Date.now() }, ...prev]);
@@ -297,7 +316,7 @@ const App: React.FC = () => {
       setEntrepreneurshipTips(prev => prev.filter(t => t.id !== tipId));
     }
   };
-  
+
   // CRUD for Sponsored Ads
   const handleAddSponsoredAd = (newAd: Omit<SponsoredAd, 'id'>) => {
     setSponsoredAds(prev => [...prev, { ...newAd, id: Date.now() }]);
@@ -316,12 +335,12 @@ const App: React.FC = () => {
     setEvents(prev => [...prev, { ...newEvent, id: Date.now() }]);
   };
   const handleUpdateEvent = (updatedEvent: Event) => {
-      setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
   };
   const handleDeleteEvent = (eventId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este evento?')) {
-          setEvents(prev => prev.filter(e => e.id !== eventId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este evento?')) {
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+    }
   };
 
   // CRUD for Partner Logos
@@ -329,25 +348,25 @@ const App: React.FC = () => {
     setPartnerLogos(prev => [...prev, { ...newLogo, id: Date.now() }]);
   };
   const handleUpdatePartnerLogo = (updatedLogo: PartnerLogo) => {
-      setPartnerLogos(prev => prev.map(logo => logo.id === updatedLogo.id ? updatedLogo : logo));
+    setPartnerLogos(prev => prev.map(logo => logo.id === updatedLogo.id ? updatedLogo : logo));
   };
   const handleDeletePartnerLogo = (logoId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este logo?')) {
-          setPartnerLogos(prev => prev.filter(logo => logo.id !== logoId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este logo?')) {
+      setPartnerLogos(prev => prev.filter(logo => logo.id !== logoId));
+    }
   };
-  
+
   // CRUD for Talent Profiles
   const handleAddTalentProfile = (newProfile: Omit<TalentProfile, 'id'>) => {
     setTalentProfiles(prev => [{ ...newProfile, id: Date.now() }, ...prev]);
   };
   const handleUpdateTalentProfile = (updatedProfile: TalentProfile) => {
-      setTalentProfiles(prev => prev.map(p => p.id === updatedProfile.id ? updatedProfile : p));
+    setTalentProfiles(prev => prev.map(p => p.id === updatedProfile.id ? updatedProfile : p));
   };
   const handleDeleteTalentProfile = (profileId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este perfil de talento?')) {
-          setTalentProfiles(prev => prev.filter(p => p.id !== profileId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este perfil de talento?')) {
+      setTalentProfiles(prev => prev.filter(p => p.id !== profileId));
+    }
   };
 
   // CRUD for Freelance Services (rating)
@@ -375,17 +394,17 @@ const App: React.FC = () => {
   const handleUpdateHeroHeading = (updatedHeading: HeroHeading) => {
     setHeroHeading(updatedHeading);
   };
-  
+
   // Update operation for Special Ads
   const handleUpdateSpecialAd = (updatedAd: SpecialAd) => {
     setSpecialAds(prev => prev.map(ad => ad.id === updatedAd.id ? updatedAd : ad));
   };
-  
+
   // Update operation for Stats
   const handleUpdateStat = (updatedStat: SiteStat) => {
     setStats(prev => prev.map(s => s.id === updatedStat.id ? updatedStat : s));
   };
-  
+
   // Update operation for Rotation Interval
   const handleUpdateRotationInterval = (interval: number) => {
     setRotationInterval(interval);
@@ -394,27 +413,30 @@ const App: React.FC = () => {
 
   const renderPage = () => {
     if (selectedSponsor) {
-        return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
+      return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
     }
     if (selectedEntrepreneur) {
-        return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
+      return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
     }
     if (selectedNewsArticle) {
-        return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
+      return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
     }
     if (selectedJob) {
-        return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
+      return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
     }
     if (selectedPressRelease) {
-        return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
+      return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
+    }
+    if (selectedPhotoPost) {
+      return <PhotojournalismDetailPage post={selectedPhotoPost} onBack={() => setSelectedPhotoPost(null)} />;
     }
     if (selectedCourse) {
-        return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
+      return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
     }
-  
+
     switch (currentPage) {
       case 'admin':
-        return <AdminPanel 
+        return <AdminPanel
           courses={courses}
           onAddCourse={handleAddCourse}
           onUpdateCourse={handleUpdateCourse}
@@ -497,9 +519,9 @@ const App: React.FC = () => {
       case 'entrepreneurship':
         return <EntrepreneurshipModule />;
       case 'opportunities':
-        return <OpportunitiesModule 
-          jobs={jobs} 
-          onSelectJob={handleSelectJob} 
+        return <OpportunitiesModule
+          jobs={jobs}
+          onSelectJob={handleSelectJob}
           initialTab={initialTab || 'jobs'}
           talentProfiles={talentProfiles}
           onAddTalentProfile={handleAddTalentProfile}
@@ -516,7 +538,7 @@ const App: React.FC = () => {
       case 'photo-gallery':
         return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
       case 'photojournalism':
-        return <PhotojournalismModule />;
+        return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} />;
       case 'resources':
         return <ResourcesModule resources={resources} />;
       case 'funding':
@@ -534,19 +556,25 @@ const App: React.FC = () => {
       case 'terms-of-service':
         return <TermsOfServicePage onNavigate={handleNavigate} />;
       case 'community-post':
-        return <CommunityPostPage 
-            posts={communityPosts} 
-            onAddPost={handleAddCommunityPost}
-            onNavigate={handleNavigate} 
+        return <CommunityPostPage
+          posts={communityPosts}
+          onAddPost={handleAddCommunityPost}
+          onNavigate={handleNavigate}
         />;
       case 'register':
         return <RegistrationPage onNavigate={handleNavigate} />;
       case 'login':
-        return <LoginPage onNavigate={handleNavigate} />;
+        return <LoginPage
+          onNavigate={handleNavigate}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            localStorage.setItem('cipress_user', JSON.stringify(user));
+          }}
+        />;
       case 'home':
       default:
-        return <HomePage 
-          onNavigate={handleNavigate} 
+        return <HomePage
+          onNavigate={handleNavigate}
           onSelectEntrepreneur={handleSelectEntrepreneur}
           onSelectSponsor={handleSelectSponsor}
           onSelectNewsArticle={handleSelectNewsArticle}
@@ -585,7 +613,7 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
       {currentPage !== 'register' && currentPage !== 'login' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} />}
-      
+
       <main className="flex-grow">
         {renderPage()}
       </main>
