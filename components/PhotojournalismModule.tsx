@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { entrepreneurs } from '../data/mockData'; // Fallback / unused for now
 import type { PhotojournalismPost, User } from '../types';
 import { WhatsAppIcon } from './icons';
-import { getPhotoPosts, insertPhotoPost, updatePhotoPost, uploadImage } from '../utils/db';
+import { getPhotoPosts, insertPhotoPost, updatePhotoPost, uploadImage, deletePhotoPost } from '../utils/db';
 
 interface PhotojournalismModuleProps {
     posts?: PhotojournalismPost[];
@@ -15,25 +15,40 @@ const PhotoCard: React.FC<{
     onClick?: () => void;
     canEdit?: boolean;
     onEdit?: (e: React.MouseEvent) => void;
-}> = ({ post, onClick, canEdit, onEdit }) => {
+    onDelete?: (e: React.MouseEvent) => void;
+}> = ({ post, onClick, canEdit, onEdit, onDelete }) => {
     return (
         <div
             className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col h-full cursor-pointer relative"
             onClick={onClick}
         >
             {canEdit && (
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit?.(e);
-                    }}
-                    className="absolute top-2 right-2 z-10 bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-primary hover:text-orange-600 transition-colors"
-                    title="Editar publicación"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                </button>
+                <div className="absolute top-2 right-2 z-10 flex space-x-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit?.(e);
+                        }}
+                        className="bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-primary hover:text-orange-600 transition-colors"
+                        title="Editar publicación"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete?.(e);
+                        }}
+                        className="bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-red-600 hover:text-red-800 transition-colors"
+                        title="Eliminar publicación"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
             )}
             <img src={post.imageUrl} alt={post.title} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="p-4 flex flex-col flex-grow">
@@ -117,6 +132,17 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     const handleEditPost = (post: PhotojournalismPost) => {
         setEditingPost(post);
         setIsPhotojournalismModalOpen(true);
+    }
+
+    const handleDeletePost = async (post: PhotojournalismPost) => {
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.')) {
+            const result = await deletePhotoPost(post.id, post.imageUrl);
+            if (result.success) {
+                setDbPosts(prev => prev.filter(p => p.id !== post.id));
+            } else {
+                alert(result.message || 'Error al eliminar la publicación.');
+            }
+        }
     }
 
     const PhotojournalismPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -351,6 +377,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                     onClick={() => onSelectPost?.(post)}
                                     canEdit={!!currentUser && !!post.createdBy && currentUser.email === post.createdBy}
                                     onEdit={() => handleEditPost(post)}
+                                    onDelete={() => handleDeletePost(post)}
                                 />
                             ))}
                         </div>

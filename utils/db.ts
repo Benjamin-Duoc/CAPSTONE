@@ -143,3 +143,40 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
     return { success: false, message: 'Error al iniciar sesión.' };
   }
 };
+// Delete photo post and image
+export const deletePhotoPost = async (postId: number, imageUrl?: string): Promise<{ success: boolean; message?: string }> => {
+  // 1. Delete record from database
+  const { error: dbError } = await supabase
+    .from('photojournalism')
+    .delete()
+    .eq('id', postId);
+
+  if (dbError) {
+    console.error('Error deleting photo post:', dbError);
+    return { success: false, message: 'Error al eliminar la publicación.' };
+  }
+
+  // 2. Delete image from storage if it exists (optional but recommended)
+  if (imageUrl) {
+    try {
+      // Extract file path from URL
+      // URL format: .../storage/v1/object/public/photos/filename.ext
+      const urlParts = imageUrl.split('/photos/');
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1];
+        const { error: storageError } = await supabase.storage
+          .from('photos')
+          .remove([filePath]);
+
+        if (storageError) {
+          console.warn('Error cleaning up storage:', storageError);
+          // We return success true anyway because the post itself is gone
+        }
+      }
+    } catch (e) {
+      console.error('Error processing image URL for deletion:', e);
+    }
+  }
+
+  return { success: true };
+};
