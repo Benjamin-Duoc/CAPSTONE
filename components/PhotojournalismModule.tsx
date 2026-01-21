@@ -76,6 +76,10 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     const [isLoading, setIsLoading] = useState(true);
     const [editingPost, setEditingPost] = useState<PhotojournalismPost | null>(null);
 
+    // Search & Filter State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState({ start: '', end: '' });
+
     const ITEMS_PER_PAGE = 9;
 
     // Fetch posts from Supabase on mount
@@ -94,9 +98,29 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     // For now, let's merge or prioritize DB.
     const effectivePosts = dbPosts.length > 0 ? dbPosts : posts;
 
+    const filteredPosts = useMemo(() => {
+        return effectivePosts.filter(post => {
+            const term = searchTerm.toLowerCase();
+            const matchesTerm =
+                post.title.toLowerCase().includes(term) ||
+                post.caption.toLowerCase().includes(term) ||
+                (post.photographerName && post.photographerName.toLowerCase().includes(term));
+
+            if (!matchesTerm) return false;
+
+            if (dateFilter.start) {
+                if (new Date(post.dateTaken) < new Date(dateFilter.start)) return false;
+            }
+            if (dateFilter.end) {
+                if (new Date(post.dateTaken) > new Date(dateFilter.end)) return false;
+            }
+            return true;
+        });
+    }, [effectivePosts, searchTerm, dateFilter]);
+
     const sortedPosts = useMemo(() => {
-        return [...effectivePosts].sort((a, b) => new Date(b.dateAdded || 0).getTime() - new Date(a.dateAdded || 0).getTime());
-    }, [effectivePosts]);
+        return [...filteredPosts].sort((a, b) => new Date(b.dateAdded || 0).getTime() - new Date(a.dateAdded || 0).getTime());
+    }, [filteredPosts]);
 
     const totalPages = Math.ceil(sortedPosts.length / ITEMS_PER_PAGE);
 
@@ -361,6 +385,40 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                     >
                         Sube tu foto
                     </button>
+                </div>
+
+                {/* Search & Filter Section */}
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Buscar</label>
+                            <input
+                                type="text"
+                                placeholder="Título, descripción o autor..."
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-sm p-2 border"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Desde</label>
+                            <input
+                                type="date"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-sm p-2 border"
+                                value={dateFilter.start}
+                                onChange={(e) => setDateFilter({ ...dateFilter, start: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
+                            <input
+                                type="date"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-sm p-2 border"
+                                value={dateFilter.end}
+                                onChange={(e) => setDateFilter({ ...dateFilter, end: e.target.value })}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {isLoading ? (
