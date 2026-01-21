@@ -6,15 +6,17 @@ import Logo from './Logo';
 
 interface LoginPageProps {
     onNavigate: (page: Page) => void;
+    onLoginSuccess?: (user: any) => void;
+    returnTo?: Page;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess, returnTo }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -28,31 +30,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess }) => 
         const result = await loginUser(formData.email, formData.password);
 
         if (result.success && result.user) {
-            setSuccess(true);
             if (onLoginSuccess) {
                 onLoginSuccess(result.user);
             }
-            setTimeout(() => {
-                onNavigate('home');
-            }, 2000);
+            // Navigate back to the previous page or home immediately
+            onNavigate(returnTo || 'home');
         } else {
             setError(result.message);
         }
     };
 
-    if (success) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-background animate-fade-in p-4">
-                <div className="bg-surface p-8 rounded-lg shadow-xl text-center max-w-md w-full border border-gray-200">
-                    <div className="text-green-500 mb-4">
-                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h2 className="text-2xl font-bold font-serif text-text-primary mb-2">¡Bienvenido de vuelta!</h2>
-                    <p className="text-text-secondary">Has ingresado exitosamente. Serás redirigido al inicio en breve.</p>
-                </div>
-            </div>
-        );
-    }
+
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">

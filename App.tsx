@@ -37,6 +37,7 @@ import * as data from './data/mockData';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [returnToPage, setReturnToPage] = useState<Page>('home'); // Track page to return to after login
   const [initialTab, setInitialTab] = useState<string | null>(null);
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneurship | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<PremiumSponsor | null>(null);
@@ -92,6 +93,11 @@ const App: React.FC = () => {
   }, []);
 
   const handleNavigate = (page: Page, subPage?: string) => {
+    // If navigating to login, save the current page (unless we are already on login or register)
+    if (page === 'login' && currentPage !== 'login' && currentPage !== 'register') {
+      setReturnToPage(currentPage);
+    }
+
     setSelectedEntrepreneur(null); // Reset detail page when navigating
     setSelectedSponsor(null);
     setSelectedNewsArticle(null);
@@ -566,6 +572,7 @@ const App: React.FC = () => {
       case 'login':
         return <LoginPage
           onNavigate={handleNavigate}
+          returnTo={returnToPage}
           onLoginSuccess={(user) => {
             setCurrentUser(user);
             localStorage.setItem('cipress_user', JSON.stringify(user));

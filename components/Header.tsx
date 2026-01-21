@@ -15,6 +15,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout }) => {
     const [showUsersModal, setShowUsersModal] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
+    const [showUserMenu, setShowUserMenu] = useState(false); // State for dropdown menu
 
     const mainNavItems: { page: Page; label: string }[] = [
         { page: 'opportunities', label: 'Oportunidades Laborales' },
@@ -34,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
         <>
             <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-20">
+                    <div className="flex items-center justify-between h-40">
                         <div className="flex-shrink-0">
                             <Logo onNavigate={onNavigate} />
                         </div>
@@ -74,17 +75,38 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                             </button>
 
                             {currentUser ? (
-                                <div className="flex items-center space-x-3">
-                                    <div className="text-right hidden sm:block">
-                                        <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
-                                        <p className="text-xs text-text-secondary">{currentUser.email}</p>
-                                    </div>
+                                <div className="relative">
                                     <button
-                                        onClick={onLogout}
-                                        className="text-sm font-medium text-red-600 hover:text-red-800 border border-red-200 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors"
+                                        onClick={() => setShowUserMenu(!showUserMenu)}
+                                        className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     >
-                                        Salir
+                                        <div className="text-left hidden sm:block">
+                                            <p className="text-sm font-bold text-text-primary leading-tight">{currentUser.firstName} {currentUser.lastName}</p>
+                                            <p className="text-xs text-text-secondary">{currentUser.email}</p>
+                                        </div>
+                                        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showUserMenu ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
                                     </button>
+
+                                    {/* Dropdown Menu */}
+                                    {showUserMenu && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50 animate-fade-in">
+                                            <div className="px-4 py-2 border-b border-gray-100 sm:hidden">
+                                                <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
+                                                <p className="text-xs text-text-secondary truncate">{currentUser.email}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setShowUserMenu(false);
+                                                    if (onLogout) onLogout();
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                Cerrar sesión
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <>
