@@ -319,7 +319,23 @@ const App: React.FC = () => {
 
   // CRUD for Photojournalism
   const handleAddPhotojournalismPost = (newPost: Omit<PhotojournalismPost, 'id'>) => {
-    setPhotojournalismPosts(prev => [{ ...newPost, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
+    const timestamp = Date.now();
+    const currentDate = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    // Add to photojournalism posts
+    setPhotojournalismPosts(prev => [{ ...newPost, id: timestamp, dateAdded: new Date().toISOString() }, ...prev]);
+    
+    // Also add to news articles so it appears in "Innovación para el Periodismo Emprendedor"
+    const newsArticle: NewsArticle = {
+      id: timestamp + 1, // Unique ID
+      title: newPost.title,
+      category: 'Industria',
+      author: newPost.photographerName,
+      date: currentDate,
+      imageUrl: newPost.imageUrl,
+      summary: newPost.caption,
+    };
+    setNewsArticles(prev => [newsArticle, ...prev]);
   };
   const handleUpdatePhotojournalismPost = (updatedPost: PhotojournalismPost) => {
     setPhotojournalismPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
@@ -628,7 +644,7 @@ const App: React.FC = () => {
           onRateFreelanceService={handleRateFreelanceService}
         />;
       case 'analysis':
-        return <NewsModule onSelectNewsArticle={handleSelectNewsArticle} />;
+        return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
       case 'community-ads':
         return <CommunityAdsModule />;
       case 'specialists':

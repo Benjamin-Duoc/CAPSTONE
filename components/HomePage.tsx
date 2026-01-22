@@ -733,6 +733,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     </div>
   );
 
+  // Sort news articles by ID (newest first - higher IDs are more recent)
   const sortedNewsArticles = [...newsArticles].sort((a, b) => b.id - a.id);
   const mainNewsArticle = sortedNewsArticles[0];
   const otherNewsArticles = sortedNewsArticles.slice(1, 3);
@@ -792,18 +793,20 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'news')} />}
                     </div>
                     {mainNewsArticle && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <button onClick={() => onSelectNewsArticle(mainNewsArticle)} className="bg-surface rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left">
-                                <div className="overflow-hidden rounded-t-lg">
-                                    <img src={mainNewsArticle.imageUrl} alt={mainNewsArticle.title} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"/>
+                        <div className="grid grid-cols-1 gap-6">
+                            <button onClick={() => onSelectNewsArticle(mainNewsArticle)} className="bg-surface rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left shadow-md grid md:grid-cols-2 gap-4">
+                                <div className="p-6 flex flex-col justify-center">
+                                    <span className="text-xs font-bold uppercase text-primary tracking-wide">{mainNewsArticle.category}</span>
+                                    <h3 className="text-3xl font-bold font-serif text-text-primary mt-3 group-hover:text-primary transition-colors">{mainNewsArticle.title}</h3>
+                                    <p className="text-text-secondary mt-4 text-base">{mainNewsArticle.summary}</p>
                                 </div>
-                                <div className="p-5">
-                                    <span className="text-xs font-bold uppercase text-primary">{mainNewsArticle.category}</span>
-                                    <h3 className="text-2xl font-bold font-serif text-text-primary mt-2 group-hover:text-primary transition-colors">{mainNewsArticle.title}</h3>
-                                    <p className="text-text-secondary mt-2">{mainNewsArticle.summary}</p>
+                                <div className="p-4">
+                                    <div className="overflow-hidden rounded-md h-64">
+                                        <img src={mainNewsArticle.imageUrl} alt={mainNewsArticle.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                                    </div>
                                 </div>
                             </button>
-                            <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {otherNewsArticles.map(article => (
                                     <NewsCard key={article.id} article={article} onClick={() => onSelectNewsArticle(article)} />
                                 ))}
