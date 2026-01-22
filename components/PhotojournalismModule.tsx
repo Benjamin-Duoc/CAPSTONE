@@ -8,6 +8,7 @@ interface PhotojournalismModuleProps {
     posts?: PhotojournalismPost[];
     onSelectPost?: (post: PhotojournalismPost) => void;
     currentUser?: User | null;
+    onPostUpdated?: () => void;
 }
 
 const PhotoCard: React.FC<{
@@ -69,7 +70,7 @@ const PhotoCard: React.FC<{
 };
 
 
-const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [], onSelectPost, currentUser }) => {
+const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [], onSelectPost, currentUser, onPostUpdated }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [dbPosts, setDbPosts] = useState<PhotojournalismPost[]>([]);
@@ -141,6 +142,8 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
         setEditingPost(null);
         // Refetch posts to show new one
         getPhotoPosts().then(setDbPosts);
+        // Notify parent to refresh
+        onPostUpdated?.();
     };
 
     const handleModalClose = () => {
@@ -389,8 +392,8 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
 
                 {/* Search & Filter Section */}
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                        <div className="md:col-span-2">
+                    <div className="grid grid-cols-12 gap-4 items-end">
+                        <div className="col-span-12 md:col-span-5">
                             <label className="block text-xs font-bold text-gray-700 mb-1">Buscar</label>
                             <input
                                 type="text"
@@ -400,7 +403,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div>
+                        <div className="col-span-6 md:col-span-3">
                             <label className="block text-xs font-bold text-gray-700 mb-1">Desde</label>
                             <input
                                 type="date"
@@ -409,7 +412,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                 onChange={(e) => setDateFilter({ ...dateFilter, start: e.target.value })}
                             />
                         </div>
-                        <div>
+                        <div className="col-span-6 md:col-span-3">
                             <label className="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
                             <input
                                 type="date"
@@ -417,6 +420,20 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                                 value={dateFilter.end}
                                 onChange={(e) => setDateFilter({ ...dateFilter, end: e.target.value })}
                             />
+                        </div>
+                        <div className="col-span-12 md:col-span-1 flex justify-end md:justify-start">
+                            <button
+                                onClick={() => {
+                                    setSearchTerm('');
+                                    setDateFilter({ start: '', end: '' });
+                                }}
+                                className="p-2.5 text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 rounded-md transition-colors w-full md:w-auto flex justify-center items-center"
+                                title="Limpiar filtros"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>

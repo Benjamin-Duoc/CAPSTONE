@@ -31,7 +31,7 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase } from './utils/db';
+import { initDatabase, getPhotoPosts } from './utils/db'; // Updated import
 
 import * as data from './data/mockData';
 
@@ -80,6 +80,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     initDatabase();
+
+    // Fetch real photo posts from DB
+    getPhotoPosts().then(dbPosts => {
+      if (dbPosts && dbPosts.length > 0) {
+        setPhotojournalismPosts(dbPosts);
+      }
+    });
+
     // Check for persisted user
     const savedUser = localStorage.getItem('cipress_user');
     if (savedUser) {
@@ -91,6 +99,13 @@ const App: React.FC = () => {
       }
     }
   }, []);
+
+  const refreshPhotoPosts = async () => {
+    const dbPosts = await getPhotoPosts();
+    if (dbPosts && dbPosts.length > 0) {
+      setPhotojournalismPosts(dbPosts);
+    }
+  };
 
   const handleNavigate = (page: Page, subPage?: string) => {
     // If navigating to login, save the current page (unless we are already on login or register)
@@ -544,7 +559,7 @@ const App: React.FC = () => {
       case 'photo-gallery':
         return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
       case 'photojournalism':
-        return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} />;
+        return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} />;
       case 'resources':
         return <ResourcesModule resources={resources} />;
       case 'funding':
@@ -612,6 +627,7 @@ const App: React.FC = () => {
           sponsoredAds={sponsoredAds}
           specialAds={specialAds}
           stats={stats}
+          currentUser={currentUser}
         />;
     }
   };
