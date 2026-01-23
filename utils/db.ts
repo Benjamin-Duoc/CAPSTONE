@@ -1,4 +1,4 @@
-import type { User, PhotojournalismPost } from '../types';
+import type { User, PhotojournalismPost, CommunityPost } from '../types';
 import { supabase } from './supabaseClient';
 
 // Initialize the "table" - No-op for Supabase as table is pre-created
@@ -180,3 +180,85 @@ export const deletePhotoPost = async (postId: number, imageUrl?: string): Promis
 
   return { success: true };
 };
+
+// Community Posts Functions
+export const getCommunityPosts = async (): Promise<CommunityPost[]> => {
+  const { data, error } = await supabase
+    .from('community_posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching community posts:', error);
+    return [];
+  }
+
+  // Map database fields to match CommunityPost type
+  return (data || []).map(post => ({
+    id: post.id,
+    postTitle: post.post_title,
+    postUrl: post.post_url,
+    comment: post.comment,
+    authorName: post.author_name,
+    authorAvatarUrl: post.author_avatar_url || 'https://i.pravatar.cc/40?u=default'
+  }));
+};
+
+export const insertCommunityPost = async (
+  post: Omit<CommunityPost, 'id'> & { createdBy?: string }
+): Promise<{ success: boolean; message?: string }> => {
+  const { error } = await supabase
+    .from('community_posts')
+    .insert([{
+      post_title: post.postTitle,
+      post_url: post.postUrl,
+      comment: post.comment,
+      author_name: post.authorName,
+      author_avatar_url: post.authorAvatarUrl,
+      created_by: post.createdBy,
+      created_at: new Date().toISOString()
+    }]);
+
+  if (error) {
+    console.error('Error inserting community post:', error);
+    return { success: false, message: 'Error al guardar la publicación.' };
+  }
+  return { success: true };
+};
+
+export const updateCommunityPost = async (
+  post: CommunityPost
+): Promise<{ success: boolean; message?: string }> => {
+  const { error } = await supabase
+    .from('community_posts')
+    .update({
+      post_title: post.postTitle,
+      post_url: post.postUrl,
+      comment: post.comment,
+      author_name: post.authorName,
+      author_avatar_url: post.authorAvatarUrl
+    })
+    .eq('id', post.id);
+
+  if (error) {
+    console.error('Error updating community post:', error);
+    return { success: false, message: 'Error al actualizar la publicación.' };
+  }
+  return { success: true };
+};
+
+export const deleteCommunityPost = async (
+  postId: number
+): Promise<{ success: boolean; message?: string }> => {
+  const { error } = await supabase
+    .from('community_posts')
+    .delete()
+    .eq('id', postId);
+
+  if (error) {
+    console.error('Error deleting community post:', error);
+    return { success: false, message: 'Error al eliminar la publicación.' };
+  }
+  return { success: true };
+};
+

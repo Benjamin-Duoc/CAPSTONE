@@ -31,7 +31,7 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, getPhotoPosts } from './utils/db'; // Updated import
+import { initDatabase, getPhotoPosts, getCommunityPosts, insertCommunityPost } from './utils/db'; // Updated import
 
 import * as data from './data/mockData';
 
@@ -88,6 +88,13 @@ const App: React.FC = () => {
       }
     });
 
+    // Fetch community posts from DB
+    getCommunityPosts().then(dbPosts => {
+      if (dbPosts && dbPosts.length > 0) {
+        setCommunityPosts(dbPosts);
+      }
+    });
+
     // Check for persisted user
     const savedUser = localStorage.getItem('cipress_user');
     if (savedUser) {
@@ -104,6 +111,13 @@ const App: React.FC = () => {
     const dbPosts = await getPhotoPosts();
     if (dbPosts && dbPosts.length > 0) {
       setPhotojournalismPosts(dbPosts);
+    }
+  };
+
+  const refreshCommunityPosts = async () => {
+    const dbPosts = await getCommunityPosts();
+    if (dbPosts && dbPosts.length > 0) {
+      setCommunityPosts(dbPosts);
     }
   };
 
@@ -291,14 +305,27 @@ const App: React.FC = () => {
   };
 
   // CRUD for Community Posts
-  const handleAddCommunityPost = (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
-    const newCommunityPost: CommunityPost = {
+  const handleAddCommunityPost = async (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
+    if (!currentUser) {
+      alert('Debes iniciar sesión para publicar.');
+      return;
+    }
+
+    const newCommunityPost = {
       ...newPost,
-      id: Date.now(),
-      authorName: 'Usuario Activo', // Hardcoded for now
-      authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
+      authorName: `${currentUser.firstName} ${currentUser.lastName}`,
+      authorAvatarUrl: `https://i.pravatar.cc/40?u=${currentUser.email}`,
+      createdBy: currentUser.email,
     };
-    setCommunityPosts(prev => [newCommunityPost, ...prev]);
+
+    const result = await insertCommunityPost(newCommunityPost);
+
+    if (result.success) {
+      await refreshCommunityPosts();
+      alert('¡Publicación compartida exitosamente!');
+    } else {
+      alert(result.message || 'Error al publicar. Inténtalo de nuevo.');
+    }
   };
   const handleAddCommunityPostAdmin = (newPost: Omit<CommunityPost, 'id'>) => {
     setCommunityPosts(prev => [{ ...newPost, id: Date.now() }, ...prev]);
@@ -581,6 +608,7 @@ const App: React.FC = () => {
           posts={communityPosts}
           onAddPost={handleAddCommunityPost}
           onNavigate={handleNavigate}
+          currentUser={currentUser}
         />;
       case 'register':
         return <RegistrationPage onNavigate={handleNavigate} />;
