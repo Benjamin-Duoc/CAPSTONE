@@ -8,47 +8,48 @@ export interface User {
     region: string;
     email: string;
     password: string;
+    createdAt?: string;
 }
 
 export type ReportContentItem =
-  | { type: 'paragraph'; text: string }
-  | { type: 'image'; src: string; alt: string }
-  | { type: 'quote'; text: string; author?: string };
+    | { type: 'paragraph'; text: string }
+    | { type: 'image'; src: string; alt: string }
+    | { type: 'quote'; text: string; author?: string };
 
 export interface Course {
-  id: number;
-  title: string;
-  category: 'Periodismo de Datos' | 'SEO' | 'Marketing Digital' | 'Podcast' | 'Fact-Checking' | 'Video Móvil';
-  level: 'Básico' | 'Intermedio' | 'Avanzado';
-  format: 'Video' | 'PDF' | 'Webinar';
-  cost: 'Gratis' | 'Pago' | string; // Allow for specific prices
-  rating: number;
-  reviewCount: number;
-  imageUrl: string;
-  description: string;
-  instructorName: string;
-  instructorTitle: string;
-  instructorAvatarUrl: string;
-  duration: string;
-  topics: string[];
-  enrollmentStartDate: string;
-  enrollmentEndDate: string;
-  courseStartDate: string;
-  courseEndDate: string;
-  accessLink: string;
+    id: number;
+    title: string;
+    category: 'Periodismo de Datos' | 'SEO' | 'Marketing Digital' | 'Podcast' | 'Fact-Checking' | 'Video Móvil';
+    level: 'Básico' | 'Intermedio' | 'Avanzado';
+    format: 'Video' | 'PDF' | 'Webinar';
+    cost: 'Gratis' | 'Pago' | string; // Allow for specific prices
+    rating: number;
+    reviewCount: number;
+    imageUrl: string;
+    description: string;
+    instructorName: string;
+    instructorTitle: string;
+    instructorAvatarUrl: string;
+    duration: string;
+    topics: string[];
+    enrollmentStartDate: string;
+    enrollmentEndDate: string;
+    courseStartDate: string;
+    courseEndDate: string;
+    accessLink: string;
 }
 
 export interface Job {
-  id: number;
-  title: string;
-  company: string;
-  location: string;
-  type: 'Completo' | 'Parcial' | 'Freelance';
-  area: 'Prensa' | 'TV' | 'Radio' | 'Digital';
-  date: string;
-  logoUrl: string;
-  description: string;
-  applyEmail: string;
+    id: number;
+    title: string;
+    company: string;
+    location: string;
+    type: 'Completo' | 'Parcial' | 'Freelance';
+    area: 'Prensa' | 'TV' | 'Radio' | 'Digital';
+    date: string;
+    logoUrl: string;
+    description: string;
+    applyEmail: string;
 }
 
 export interface Entrepreneurship {
@@ -258,44 +259,44 @@ export interface EntrepreneurshipTip {
 }
 
 export interface SponsoredAd {
-  id: number;
-  imageUrl: string;
-  title: string;
-  advertiser: string;
-  ctaText: string;
-  ctaLink: string;
+    id: number;
+    imageUrl: string;
+    title: string;
+    advertiser: string;
+    ctaText: string;
+    ctaLink: string;
 }
 
 export interface SpecialAd {
-  id: 'legal' | 'entrepreneurship';
-  title: string;
-  description: string;
-  ctaText: string;
+    id: 'legal' | 'entrepreneurship';
+    title: string;
+    description: string;
+    ctaText: string;
 }
 
 export interface SiteStat {
-  id: 'subscribers' | 'visits' | 'regions';
-  label: string;
-  endValue: number;
-  prefix?: string;
+    id: 'subscribers' | 'visits' | 'regions';
+    label: string;
+    endValue: number;
+    prefix?: string;
 }
 
 export interface PartnerLogo {
-  id: number;
-  name: string;
-  logoUrl: string;
-  websiteUrl: string;
+    id: number;
+    name: string;
+    logoUrl: string;
+    websiteUrl: string;
 }
 
 export interface TalentProfile {
-  id: number;
-  name: string;
-  avatarUrl: string;
-  title: string; // max 8 words
-  skills: [string, string, string]; // Top 3 skills
-  availability: 'Presencial' | 'Remoto' | 'Híbrido';
-  expectedSalary: string; // e.g., "$1.000.000 CLP"
-  region: string;
-  linkedinUrl: string;
-  experienceYears: number;
+    id: number;
+    name: string;
+    avatarUrl: string;
+    title: string; // max 8 words
+    skills: [string, string, string]; // Top 3 skills
+    availability: 'Presencial' | 'Remoto' | 'Híbrido';
+    expectedSalary: string; // e.g., "$1.000.000 CLP"
+    region: string;
+    linkedinUrl: string;
+    experienceYears: number;
 }
