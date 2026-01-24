@@ -1,13 +1,20 @@
 
-import type { User } from '../types';
+import type { User, NewsArticle, PressRelease } from '../types';
+import { newsArticles as initialNewsArticles, pressReleases as initialPressReleases } from '../data/mockData';
 
 const DB_USERS_KEY = 'cipress_db_users';
+const DB_NAME = 'CipressDB';
+const DB_VERSION = 2; // Version 2 to ensure both stores are created
+const STORE_NEWS = 'news';
+const STORE_PRESS_RELEASES = 'press_releases';
 
-// Initialize the "table"
+// --- LocalStorage for Users (Legacy) ---
+
+// Initialize the "table" for users and IndexedDB
 export const initDatabase = () => {
   if (!localStorage.getItem(DB_USERS_KEY)) {
     localStorage.setItem(DB_USERS_KEY, JSON.stringify([]));
-    console.log('Database: Tabla "usuario" creada.');
+    console.log('Database: Tabla "usuario" creada (localStorage).');
   }
 };
 
@@ -33,5 +40,6 @@ export const insertUser = async (user: Omit<User, 'id' | 'createdAt'>): Promise<
 
 // Get all users (for debugging or admin)
 export const getAllUsers = (): User[] => {
+  return JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
   return JSON.parse(localStorage.getItem(DB_USERS_KEY) || '[]');
 };

@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register';
+export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'upload-press-release';
 
 export interface User {
     id: number;

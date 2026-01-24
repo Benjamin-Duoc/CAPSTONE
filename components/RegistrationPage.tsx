@@ -6,9 +6,10 @@ import Logo from './Logo';
 
 interface RegistrationPageProps {
     onNavigate: (page: Page) => void;
+    onLogin: (user: any) => void;
 }
 
-const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
+const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -29,6 +30,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
             return;
@@ -41,16 +43,16 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
             region: formData.region,
             email: formData.email,
             password: formData.password
-        }).then(result => {
-            if (result.success) {
-                setSuccess(true);
-                setTimeout(() => {
-                    onNavigate('home');
-                }, 2000);
-            } else {
-                setError(result.message);
-            }
         });
+
+        if (result.success) {
+            setSuccess(true);
+            setTimeout(() => {
+                onNavigate('home');
+            }, 2000);
+        } else {
+            setError(result.message);
+        }
     };
 
     if (success) {

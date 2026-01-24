@@ -8,9 +8,11 @@ interface HeaderProps {
     currentPage: Page;
     onNavigate: (page: Page, subPage?: string) => void;
     isAdminMode: boolean;
+    currentUser?: User | null;
+    onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode }) => {
+const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout }) => {
     const [showUsersModal, setShowUsersModal] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
 
@@ -70,16 +72,32 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode })
                                 Ver Usuarios DB
                             </button>
 
-                            <a href="#" className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block">
-                                Ingresar
-                            </a>
-                            <a
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
-                                className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-lg shadow-primary/20"
-                            >
-                                Registrarme
-                            </a>
+                            {currentUser ? (
+                                <div className="flex items-center space-x-3">
+                                    <div className="text-right hidden sm:block">
+                                        <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
+                                        <button onClick={onLogout} className="text-xs text-red-500 hover:underline">Cerrar Sesión</button>
+                                    </div>
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${currentUser.firstName}+${currentUser.lastName}&background=random&color=fff`}
+                                        alt={currentUser.firstName}
+                                        className="w-10 h-10 rounded-full border-2 border-primary object-cover"
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <a href="#" className="text-sm font-medium text-text-secondary hover:text-text-primary hidden sm:block">
+                                        Ingresar
+                                    </a>
+                                    <a
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
+                                        className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-lg shadow-primary/20"
+                                    >
+                                        Registrarme
+                                    </a>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
