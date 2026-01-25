@@ -713,7 +713,6 @@ const App: React.FC = () => {
           sponsoredAds={sponsoredAds}
           specialAds={specialAds}
           stats={stats}
-          currentUser={currentUser}
         />;
     }
   };

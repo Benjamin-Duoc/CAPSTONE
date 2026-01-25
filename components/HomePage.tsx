@@ -1037,14 +1037,19 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                         if (currentUser) {
                                             onNavigate('photojournalism');
                                         } else {
-                                            onNavigate('login');
+                                            setIsPhotojournalismModalOpen(true);
                                         }
                                     }}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm"
                                 >
                                     Sube tu foto
                                 </button>
-                                    onClick={() => setIsPhotojournalismModalOpen(true)}
+                        </div>
+                    </section>
+
+                    </div>
+
+                    <aside className="space-y-8">
                         {/* Opportunities Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-4">
