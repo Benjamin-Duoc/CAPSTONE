@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PressReleaseUploadPage from './components/PressReleaseUploadPage';
 import HomePage from './components/HomePage';
 import CoursesModule from './components/CoursesModule';
 import EntrepreneurshipModule from './components/EntrepreneurshipModule';
@@ -31,7 +32,7 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, getPhotoPosts, getCommunityPosts, insertCommunityPost } from './utils/db'; // Updated import
+import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, getPhotoPosts, getCommunityPosts, insertCommunityPost, deleteCommunityPost } from './utils/db';
 
 import * as data from './data/mockData';
 
@@ -49,12 +50,24 @@ const App: React.FC = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Persistent user state
 
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+    localStorage.setItem('cipress_user', JSON.stringify(user));
+    handleNavigate('home');
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('cipress_user');
+    handleNavigate('home');
+  };
+
   // Centralized data state for the entire application
   const [courses, setCourses] = useState(data.courses);
   const [jobs, setJobs] = useState(data.jobs);
   const [entrepreneurs, setEntrepreneurs] = useState(data.entrepreneurs);
-  const [newsArticles, setNewsArticles] = useState(data.newsArticles);
-  const [pressReleases, setPressReleases] = useState(data.pressReleases);
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]); // Initialize empty, load from DB
+  const [pressReleases, setPressReleases] = useState<PressRelease[]>([]); // Initialize empty, load from DB
   const [ngoSpotlight, setNgoSpotlight] = useState(data.ngoSpotlight);
   const [freelanceServices, setFreelanceServices] = useState(data.freelanceServices);
   const [communityAds, setCommunityAds] = useState(data.communityAds);
@@ -81,21 +94,21 @@ const App: React.FC = () => {
   useEffect(() => {
     initDatabase();
 
-    // Fetch real photo posts from DB
     getPhotoPosts().then(dbPosts => {
       if (dbPosts && dbPosts.length > 0) {
         setPhotojournalismPosts(dbPosts);
       }
     });
 
-    // Fetch community posts from DB
     getCommunityPosts().then(dbPosts => {
       if (dbPosts && dbPosts.length > 0) {
         setCommunityPosts(dbPosts);
       }
     });
 
-    // Check for persisted user
+    getAllNews().then(setNewsArticles).catch(err => console.error('Error loading news:', err));
+    getAllPressReleases().then(setPressReleases).catch(err => console.error('Error loading press releases:', err));
+
     const savedUser = localStorage.getItem('cipress_user');
     if (savedUser) {
       try {
@@ -214,15 +227,34 @@ const App: React.FC = () => {
   };
 
   // CRUD Operations for News Articles
-  const handleAddNewsArticle = (newArticle: Omit<NewsArticle, 'id'>) => {
-    setNewsArticles(prev => [{ ...newArticle, id: Date.now() }, ...prev]);
+  const handleAddNewsArticle = async (newArticle: Omit<NewsArticle, 'id'>) => {
+    const articleWithId = { ...newArticle, id: Date.now() };
+    try {
+      await addNews(articleWithId);
+      setNewsArticles(prev => [articleWithId, ...prev]);
+    } catch (error) {
+      console.error("Failed to add news article:", error);
+      alert("Error al guardar la noticia en la base de datos.");
+    }
   };
-  const handleUpdateNewsArticle = (updatedArticle: NewsArticle) => {
-    setNewsArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+  const handleUpdateNewsArticle = async (updatedArticle: NewsArticle) => {
+    try {
+      await updateNews(updatedArticle);
+      setNewsArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+    } catch (error) {
+      console.error("Failed to update news article:", error);
+      alert("Error al actualizar la noticia.");
+    }
   };
-  const handleDeleteNewsArticle = (articleId: number) => {
+  const handleDeleteNewsArticle = async (articleId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
-      setNewsArticles(prev => prev.filter(a => a.id !== articleId));
+      try {
+        await deleteNews(articleId);
+        setNewsArticles(prev => prev.filter(a => a.id !== articleId));
+      } catch (error) {
+        console.error("Failed to delete news article:", error);
+        alert("Error al eliminar la noticia.");
+      }
     }
   };
 
@@ -240,15 +272,34 @@ const App: React.FC = () => {
   };
 
   // CRUD Operations for Press Releases
-  const handleAddPressRelease = (newPressRelease: Omit<PressRelease, 'id'>) => {
-    setPressReleases(prev => [{ ...newPressRelease, id: Date.now() }, ...prev]);
+  const handleAddPressRelease = async (newPressRelease: Omit<PressRelease, 'id'>) => {
+    const prWithId = { ...newPressRelease, id: Date.now() };
+    try {
+      await addPressRelease(prWithId);
+      setPressReleases(prev => [prWithId, ...prev]);
+    } catch (error) {
+      console.error("Failed to add press release:", error);
+      alert("Error al guardar el comunicado en la base de datos.");
+    }
   };
-  const handleUpdatePressRelease = (updatedPressRelease: PressRelease) => {
-    setPressReleases(prev => prev.map(pr => pr.id === updatedPressRelease.id ? updatedPressRelease : pr));
+  const handleUpdatePressRelease = async (updatedPressRelease: PressRelease) => {
+    try {
+      await updatePressRelease(updatedPressRelease);
+      setPressReleases(prev => prev.map(pr => pr.id === updatedPressRelease.id ? updatedPressRelease : pr));
+    } catch (error) {
+      console.error("Failed to update press release:", error);
+      alert("Error al actualizar el comunicado.");
+    }
   };
-  const handleDeletePressRelease = (pressReleaseId: number) => {
+  const handleDeletePressRelease = async (pressReleaseId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este comunicado?')) {
-      setPressReleases(prev => prev.filter(pr => pr.id !== pressReleaseId));
+      try {
+        await deletePressRelease(pressReleaseId);
+        setPressReleases(prev => prev.filter(pr => pr.id !== pressReleaseId));
+      } catch (error) {
+        console.error("Failed to delete press release:", error);
+        alert("Error al eliminar el comunicado.");
+      }
     }
   };
 
@@ -311,14 +362,12 @@ const App: React.FC = () => {
       return;
     }
 
-    const newCommunityPost = {
+    const result = await insertCommunityPost({
       ...newPost,
       authorName: `${currentUser.firstName} ${currentUser.lastName}`,
       authorAvatarUrl: `https://i.pravatar.cc/40?u=${currentUser.email}`,
       createdBy: currentUser.email,
-    };
-
-    const result = await insertCommunityPost(newCommunityPost);
+    });
 
     if (result.success) {
       await refreshCommunityPosts();
@@ -333,9 +382,14 @@ const App: React.FC = () => {
   const handleUpdateCommunityPost = (updatedPost: CommunityPost) => {
     setCommunityPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
   };
-  const handleDeleteCommunityPost = (postId: number) => {
+  const handleDeleteCommunityPost = async (postId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
-      setCommunityPosts(prev => prev.filter(p => p.id !== postId));
+      const result = await deleteCommunityPost(postId);
+      if (!result.success) {
+        alert(result.message || 'Error al eliminar la publicación.');
+        return;
+      }
+      await refreshCommunityPosts();
     }
   };
 
@@ -611,19 +665,23 @@ const App: React.FC = () => {
           currentUser={currentUser}
         />;
       case 'register':
-        return <RegistrationPage onNavigate={handleNavigate} />;
+        return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
       case 'login':
         return <LoginPage
           onNavigate={handleNavigate}
           returnTo={returnToPage}
           onLoginSuccess={(user) => {
-            setCurrentUser(user);
-            localStorage.setItem('cipress_user', JSON.stringify(user));
+            handleLogin(user);
+            handleNavigate(returnToPage);
           }}
         />;
+      case 'upload-press-release':
+        return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
       case 'home':
       default:
         return <HomePage
+          currentUser={currentUser}
+          onAddPressRelease={handleAddPressRelease}
           onNavigate={handleNavigate}
           onSelectEntrepreneur={handleSelectEntrepreneur}
           onSelectSponsor={handleSelectSponsor}
@@ -664,17 +722,7 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
       {currentPage !== 'register' && currentPage !== 'login' && (
-        <Header
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          isAdminMode={isAdminMode}
-          currentUser={currentUser}
-          onLogout={() => {
-            setCurrentUser(null);
-            localStorage.removeItem('cipress_user');
-            handleNavigate('home');
-          }}
-        />
+        <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />
       )}
 
       <main className="flex-grow">

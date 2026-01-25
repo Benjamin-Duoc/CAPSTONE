@@ -106,7 +106,7 @@ type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'sponsors'
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     const [selectedSection, setSelectedSection] = useState<ManagedSection>('settings');
-    
+
     // Course states
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [isCourseFormOpen, setIsCourseFormOpen] = useState(false);
@@ -119,7 +119,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
     const [editingEntrepreneur, setEditingEntrepreneur] = useState<Entrepreneurship | null>(null);
     const [isEntrepreneurFormOpen, setIsEntrepreneurFormOpen] = useState(false);
-    
+
     const [editingNewsArticle, setEditingNewsArticle] = useState<NewsArticle | null>(null);
     const [isNewsArticleFormOpen, setIsNewsArticleFormOpen] = useState(false);
 
@@ -127,7 +127,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     const [isSponsorFormOpen, setIsSponsorFormOpen] = useState(false);
 
     const [isHeadingFormOpen, setIsHeadingFormOpen] = useState(false);
-    
+
     const [editingPressRelease, setEditingPressRelease] = useState<PressRelease | null>(null);
     const [isPressReleaseFormOpen, setIsPressReleaseFormOpen] = useState(false);
 
@@ -136,7 +136,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
     const [editingFunding, setEditingFunding] = useState<FundingOpportunity | null>(null);
     const [isFundingFormOpen, setIsFundingFormOpen] = useState(false);
-    
+
     const [editingSpecialist, setEditingSpecialist] = useState<Specialist | null>(null);
     const [isSpecialistFormOpen, setIsSpecialistFormOpen] = useState(false);
 
@@ -148,29 +148,29 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
     const [editingEntrepreneurshipTip, setEditingEntrepreneurshipTip] = useState<EntrepreneurshipTip | null>(null);
     const [isEntrepreneurshipTipFormOpen, setIsEntrepreneurshipTipFormOpen] = useState(false);
-    
+
     const [editingSponsoredAd, setEditingSponsoredAd] = useState<SponsoredAd | null>(null);
     const [isSponsoredAdFormOpen, setIsSponsoredAdFormOpen] = useState(false);
-    
+
     const [editingSpecialAd, setEditingSpecialAd] = useState<SpecialAd | null>(null);
     const [isSpecialAdFormOpen, setIsSpecialAdFormOpen] = useState(false);
-    
+
     const [editingCommunityPost, setEditingCommunityPost] = useState<CommunityPost | null>(null);
     const [isCommunityPostFormOpen, setIsCommunityPostFormOpen] = useState(false);
 
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
     const [isEventFormOpen, setIsEventFormOpen] = useState(false);
-    
+
     const [editingStat, setEditingStat] = useState<SiteStat | null>(null);
     const [isStatFormOpen, setIsStatFormOpen] = useState(false);
-    
+
     const [editingPartnerLogo, setEditingPartnerLogo] = useState<PartnerLogo | null>(null);
     const [isPartnerLogoFormOpen, setIsPartnerLogoFormOpen] = useState(false);
 
     const [editingTalentProfile, setEditingTalentProfile] = useState<TalentProfile | null>(null);
     const [isTalentProfileFormOpen, setIsTalentProfileFormOpen] = useState(false);
     const [talentSearchTerm, setTalentSearchTerm] = useState('');
-    
+
     const [isSettingsFormOpen, setIsSettingsFormOpen] = useState(false);
 
 
@@ -207,7 +207,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsJobFormOpen(false);
     };
-    
+
     const handleAddNewEntrepreneur = () => {
         setEditingEntrepreneur(null);
         setIsEntrepreneurFormOpen(true);
@@ -224,7 +224,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsEntrepreneurFormOpen(false);
     };
-    
+
     const handleAddNewNewsArticle = () => {
         setEditingNewsArticle(null);
         setIsNewsArticleFormOpen(true);
@@ -241,7 +241,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsNewsArticleFormOpen(false);
     };
-    
+
     const handleAddNewSponsor = () => {
         setEditingSponsor(null);
         setIsSponsorFormOpen(true);
@@ -275,7 +275,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsPressReleaseFormOpen(false);
     };
-    
+
     const handleAddNewPhotoPost = () => {
         setEditingPhotoPost(null);
         setIsPhotoPostFormOpen(true);
@@ -309,7 +309,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsFundingFormOpen(false);
     };
-    
+
     const handleAddNewSpecialist = () => {
         setEditingSpecialist(null);
         setIsSpecialistFormOpen(true);
@@ -326,7 +326,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsSpecialistFormOpen(false);
     };
-    
+
     const handleAddNewShareablePhoto = () => {
         setEditingShareablePhoto(null);
         setIsShareablePhotoFormOpen(true);
@@ -394,7 +394,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsSponsoredAdFormOpen(false);
     };
-    
+
     const handleEditSpecialAd = (ad: SpecialAd) => {
         setEditingSpecialAd(ad);
         setIsSpecialAdFormOpen(true);
@@ -403,7 +403,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         props.onUpdateSpecialAd(ad);
         setIsSpecialAdFormOpen(false);
     };
-    
+
     const handleAddNewCommunityPost = () => {
         setEditingCommunityPost(null);
         setIsCommunityPostFormOpen(true);
@@ -437,7 +437,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsEventFormOpen(false);
     };
-    
+
     const handleEditStat = (stat: SiteStat) => {
         setEditingStat(stat);
         setIsStatFormOpen(true);
@@ -574,7 +574,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     </div>
                 );
             case 'jobs':
-                 return (
+                return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Gestionar Oportunidades Laborales</h2>
@@ -608,7 +608,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     </div>
                 );
             case 'entrepreneurs':
-                 return (
+                return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Gestionar Emprendimientos</h2>
@@ -641,8 +641,8 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                         </div>
                     </div>
                 );
-             case 'news':
-                 return (
+            case 'news':
+                return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Gestionar Análisis y Noticias</h2>
@@ -676,7 +676,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     </div>
                 );
             case 'sponsors':
-                 return (
+                return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Gestionar Sponsors</h2>
@@ -750,10 +750,10 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                         <div className="bg-surface p-6 rounded-lg shadow">
                             <h3 className="text-lg font-semibold text-gray-600">Título de la Página de Inicio</h3>
                             <p className="mt-2 text-2xl font-serif text-gray-800">
-                               "{props.heroHeading.mainText} <span className="text-primary">{props.heroHeading.highlightedText}</span>."
+                                "{props.heroHeading.mainText} <span className="text-primary">{props.heroHeading.highlightedText}</span>."
                             </p>
-                            <button 
-                                onClick={() => setIsHeadingFormOpen(true)} 
+                            <button
+                                onClick={() => setIsHeadingFormOpen(true)}
                                 className="mt-4 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700">
                                 Editar
                             </button>
@@ -792,14 +792,14 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                         </div>
                     </div>
                 );
-             case 'funding':
+            case 'funding':
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Gestionar Fondos y Concursos</h2>
                             <button onClick={handleAddNewFunding} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Oportunidad</button>
                         </div>
-                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
+                        <div className="overflow-x-auto bg-surface rounded-lg shadow">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -1213,7 +1213,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                                     ))}
                                 </tbody>
                             </table>
-                             {filteredTalentProfiles.length === 0 && (
+                            {filteredTalentProfiles.length === 0 && (
                                 <div className="text-center p-8 text-gray-500">
                                     <p className="font-semibold">
                                         {talentSearchTerm
@@ -1232,7 +1232,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 );
             case 'settings':
                 return (
-                     <div>
+                    <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-bold">Configuración General</h2>
                         </div>
@@ -1241,8 +1241,8 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                             <p className="mt-2 text-2xl font-serif text-gray-800">
                                 Actualmente: <span className="text-primary">{props.rotationInterval} {props.rotationInterval === 1 ? 'hora' : 'horas'}</span>
                             </p>
-                            <button 
-                                onClick={() => setIsSettingsFormOpen(true)} 
+                            <button
+                                onClick={() => setIsSettingsFormOpen(true)}
                                 className="mt-4 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700">
                                 Editar
                             </button>
@@ -1253,9 +1253,9 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return <p className="text-center text-gray-500">Selecciona una sección para administrar.</p>;
         }
     };
-    
-    const NavButton: React.FC<{section: ManagedSection, label: string}> = ({section, label}) => (
-         <button 
+
+    const NavButton: React.FC<{ section: ManagedSection, label: string }> = ({ section, label }) => (
+        <button
             onClick={() => setSelectedSection(section)}
             className={`block w-full text-left px-4 py-2 text-sm rounded-md ${selectedSection === section ? 'bg-primary text-white font-semibold' : 'text-gray-700 hover:bg-gray-200'}`}
         >
@@ -1275,29 +1275,57 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                     <aside className="md:col-span-1">
                         <div className="bg-surface p-4 rounded-lg shadow-md sticky top-24">
                             <h3 className="text-lg font-bold mb-4 border-b pb-2">Secciones</h3>
-                            <nav className="space-y-1">
-                               <NavButton section="settings" label="Configuración General" />
-                               <NavButton section="headings" label="Títulos Principales" />
-                               <NavButton section="courses" label="Cursos" />
-                               <NavButton section="jobs" label="Oportunidades Laborales" />
-                               <NavButton section="talentProfiles" label="Base de Talentos" />
-                               <NavButton section="collaborations" label="Colaboraciones Urgentes" />
-                               <NavButton section="entrepreneurs" label="Emprendimientos" />
-                               <NavButton section="news" label="Análisis y Noticias" />
-                               <NavButton section="sponsors" label="Sponsors" />
-                               <NavButton section="pressReleases" label="Periodistas en Acción" />
-                               {/* FIX: Restore corrupted file content */}
-                               <NavButton section="photojournalism" label="Fotoperiodismo" />
-                               <NavButton section="funding" label="Fondos y Concursos" />
-                               <NavButton section="specialists" label="Fuentes Especializadas" />
-                               <NavButton section="shareablePhotos" label="Galería Fotográfica" />
-                               <NavButton section="entrepreneurshipTips" label="Videos 'Emprender'" />
-                               <NavButton section="sponsoredAds" label="Anuncios Laterales" />
-                               <NavButton section="specialAds" label="Anuncios Especiales" />
-                               <NavButton section="communityPosts" label="Actividad Comunidad" />
-                               <NavButton section="events" label="Eventos" />
-                               <NavButton section="stats" label="Estadísticas" />
-                               <NavButton section="partnerLogos" label="Logos de Socios" />
+                            <nav className="space-y-6">
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">General</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="settings" label="Configuración General" />
+                                        <NavButton section="stats" label="Estadísticas" />
+                                        <NavButton section="headings" label="Títulos Principales" />
+                                        <NavButton section="partnerLogos" label="Logos de Socios" />
+                                        <NavButton section="sponsors" label="Sponsors" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Noticias y Contenido (Innovación)</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="news" label="Innovación para el Periodismo" />
+                                        <NavButton section="pressReleases" label="Periodistas en Acción" />
+                                        <NavButton section="photojournalism" label="Fotoperiodismo" />
+                                        <NavButton section="shareablePhotos" label="Galería Fotográfica" />
+                                        <NavButton section="entrepreneurshipTips" label="Videos 'Emprender'" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Oportunidades y Servicios</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="jobs" label="Oportunidades Laborales" />
+                                        <NavButton section="courses" label="Capacitaciones (Cursos)" />
+                                        <NavButton section="funding" label="Fondos y Concursos" />
+                                        <NavButton section="collaborations" label="Colaboraciones Urgentes" />
+                                        <NavButton section="talentProfiles" label="Base de Talentos" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Comunidad</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="entrepreneurs" label="Emprendimientos Periodísticos" />
+                                        <NavButton section="specialists" label="Fuentes Especializadas" />
+                                        <NavButton section="communityPosts" label="Actividad Comunidad" />
+                                        <NavButton section="events" label="Eventos" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Publicidad</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="sponsoredAds" label="Anuncios Laterales" />
+                                        <NavButton section="specialAds" label="Anuncios Especiales" />
+                                    </div>
+                                </div>
                             </nav>
                         </div>
                     </aside>

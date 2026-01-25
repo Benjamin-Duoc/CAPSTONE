@@ -1,18 +1,24 @@
-import type { User, PhotojournalismPost, CommunityPost } from '../types';
+import type { User, PhotojournalismPost, CommunityPost, NewsArticle, PressRelease } from '../types';
+import { newsArticles as initialNewsArticles, pressReleases as initialPressReleases } from '../data/mockData';
 import { supabase } from './supabaseClient';
 
-// Initialize the "table" - No-op for Supabase as table is pre-created
+const NEWS_KEY = 'cipress_news';
+const PR_KEY = 'cipress_press_releases';
+
+// Initialize local caches for news/press and ensure users table exists (supabase)
 export const initDatabase = () => {
-  console.log('Database: Connected to Supabase (users table managed in cloud).');
+  if (!localStorage.getItem(NEWS_KEY)) {
+    localStorage.setItem(NEWS_KEY, JSON.stringify(initialNewsArticles));
+  }
+  if (!localStorage.getItem(PR_KEY)) {
+    localStorage.setItem(PR_KEY, JSON.stringify(initialPressReleases));
+  }
+  console.log('Database initialized (local cache + Supabase).');
 };
 
 // Insert a user
 export const insertUser = async (user: Omit<User, 'id'>): Promise<{ success: boolean; message: string }> => {
   try {
-    // Check for duplicate email directly in Supabase? 
-    // Although the unique constraint will handle it, it's nice to check or catch the error.
-    // Let's rely on the unique constraint error from Supabase for simplicity and speed.
-
     const { error } = await supabase
       .from('users')
       .insert([
@@ -26,14 +32,13 @@ export const insertUser = async (user: Omit<User, 'id'>): Promise<{ success: boo
       ]);
 
     if (error) {
-      if (error.code === '23505') { // Postgres unique violation code
+      if ((error as any).code === '23505') {
         return { success: false, message: 'El correo electrónico ya está registrado.' };
       }
       console.error('Supabase Error:', error);
       return { success: false, message: 'Error al guardar en la base de datos.' };
     }
 
-    console.log('Database: Usuario insertado con éxito en Supabase');
     return { success: true, message: 'Usuario registrado exitosamente.' };
   } catch (error) {
     console.error('Database Error:', error);
@@ -49,6 +54,46 @@ export const getAllUsers = async (): Promise<User[]> => {
     return [];
   }
   return data as User[];
+};
+
+// --- Local news and press releases (localStorage-backed) ---
+const readNewsCache = (): NewsArticle[] => JSON.parse(localStorage.getItem(NEWS_KEY) || '[]');
+const saveNewsCache = (list: NewsArticle[]) => localStorage.setItem(NEWS_KEY, JSON.stringify(list));
+const readPressCache = (): PressRelease[] => JSON.parse(localStorage.getItem(PR_KEY) || '[]');
+const savePressCache = (list: PressRelease[]) => localStorage.setItem(PR_KEY, JSON.stringify(list));
+
+export const getAllNews = async (): Promise<NewsArticle[]> => readNewsCache();
+
+export const addNews = async (article: NewsArticle): Promise<void> => {
+  const list = readNewsCache();
+  saveNewsCache([article, ...list]);
+};
+
+export const updateNews = async (article: NewsArticle): Promise<void> => {
+  const list = readNewsCache().map(a => (a.id === article.id ? article : a));
+  saveNewsCache(list);
+};
+
+export const deleteNews = async (id: number): Promise<void> => {
+  const list = readNewsCache().filter(a => a.id !== id);
+  saveNewsCache(list);
+};
+
+export const getAllPressReleases = async (): Promise<PressRelease[]> => readPressCache();
+
+export const addPressRelease = async (release: PressRelease): Promise<void> => {
+  const list = readPressCache();
+  savePressCache([release, ...list]);
+};
+
+export const updatePressRelease = async (release: PressRelease): Promise<void> => {
+  const list = readPressCache().map(pr => (pr.id === release.id ? release : pr));
+  savePressCache(list);
+};
+
+export const deletePressRelease = async (id: number): Promise<void> => {
+  const list = readPressCache().filter(pr => pr.id !== id);
+  savePressCache(list);
 };
 
 // Photojournalism Functions
@@ -262,4 +307,3 @@ export const deleteCommunityPost = async (
   }
   return { success: true };
 };
-

@@ -94,6 +94,10 @@ La carpeta `/docs` centraliza la información técnica y estratégica necesaria 
 
 ---
 
+## 📝 Notas
+
+El día 23/01/2026 se hizo una capacitación de Antigravity.
+
 ## 🎓 Contexto Académico
 
 Este proyecto ha sido desarrollado en el marco de las prácticas académicas del **Instituto Profesional DUOC UC**. Integra formación en:

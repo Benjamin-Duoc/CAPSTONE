@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon } from './icons';
-import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat } from '../types';
+import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User } from '../types';
+import PressReleaseForm from './admin/PressReleaseForm';
 
 interface HomePageProps {
     onNavigate: (page: Page, subPage?: string) => void;
@@ -12,7 +13,7 @@ interface HomePageProps {
     onSelectPressRelease: (pressRelease: PressRelease) => void;
     onSelectCourse: (course: Course) => void;
     isAdminMode: boolean;
-    currentUser: any | null;
+    currentUser?: User | null;
     courses: Course[];
     jobs: Job[];
     entrepreneurs: Entrepreneurship[];
@@ -36,6 +37,7 @@ interface HomePageProps {
     sponsoredAds: SponsoredAd[];
     specialAds: SpecialAd[];
     stats: SiteStat[];
+    onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
 }
 
 // A custom hook for counting up animation
@@ -639,11 +641,11 @@ const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const HomePage: React.FC<HomePageProps> = (props) => {
     const {
-        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, currentUser, courses, jobs, entrepreneurs, newsArticles,
+        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
         pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
         freelanceServices, photojournalismPosts, events,
         resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
-        sponsoredAds, communityAds, specialAds, stats
+        sponsoredAds, communityAds, specialAds, stats, currentUser
     } = props;
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
@@ -653,6 +655,14 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isCommunityAdModalOpen, setIsCommunityAdModalOpen] = useState(false);
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
+
+    const handleUploadClick = () => {
+        if (currentUser) {
+            onNavigate('upload-press-release');
+        } else {
+            setIsPressReleaseModalOpen(true);
+        }
+    };
 
     const iconMap: { [key in SiteStat['id']]: React.ReactNode } = {
         subscribers: <UserGroupIcon className="h-12 w-12 text-highlight" />,
@@ -682,7 +692,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             </div>
         </div>
     );
-
     const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
@@ -907,7 +916,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             )}
                         </section>
 
-                        {/* Press Releases Section */}
+                        {/* Periodistas en acción */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-6">
                                 <h2 className="text-3xl font-bold font-serif text-text-primary">Periodistas en Acción</h2>
@@ -932,23 +941,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <p className="text-xs text-blue-800">Con tu suscripción gratuita, publica tu comunicado directamente en nuestra plataforma.</p>
                                 </div>
                                 <button
-                                    onClick={() => setIsPressReleaseModalOpen(true)}
+                                    onClick={handleUploadClick}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-secondary rounded-md hover:bg-blue-900 transition-colors duration-200 shadow-sm"
                                 >
                                     Sube tu comunicado
                                 </button>
-                            </div>
-                        </section>
-
-                        {/* Courses Section */}
-                        <section>
-                            <div className="flex justify-between items-center border-b-2 border-primary pb-2 mb-6">
-                                <h2 className="text-3xl font-bold font-serif text-text-primary">Capacitación</h2>
-                                <button onClick={() => onNavigate('courses')} className="font-semibold text-primary hover:underline">Ver todo &rarr;</button>
-                                {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                                {courses.slice(0, 4).map(course => <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />)}
                             </div>
                         </section>
 
@@ -1047,13 +1044,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 >
                                     Sube tu foto
                                 </button>
-                            </div>
-                        </section>
-
-                    </div>
-
-                    {/* Right Sidebar */}
-                    <aside className="lg:col-span-1 space-y-8">
+                                    onClick={() => setIsPhotojournalismModalOpen(true)}
                         {/* Opportunities Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-4">
@@ -1216,7 +1207,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         </button>
                     </div>
                 </section>
-
                 {/* New Opportunities Banner */}
                 <section>
                     <div className="bg-gradient-to-r from-secondary to-blue-900 text-white rounded-lg p-8 md:p-12">
@@ -1261,7 +1251,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <StatsCounter stats={statsWithIcons} />
                 </section>
             </div>
-
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
             {isEntrepreneurModalOpen && <EntrepreneurPublicationModal onClose={() => setIsEntrepreneurModalOpen(false)} />}
@@ -1269,7 +1258,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
-        </div>
+            </div>
     );
 };
 

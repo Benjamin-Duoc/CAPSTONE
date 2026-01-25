@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
-import type { Page } from '../types';
+import type { Page, User } from '../types';
 import { insertUser } from '../utils/db';
 import Logo from './Logo';
 
 interface RegistrationPageProps {
     onNavigate: (page: Page) => void;
+    onLogin?: (user: User) => void;
 }
 
-const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
+const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,7 +29,6 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
             return;
@@ -49,7 +49,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate }) => {
                 onNavigate('home');
             }, 2000);
         } else {
-            setError(result.message);
+            setError(result.message || 'Error al registrar usuario.');
         }
     };
 

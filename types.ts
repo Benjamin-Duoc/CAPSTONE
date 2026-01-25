@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'login';
+export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'login' | 'upload-press-release';
 
 export interface User {
     id: number;
@@ -8,6 +8,7 @@ export interface User {
     region: string;
     email: string;
     password: string;
+    createdAt?: string;
 }
 
 export type ReportContentItem =
