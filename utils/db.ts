@@ -200,7 +200,8 @@ export const getCommunityPosts = async (): Promise<CommunityPost[]> => {
     postUrl: post.post_url,
     comment: post.comment,
     authorName: post.author_name,
-    authorAvatarUrl: post.author_avatar_url || 'https://i.pravatar.cc/40?u=default'
+    authorAvatarUrl: post.author_avatar_url || 'https://i.pravatar.cc/40?u=default',
+    createdAt: post.created_at
   }));
 };
 

@@ -256,6 +256,66 @@ const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
     </div>
 );
 
+const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    // Sort posts by createdAt (descending) or id if createdAt is missing
+    const sortedPosts = [...posts].sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+        if (dateA !== dateB) {
+            return dateB - dateA;
+        }
+        return b.id - a.id;
+    }).slice(0, 8);
+
+    const slides = [];
+    for (let i = 0; i < sortedPosts.length; i += 4) {
+        slides.push(sortedPosts.slice(i, i + 4));
+    }
+
+    const totalSlides = slides.length;
+
+    useEffect(() => {
+        if (totalSlides <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % totalSlides);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, [totalSlides]);
+
+    if (sortedPosts.length === 0) return null;
+
+    return (
+        <div className="relative group overflow-hidden pb-10">
+            <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {slides.map((slide, slideIdx) => (
+                    <div key={slideIdx} className="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-6 px-1">
+                        {slide.map(post => (
+                            <CommunityPostCard key={post.id} post={post} />
+                        ))}
+                    </div>
+                ))}
+            </div>
+
+            {/* Navigation Dots */}
+            {totalSlides > 1 && (
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-3 z-10">
+                    {slides.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-accent w-6' : 'bg-gray-300 hover:bg-accent/40'}`}
+                            aria-label={`Ver slide ${idx + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
     <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
         <img src={post.imageUrl} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
@@ -946,9 +1006,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <h2 className="text-3xl font-bold font-serif text-text-primary">Actividad de la Comunidad</h2>
                                 <button onClick={() => onNavigate('community-post')} className="font-semibold text-accent hover:underline">Ver toda la actividad &rarr;</button>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {communityPosts.slice(0, 4).map(post => <CommunityPostCard key={post.id} post={post} />)}
-                            </div>
+                            <CommunityActivityCarousel posts={communityPosts} />
                             <div className={`bg-accent/5 p-4 rounded-lg mt-8 border border-accent/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3e%3cpath d='M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10' stroke='%2384cc16' stroke-width='1' stroke-opacity='0.2'/%3e%3c/svg%3e")]`}>
                                 <div>
                                     <h3 className="font-semibold text-base text-green-800">¿Quieres iniciar un debate?</h3>

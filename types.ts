@@ -152,6 +152,7 @@ export interface CommunityPost {
     postTitle: string;
     postUrl: string;
     comment: string;
+    createdAt?: string;
 }
 
 export interface PhotojournalismPost {

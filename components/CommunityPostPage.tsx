@@ -32,13 +32,25 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const ITEMS_PER_PAGE = 9;
-    const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
+    const ITEMS_PER_PAGE = 6;
+
+    // Sort posts by createdAt (descending) or id if createdAt is missing
+    const sortedPosts = [...posts].sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+        if (dateA !== dateB) {
+            return dateB - dateA;
+        }
+        return b.id - a.id;
+    });
+
+    const totalPages = Math.ceil(sortedPosts.length / ITEMS_PER_PAGE);
 
     // Get current posts
     const indexOfLastPost = currentPage * ITEMS_PER_PAGE;
     const indexOfFirstPost = indexOfLastPost - ITEMS_PER_PAGE;
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+    const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     // Change page
     const paginate = (pageNumber: number) => {
@@ -168,8 +180,8 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
                                     key={i + 1}
                                     onClick={() => paginate(i + 1)}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${currentPage === i + 1
-                                            ? 'bg-primary text-white shadow-md'
-                                            : 'bg-surface text-text-secondary border border-gray-300 hover:bg-gray-50'
+                                        ? 'bg-primary text-white shadow-md'
+                                        : 'bg-surface text-text-secondary border border-gray-300 hover:bg-gray-50'
                                         }`}
                                 >
                                     {i + 1}
