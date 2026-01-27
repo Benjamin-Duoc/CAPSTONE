@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -29,6 +28,9 @@ import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
+import LoginPage from './components/LoginPage';
+import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
+
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
 import * as mockData from './data/mockData';
 import {
@@ -65,19 +67,25 @@ import {
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [returnToPage, setReturnToPage] = useState<Page>('home');
   const [initialTab, setInitialTab] = useState<string | null>(null);
+
+  // Selection states
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneurship | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<PremiumSponsor | null>(null);
   const [selectedNewsArticle, setSelectedNewsArticle] = useState<NewsArticle | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedPhotoPost, setSelectedPhotoPost] = useState<PhotojournalismPost | null>(null);
+
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const handleLogin = (user: User) => {
     setCurrentUser(user);
-    handleNavigate('home');
+    // Persist login if needed, or rely on token (backend auth recommended)
+    handleNavigate(returnToPage || 'home');
   };
 
   const handleLogout = () => {
@@ -85,7 +93,7 @@ const App: React.FC = () => {
     handleNavigate('home');
   };
 
-  // State initialized with Mock Data for immediate render, then updated via API
+  // Data States (initialized with mockData for immediate render, then updated via API)
   const [courses, setCourses] = useState(mockData.courses);
   const [jobs, setJobs] = useState(mockData.jobs);
   const [entrepreneurs, setEntrepreneurs] = useState(mockData.entrepreneurs);
@@ -114,10 +122,11 @@ const App: React.FC = () => {
   const [talentProfiles, setTalentProfiles] = useState(mockData.talentProfiles);
   const [rotationInterval, setRotationInterval] = useState(mockData.rotationInterval);
 
+  // Load data from Backend on mount
   useEffect(() => {
     const loadData = async () => {
       try {
-        await initDatabase();
+        await initDatabase(); // Auto-seed if empty
         setCourses(await getAllCourses());
         setJobs(await getAllJobs());
         setEntrepreneurs(await getAllEntrepreneurs());
@@ -152,640 +161,228 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
+  const refreshPhotoPosts = async () => {
+    const dbPosts = await getPhotojournalismPosts();
+    setPhotojournalismPosts(dbPosts);
+  };
+
+  const refreshCommunityPosts = async () => {
+    const dbPosts = await getCommunityPosts();
+    setCommunityPosts(dbPosts);
+  };
+
+  const isCommunityPostOwner = (post: CommunityPost) => {
+    if (isAdminMode || currentPage === 'admin') return true;
+    if (!currentUser) return false;
+    // Simple check: match email if available, or name as fallback
+    // In a real app, use user ID from backend response
+    if (post.authorName === `${currentUser.firstName} ${currentUser.lastName}`.trim()) return true;
+    return false;
+  };
+
+  // --- Navigation & Selection Handlers ---
+
   const handleNavigate = (page: Page, subPage?: string) => {
+    if (page === 'login' && currentPage !== 'login' && currentPage !== 'register') {
+      setReturnToPage(currentPage);
+    }
     setSelectedEntrepreneur(null);
     setSelectedSponsor(null);
     setSelectedNewsArticle(null);
     setSelectedJob(null);
     setSelectedPressRelease(null);
     setSelectedCourse(null);
+    setSelectedPhotoPost(null);
     setCurrentPage(page);
     setInitialTab(subPage || null);
     window.scrollTo(0, 0);
   };
 
-  const handleSelectEntrepreneur = (entrepreneur: Entrepreneurship) => {
-    setSelectedEntrepreneur(entrepreneur);
-    window.scrollTo(0, 0);
-  };
+  // Select Handlers
+  const handleSelectEntrepreneur = (e: Entrepreneurship) => { setSelectedEntrepreneur(e); window.scrollTo(0, 0); };
+  const handleSelectSponsor = (s: PremiumSponsor) => { setSelectedSponsor(s); window.scrollTo(0, 0); };
+  const handleSelectNewsArticle = (a: NewsArticle) => { setSelectedNewsArticle(a); window.scrollTo(0, 0); };
+  const handleSelectJob = (j: Job) => { setSelectedJob(j); window.scrollTo(0, 0); };
+  const handleSelectPressRelease = (p: PressRelease) => { setSelectedPressRelease(p); window.scrollTo(0, 0); };
+  const handleSelectCourse = (c: Course) => { setSelectedCourse(c); window.scrollTo(0, 0); };
+  const handleSelectPhotoPost = (p: PhotojournalismPost) => { setSelectedPhotoPost(p); window.scrollTo(0, 0); };
 
-  const handleSelectSponsor = (sponsor: PremiumSponsor) => {
-    setSelectedSponsor(sponsor);
-    window.scrollTo(0, 0);
-  };
 
-  const handleSelectNewsArticle = (article: NewsArticle) => {
-    setSelectedNewsArticle(article);
-    window.scrollTo(0, 0);
-  };
+  // --- CRUD Operations (Connected to Backend) ---
 
-  const handleSelectJob = (job: Job) => {
-    setSelectedJob(job);
-    window.scrollTo(0, 0);
-  };
+  // Courses
+  const handleAddCourse = async (item: Omit<Course, 'id'>) => { try { const res = await createCourse(item); setCourses(prev => [...prev, res]); } catch (e) { alert("Error creating course"); } };
+  const handleUpdateCourse = async (item: Course) => { try { const res = await updateCourse(item); setCourses(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating course"); } };
+  const handleDeleteCourse = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteCourse(id); setCourses(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting course"); } } };
 
-  const handleSelectPressRelease = (pressRelease: PressRelease) => {
-    setSelectedPressRelease(pressRelease);
-    window.scrollTo(0, 0);
-  };
+  // Jobs
+  const handleAddJob = async (item: Omit<Job, 'id'>) => { try { const res = await createJob(item); setJobs(prev => [...prev, res]); } catch (e) { alert("Error creating job"); } };
+  const handleUpdateJob = async (item: Job) => { try { const res = await updateJob(item); setJobs(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating job"); } };
+  const handleDeleteJob = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteJob(id); setJobs(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting job"); } } };
 
-  const handleSelectCourse = (course: Course) => {
-    setSelectedCourse(course);
-    window.scrollTo(0, 0);
-  };
+  // Entrepreneurs
+  const handleAddEntrepreneur = async (item: Omit<Entrepreneurship, 'id'>) => { try { const res = await createEntrepreneur(item); setEntrepreneurs(prev => [...prev, res]); } catch (e) { alert("Error creating entrepreneur"); } };
+  const handleUpdateEntrepreneur = async (item: Entrepreneurship) => { try { const res = await updateEntrepreneur(item); setEntrepreneurs(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating entrepreneur"); } };
+  const handleDeleteEntrepreneur = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteEntrepreneur(id); setEntrepreneurs(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting entrepreneur"); } } };
 
-  // --- CRUD Operations ---
-  // Note: All operations now use async calls to backend
+  // News
+  const handleAddNewsArticle = async (item: Omit<NewsArticle, 'id'>) => { try { const res = await createNews(item); setNewsArticles(prev => [res, ...prev]); } catch (e) { alert("Error creating news"); } };
+  const handleUpdateNewsArticle = async (item: NewsArticle) => { try { const res = await updateNews(item); setNewsArticles(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating news"); } };
+  const handleDeleteNewsArticle = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteNews(id); setNewsArticles(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting news"); } } };
 
-  const handleAddCourse = async (newCourse: Omit<Course, 'id'>) => {
-    try {
-      const created = await createCourse(newCourse);
-      setCourses(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating course"); }
-  };
-  const handleUpdateCourse = async (updatedCourse: Course) => {
-    try {
-      const updated = await updateCourse(updatedCourse);
-      setCourses(prev => prev.map(c => c.id === updated.id ? updated : c));
-    } catch (e) { console.error(e); alert("Error updating course"); }
-  };
-  const handleDeleteCourse = async (courseId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este curso?')) {
-      try {
-        await deleteCourse(courseId);
-        setCourses(prev => prev.filter(c => c.id !== courseId));
-      } catch (e) { console.error(e); alert("Error deleting course"); }
-    }
-  };
+  // Sponsors
+  const handleAddSponsor = async (item: Omit<PremiumSponsor, 'id'>) => { try { const res = await createPremiumSponsor(item); setPremiumSponsors(prev => [...prev, res]); } catch (e) { alert("Error creating sponsor"); } };
+  const handleUpdateSponsor = async (item: PremiumSponsor) => { try { const res = await updatePremiumSponsor(item); setPremiumSponsors(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating sponsor"); } };
+  const handleDeleteSponsor = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePremiumSponsor(id); setPremiumSponsors(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting sponsor"); } } };
 
-  const handleAddJob = async (newJob: Omit<Job, 'id'>) => {
-    try {
-      const created = await createJob(newJob);
-      setJobs(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating job"); }
-  };
-  const handleUpdateJob = async (updatedJob: Job) => {
-    try {
-      const updated = await updateJob(updatedJob);
-      setJobs(prev => prev.map(j => j.id === updated.id ? updated : j));
-    } catch (e) { console.error(e); alert("Error updating job"); }
-  };
-  const handleDeleteJob = async (jobId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
-      try {
-        await deleteJob(jobId);
-        setJobs(prev => prev.filter(j => j.id !== jobId));
-      } catch (e) { console.error(e); alert("Error deleting job"); }
-    }
-  };
+  // Press Releases
+  const handleAddPressRelease = async (item: Omit<PressRelease, 'id'>) => { try { const res = await createPressRelease(item); setPressReleases(prev => [res, ...prev]); return true; } catch (e) { alert("Error creating press release"); return false; } };
+  const handleUpdatePressRelease = async (item: PressRelease) => { try { const res = await updatePressRelease(item); setPressReleases(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating press release"); } };
+  const handleDeletePressRelease = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePressRelease(id); setPressReleases(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting press release"); } } };
 
-  const handleAddEntrepreneur = async (newEntrepreneur: Omit<Entrepreneurship, 'id'>) => {
-    try {
-      const created = await createEntrepreneur(newEntrepreneur);
-      setEntrepreneurs(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating entrepreneur"); }
-  };
-  const handleUpdateEntrepreneur = async (updatedEntrepreneur: Entrepreneurship) => {
-    try {
-      const updated = await updateEntrepreneur(updatedEntrepreneur);
-      setEntrepreneurs(prev => prev.map(e => e.id === updated.id ? updated : e));
-    } catch (e) { console.error(e); alert("Error updating entrepreneur"); }
-  };
-  const handleDeleteEntrepreneur = async (entrepreneurId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este emprendimiento?')) {
-      try {
-        await deleteEntrepreneur(entrepreneurId);
-        setEntrepreneurs(prev => prev.filter(e => e.id !== entrepreneurId));
-      } catch (e) { console.error(e); alert("Error deleting entrepreneur"); }
-    }
-  };
+  // Photojournalism
+  const handleAddPhotojournalismPost = async (item: Omit<PhotojournalismPost, 'id'>) => { try { const res = await createPhotojournalismPost({ ...item, dateAdded: new Date().toISOString() }); setPhotojournalismPosts(prev => [res, ...prev]); } catch (e) { alert("Error creating photo post"); } };
+  const handleUpdatePhotojournalismPost = async (item: PhotojournalismPost) => { try { const res = await updatePhotojournalismPost(item); setPhotojournalismPosts(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating photo post"); } };
+  const handleDeletePhotojournalismPost = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePhotojournalismPost(id); setPhotojournalismPosts(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting photo post"); } } };
 
-  const handleAddNewsArticle = async (newArticle: Omit<NewsArticle, 'id'>) => {
-    try {
-      const created = await createNews(newArticle);
-      setNewsArticles(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating news"); }
-  };
-  const handleUpdateNewsArticle = async (updatedArticle: NewsArticle) => {
-    try {
-      const updated = await updateNews(updatedArticle);
-      setNewsArticles(prev => prev.map(a => a.id === updated.id ? updated : a));
-    } catch (e) { console.error(e); alert("Error updating news"); }
-  };
-  const handleDeleteNewsArticle = async (articleId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
-      try {
-        await deleteNews(articleId);
-        setNewsArticles(prev => prev.filter(a => a.id !== articleId));
-      } catch (e) { console.error(e); alert("Error deleting news"); }
-    }
-  };
+  // Funding
+  const handleAddFundingOpportunity = async (item: Omit<FundingOpportunity, 'id'>) => { try { const res = await createFundingOpportunity(item); setFundingOpportunities(prev => [...prev, res]); } catch (e) { alert("Error creating funding"); } };
+  const handleUpdateFundingOpportunity = async (item: FundingOpportunity) => { try { const res = await updateFundingOpportunity(item); setFundingOpportunities(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating funding"); } };
+  const handleDeleteFundingOpportunity = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteFundingOpportunity(id); setFundingOpportunities(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting funding"); } } };
 
-  const handleAddSponsor = async (newSponsor: Omit<PremiumSponsor, 'id'>) => {
-    try {
-      const created = await createPremiumSponsor(newSponsor);
-      setPremiumSponsors(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating sponsor"); }
-  };
-  const handleUpdateSponsor = async (updatedSponsor: PremiumSponsor) => {
-    try {
-      const updated = await updatePremiumSponsor(updatedSponsor);
-      setPremiumSponsors(prev => prev.map(s => s.id === updated.id ? updated : s));
-    } catch (e) { console.error(e); alert("Error updating sponsor"); }
-  };
-  const handleDeleteSponsor = async (sponsorId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este sponsor?')) {
-      try {
-        await deletePremiumSponsor(sponsorId);
-        setPremiumSponsors(prev => prev.filter(s => s.id !== sponsorId));
-      } catch (e) { console.error(e); alert("Error deleting sponsor"); }
-    }
-  };
+  // Specialists
+  const handleAddSpecialist = async (item: Omit<Specialist, 'id' | 'dateAdded'>) => { try { const res = await createSpecialist({ ...item, dateAdded: new Date().toISOString() }); setSpecialists(prev => [res, ...prev]); } catch (e) { alert("Error creating specialist"); } };
+  const handleUpdateSpecialist = async (item: Specialist) => { try { const res = await updateSpecialist(item); setSpecialists(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating specialist"); } };
+  const handleDeleteSpecialist = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteSpecialist(id); setSpecialists(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting specialist"); } } };
 
-  const handleAddPressRelease = async (newPressRelease: Omit<PressRelease, 'id'>) => {
-    try {
-      const created = await createPressRelease(newPressRelease);
-      setPressReleases(prev => [created, ...prev]);
-      return true;
-    } catch (e) {
-      console.error(e);
-      alert("Error creating press release");
-      return false;
-    }
-  };
-  const handleUpdatePressRelease = async (updatedPressRelease: PressRelease) => {
-    try {
-      const updated = await updatePressRelease(updatedPressRelease);
-      setPressReleases(prev => prev.map(p => p.id === updated.id ? updated : p));
-    } catch (e) { console.error(e); alert("Error updating press release"); }
-  };
-  const handleDeletePressRelease = async (pressReleaseId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este comunicado?')) {
-      try {
-        await deletePressRelease(pressReleaseId);
-        setPressReleases(prev => prev.filter(p => p.id !== pressReleaseId));
-      } catch (e) { console.error(e); alert("Error deleting press release"); }
-    }
-  };
+  // Shareable Photos
+  const handleAddShareablePhoto = async (item: Omit<ShareablePhoto, 'id' | 'dateAdded'>) => { try { const res = await createShareablePhoto({ ...item, dateAdded: new Date().toISOString() }); setShareablePhotos(prev => [res, ...prev]); } catch (e) { alert("Error creating shareable photo"); } };
+  const handleUpdateShareablePhoto = async (item: ShareablePhoto) => { try { const res = await updateShareablePhoto(item); setShareablePhotos(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating shareable photo"); } };
+  const handleDeleteShareablePhoto = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteShareablePhoto(id); setShareablePhotos(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting shareable photo"); } } };
 
-  const handleAddPhotojournalismPost = async (newPost: Omit<PhotojournalismPost, 'id'>) => {
+  // Community Posts
+  const handleAddCommunityPost = async (item: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
+    if (!currentUser) { alert('Debes iniciar sesión'); return; }
     try {
-      const item = { ...newPost, dateAdded: new Date().toISOString() };
-      const created = await createPhotojournalismPost(item);
-      setPhotojournalismPosts(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating post"); }
-  };
-  const handleUpdatePhotojournalismPost = async (updatedPost: PhotojournalismPost) => {
-    try {
-      const updated = await updatePhotojournalismPost(updatedPost);
-      setPhotojournalismPosts(prev => prev.map(p => p.id === updated.id ? updated : p));
-    } catch (e) { console.error(e); alert("Error updating post"); }
-  };
-  const handleDeletePhotojournalismPost = async (postId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta publicación de fotoperiodismo?')) {
-      try {
-        await deletePhotojournalismPost(postId);
-        setPhotojournalismPosts(prev => prev.filter(p => p.id !== postId));
-      } catch (e) { console.error(e); alert("Error deleting post"); }
-    }
-  };
-
-  const handleAddFundingOpportunity = async (newFunding: Omit<FundingOpportunity, 'id'>) => {
-    try {
-      const created = await createFundingOpportunity(newFunding);
-      setFundingOpportunities(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating funding opportunity"); }
-  };
-  const handleUpdateFundingOpportunity = async (updatedFunding: FundingOpportunity) => {
-    try {
-      const updated = await updateFundingOpportunity(updatedFunding);
-      setFundingOpportunities(prev => prev.map(f => f.id === updated.id ? updated : f));
-    } catch (e) { console.error(e); alert("Error updating funding opportunity"); }
-  };
-  const handleDeleteFundingOpportunity = async (fundingId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
-      try {
-        await deleteFundingOpportunity(fundingId);
-        setFundingOpportunities(prev => prev.filter(f => f.id !== fundingId));
-      } catch (e) { console.error(e); alert("Error deleting funding opportunity"); }
-    }
-  };
-
-  const handleAddSpecialist = async (newSpecialist: Omit<Specialist, 'id' | 'dateAdded'>) => {
-    try {
-      const item = { ...newSpecialist, dateAdded: new Date().toISOString() };
-      const created = await createSpecialist(item);
-      setSpecialists(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating specialist"); }
-  };
-  const handleUpdateSpecialist = async (updatedSpecialist: Specialist) => {
-    try {
-      const updated = await updateSpecialist(updatedSpecialist);
-      setSpecialists(prev => prev.map(s => s.id === updated.id ? updated : s));
-    } catch (e) { console.error(e); alert("Error updating specialist"); }
-  };
-  const handleDeleteSpecialist = async (specialistId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este especialista?')) {
-      try {
-        await deleteSpecialist(specialistId);
-        setSpecialists(prev => prev.filter(s => s.id !== specialistId));
-      } catch (e) { console.error(e); alert("Error deleting specialist"); }
-    }
-  };
-
-  const handleAddShareablePhoto = async (newPhoto: Omit<ShareablePhoto, 'id' | 'dateAdded'>) => {
-    try {
-      const item = { ...newPhoto, dateAdded: new Date().toISOString() };
-      const created = await createShareablePhoto(item);
-      setShareablePhotos(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating photo"); }
-  };
-  const handleUpdateShareablePhoto = async (updatedPhoto: ShareablePhoto) => {
-    try {
-      const updated = await updateShareablePhoto(updatedPhoto);
-      setShareablePhotos(prev => prev.map(p => p.id === updated.id ? updated : p));
-    } catch (e) { console.error(e); alert("Error updating photo"); }
-  };
-  const handleDeleteShareablePhoto = async (photoId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta foto?')) {
-      try {
-        await deleteShareablePhoto(photoId);
-        setShareablePhotos(prev => prev.filter(p => p.id !== photoId));
-      } catch (e) { console.error(e); alert("Error deleting photo"); }
-    }
-  };
-
-  const handleAddCommunityPost = async (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
-    try {
-      const item = {
-        ...newPost,
-        authorName: 'Usuario Activo',
-        authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser',
+      const newItem = {
+        ...item,
+        authorName: `${currentUser.firstName} ${currentUser.lastName}`,
+        authorAvatarUrl: 'https://i.pravatar.cc/150?u=' + currentUser.email,
+        createdBy: currentUser.email
       };
-      const created = await createCommunityPost(item);
-      setCommunityPosts(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating post"); }
+      const res = await createCommunityPost(newItem);
+      setCommunityPosts(prev => [res, ...prev]);
+      alert('¡Publicado!');
+    } catch (e) { alert("Error creating post"); }
   };
-  const handleAddCommunityPostAdmin = async (newPost: Omit<CommunityPost, 'id'>) => {
-    try {
-      const created = await createCommunityPost(newPost);
-      setCommunityPosts(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating post"); }
+  const handleAddCommunityPostAdmin = async (item: Omit<CommunityPost, 'id'>) => { try { const res = await createCommunityPost(item); setCommunityPosts(prev => [res, ...prev]); } catch (e) { alert("Error creating post"); } };
+  const handleUpdateCommunityPost = async (item: CommunityPost) => {
+    if (!isCommunityPostOwner(item)) { alert('No tienes permiso'); return; }
+    try { const res = await updateCommunityPost(item); setCommunityPosts(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating post"); }
   };
-  const handleUpdateCommunityPost = async (updatedPost: CommunityPost) => {
-    try {
-      const updated = await updateCommunityPost(updatedPost);
-      setCommunityPosts(prev => prev.map(p => p.id === updated.id ? updated : p));
-    } catch (e) { console.error(e); alert("Error updating post"); }
-  };
-  const handleDeleteCommunityPost = async (postId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
-      try {
-        await deleteCommunityPost(postId);
-        setCommunityPosts(prev => prev.filter(p => p.id !== postId));
-      } catch (e) { console.error(e); alert("Error deleting post"); }
-    }
+  const handleDeleteCommunityPost = async (id: number) => {
+    const post = communityPosts.find(p => p.id === id);
+    if (post && !isCommunityPostOwner(post)) { alert('No tienes permiso'); return; }
+    if (window.confirm('Eliminar?')) { try { await deleteCommunityPost(id); setCommunityPosts(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting post"); } }
   };
 
-  const handleAddShortCollaboration = async (newCollaboration: Omit<ShortCollaboration, 'id'>) => {
-    try {
-      const created = await createShortCollaboration(newCollaboration);
-      setShortCollaborations(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating collaboration"); }
-  };
-  const handleUpdateShortCollaboration = async (updatedCollaboration: ShortCollaboration) => {
-    try {
-      const updated = await updateShortCollaboration(updatedCollaboration);
-      setShortCollaborations(prev => prev.map(c => c.id === updated.id ? updated : c));
-    } catch (e) { console.error(e); alert("Error updating collaboration"); }
-  };
-  const handleDeleteShortCollaboration = async (collaborationId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta colaboración?')) {
-      try {
-        await deleteShortCollaboration(collaborationId);
-        setShortCollaborations(prev => prev.filter(c => c.id !== collaborationId));
-      } catch (e) { console.error(e); alert("Error deleting collaboration"); }
-    }
+  // Short Collaborations
+  const handleAddShortCollaboration = async (item: Omit<ShortCollaboration, 'id'>) => { try { const res = await createShortCollaboration(item); setShortCollaborations(prev => [res, ...prev]); } catch (e) { alert("Error creating collaboration"); } };
+  const handleUpdateShortCollaboration = async (item: ShortCollaboration) => { try { const res = await updateShortCollaboration(item); setShortCollaborations(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating collaboration"); } };
+  const handleDeleteShortCollaboration = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteShortCollaboration(id); setShortCollaborations(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting collaboration"); } } };
+
+  // Tips
+  const handleAddEntrepreneurshipTip = async (item: Omit<EntrepreneurshipTip, 'id'>) => { try { const res = await createEntrepreneurshipTip(item); setEntrepreneurshipTips(prev => [res, ...prev]); } catch (e) { alert("Error creating tip"); } };
+  const handleUpdateEntrepreneurshipTip = async (item: EntrepreneurshipTip) => { try { const res = await updateEntrepreneurshipTip(item); setEntrepreneurshipTips(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating tip"); } };
+  const handleDeleteEntrepreneurshipTip = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteEntrepreneurshipTip(id); setEntrepreneurshipTips(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting tip"); } } };
+
+  // Sponsored Ads
+  const handleAddSponsoredAd = async (item: Omit<SponsoredAd, 'id'>) => { try { const res = await createSponsoredAd(item); setSponsoredAds(prev => [res, ...prev]); } catch (e) { alert("Error creating ad"); } };
+  const handleUpdateSponsoredAd = async (item: SponsoredAd) => { try { const res = await updateSponsoredAd(item); setSponsoredAds(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating ad"); } };
+  const handleDeleteSponsoredAd = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteSponsoredAd(id); setSponsoredAds(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting ad"); } } };
+
+  // Events
+  const handleAddEvent = async (item: Omit<Event, 'id'>) => { try { const res = await createEvent(item); setEvents(prev => [...prev, res]); } catch (e) { alert("Error creating event"); } };
+  const handleUpdateEvent = async (item: Event) => { try { const res = await updateEvent(item); setEvents(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating event"); } };
+  const handleDeleteEvent = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteEvent(id); setEvents(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting event"); } } };
+
+  // Partner Logos
+  const handleAddPartnerLogo = async (item: Omit<PartnerLogo, 'id'>) => { try { const res = await createPartnerLogo(item); setPartnerLogos(prev => [...prev, res]); } catch (e) { alert("Error creating logo"); } };
+  const handleUpdatePartnerLogo = async (item: PartnerLogo) => { try { const res = await updatePartnerLogo(item); setPartnerLogos(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating logo"); } };
+  const handleDeletePartnerLogo = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePartnerLogo(id); setPartnerLogos(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting logo"); } } };
+
+  // Talent Profiles
+  const handleAddTalentProfile = async (item: Omit<TalentProfile, 'id'>) => { try { const res = await createTalentProfile(item); setTalentProfiles(prev => [res, ...prev]); } catch (e) { alert("Error creating profile"); } };
+  const handleUpdateTalentProfile = async (item: TalentProfile) => { try { const res = await updateTalentProfile(item); setTalentProfiles(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating profile"); } };
+  const handleDeleteTalentProfile = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteTalentProfile(id); setTalentProfiles(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting profile"); } } };
+
+  // Special Updates
+  const handleUpdateHeroHeading = async (h: HeroHeading) => { setHeroHeading(h); try { await saveHeroHeading(h); } catch (e) { console.error(e); } };
+  const handleUpdateSpecialAd = async (ad: SpecialAd) => { setSpecialAds(prev => prev.map(a => a.id === ad.id ? ad : a)); try { await updateSpecialAd(ad); } catch (e) { console.error(e); } };
+  const handleUpdateStat = async (stat: SiteStat) => { const newStats = stats.map(s => s.id === stat.id ? stat : s); setStats(newStats); try { await saveStats(newStats); } catch (e) { console.error(e); } };
+  const handleUpdateRotationInterval = async (val: number) => { setRotationInterval(val); try { await saveRotationInterval(val); } catch (e) { console.error(e); } };
+  const handleRateFreelanceService = async (id: number, rating: number) => {
+    // Optimistic rating update logic could go here
+    // For now simple alert as placeholder
+    console.log("Rating service", id, rating);
   };
 
-  const handleAddEntrepreneurshipTip = async (newTip: Omit<EntrepreneurshipTip, 'id'>) => {
-    try {
-      const created = await createEntrepreneurshipTip(newTip);
-      setEntrepreneurshipTips(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating tip"); }
-  };
-  const handleUpdateEntrepreneurshipTip = async (updatedTip: EntrepreneurshipTip) => {
-    try {
-      const updated = await updateEntrepreneurshipTip(updatedTip);
-      setEntrepreneurshipTips(prev => prev.map(t => t.id === updated.id ? updated : t));
-    } catch (e) { console.error(e); alert("Error updating tip"); }
-  };
-  const handleDeleteEntrepreneurshipTip = async (tipId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este tip?')) {
-      try {
-        await deleteEntrepreneurshipTip(tipId);
-        setEntrepreneurshipTips(prev => prev.filter(t => t.id !== tipId));
-      } catch (e) { console.error(e); alert("Error deleting tip"); }
-    }
-  };
-
-  const handleAddSponsoredAd = async (newAd: Omit<SponsoredAd, 'id'>) => {
-    try {
-      const created = await createSponsoredAd(newAd);
-      setSponsoredAds(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating ad"); }
-  };
-  const handleUpdateSponsoredAd = async (updatedAd: SponsoredAd) => {
-    try {
-      const updated = await updateSponsoredAd(updatedAd);
-      setSponsoredAds(prev => prev.map(ad => ad.id === updated.id ? updated : ad));
-    } catch (e) { console.error(e); alert("Error updating ad"); }
-  };
-  const handleDeleteSponsoredAd = async (adId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este anuncio?')) {
-      try {
-        await deleteSponsoredAd(adId);
-        setSponsoredAds(prev => prev.filter(ad => ad.id !== adId));
-      } catch (e) { console.error(e); alert("Error deleting ad"); }
-    }
-  };
-
-  const handleAddEvent = async (newEvent: Omit<Event, 'id'>) => {
-    try {
-      const created = await createEvent(newEvent);
-      setEvents(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating event"); }
-  };
-  const handleUpdateEvent = async (updatedEvent: Event) => {
-    try {
-      const updated = await updateEvent(updatedEvent);
-      setEvents(prev => prev.map(e => e.id === updated.id ? updated : e));
-    } catch (e) { console.error(e); alert("Error updating event"); }
-  };
-  const handleDeleteEvent = async (eventId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este evento?')) {
-      try {
-        await deleteEvent(eventId);
-        setEvents(prev => prev.filter(e => e.id !== eventId));
-      } catch (e) { console.error(e); alert("Error deleting event"); }
-    }
-  };
-
-  const handleAddPartnerLogo = async (newLogo: Omit<PartnerLogo, 'id'>) => {
-    try {
-      const created = await createPartnerLogo(newLogo);
-      setPartnerLogos(prev => [...prev, created]);
-    } catch (e) { console.error(e); alert("Error creating logo"); }
-  };
-  const handleUpdatePartnerLogo = async (updatedLogo: PartnerLogo) => {
-    try {
-      const updated = await updatePartnerLogo(updatedLogo);
-      setPartnerLogos(prev => prev.map(l => l.id === updated.id ? updated : l));
-    } catch (e) { console.error(e); alert("Error updating logo"); }
-  };
-  const handleDeletePartnerLogo = async (logoId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este logo?')) {
-      try {
-        await deletePartnerLogo(logoId);
-        setPartnerLogos(prev => prev.filter(l => l.id !== logoId));
-      } catch (e) { console.error(e); alert("Error deleting logo"); }
-    }
-  };
-
-  const handleAddTalentProfile = async (newProfile: Omit<TalentProfile, 'id'>) => {
-    try {
-      const created = await createTalentProfile(newProfile);
-      setTalentProfiles(prev => [created, ...prev]);
-    } catch (e) { console.error(e); alert("Error creating profile"); }
-  };
-  const handleUpdateTalentProfile = async (updatedProfile: TalentProfile) => {
-    try {
-      const updated = await updateTalentProfile(updatedProfile);
-      setTalentProfiles(prev => prev.map(p => p.id === updated.id ? updated : p));
-    } catch (e) { console.error(e); alert("Error updating profile"); }
-  };
-  const handleDeleteTalentProfile = async (profileId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este perfil?')) {
-      try {
-        await deleteTalentProfile(profileId);
-        setTalentProfiles(prev => prev.filter(p => p.id !== profileId));
-      } catch (e) { console.error(e); alert("Error deleting profile"); }
-    }
-  };
-
-  // Freelance service rating
-  const handleRateFreelanceService = async (serviceId: number, rating: number) => {
-    // Optimistic update
-    const service = freelanceServices.find(s => s.id === serviceId);
-    if (!service) return;
-
-    const newCount = service.rating.count + 1;
-    const newAverage = ((service.rating.average * service.rating.count) + rating) / newCount;
-    const updatedService = {
-      ...service,
-      rating: {
-        average: newAverage,
-        count: newCount,
-      },
-    };
-    // Update local immediately
-    setFreelanceServices(prev => prev.map(s => s.id === serviceId ? updatedService : s));
-
-    try {
-      await updateFreelanceService(updatedService);
-    } catch (e) {
-      console.error(e);
-      // revert if failed? keeping simple for now.
-    }
-  };
-
-  const handleUpdateHeroHeading = async (updatedHeading: HeroHeading) => {
-    // Optimistic
-    setHeroHeading(updatedHeading);
-    try {
-      await saveHeroHeading(updatedHeading);
-    } catch (e) { console.error(e); alert("Error saving heading"); }
-  };
-
-  const handleUpdateSpecialAd = async (updatedAd: SpecialAd) => {
-    // Only two ads exist, identified by string ID.
-    // Backend API handles update of single item or list?
-    // My db.ts `updateSpecialAd` calls POST /special-ads with body.
-    // If backend controller takes `SpecialAd`, it should update based on ID.
-    setSpecialAds(prev => prev.map(ad => ad.id === updatedAd.id ? updatedAd : ad));
-    try {
-      await updateSpecialAd(updatedAd);
-    } catch (e) { console.error(e); alert("Error saving ad"); }
-  };
-
-  const handleUpdateStat = async (updatedStat: SiteStat) => {
-    // Optimistic
-    const newStats = stats.map(s => s.id === updatedStat.id ? updatedStat : s);
-    setStats(newStats);
-    try {
-      // SiteStat logic uses saveStats(List)
-      await saveStats(newStats);
-    } catch (e) { console.error(e); alert("Error saving stats"); }
-  };
-
-  const handleUpdateRotationInterval = async (interval: number) => {
-    setRotationInterval(interval);
-    try {
-      await saveRotationInterval(interval);
-    } catch (e) { console.error(e); }
-  };
 
   const renderPage = () => {
-    if (selectedSponsor) {
-      return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
-    }
-    if (selectedEntrepreneur) {
-      return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
-    }
-    if (selectedNewsArticle) {
-      return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
-    }
-    if (selectedJob) {
-      return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
-    }
-    if (selectedPressRelease) {
-      return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
-    }
-    if (selectedCourse) {
-      return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
-    }
+    if (selectedSponsor) return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
+    if (selectedEntrepreneur) return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
+    if (selectedNewsArticle) return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
+    if (selectedJob) return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
+    if (selectedPressRelease) return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
+    if (selectedPhotoPost) return <PhotojournalismDetailPage post={selectedPhotoPost} onBack={() => setSelectedPhotoPost(null)} />;
+    if (selectedCourse) return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
 
     switch (currentPage) {
       case 'admin':
         return <AdminPanel
-          courses={courses}
-          onAddCourse={handleAddCourse}
-          onUpdateCourse={handleUpdateCourse}
-          onDeleteCourse={handleDeleteCourse}
-          jobs={jobs}
-          onAddJob={handleAddJob}
-          onUpdateJob={handleUpdateJob}
-          onDeleteJob={handleDeleteJob}
-          entrepreneurs={entrepreneurs}
-          onAddEntrepreneur={handleAddEntrepreneur}
-          onUpdateEntrepreneur={handleUpdateEntrepreneur}
-          onDeleteEntrepreneur={handleDeleteEntrepreneur}
-          newsArticles={newsArticles}
-          onAddNewsArticle={handleAddNewsArticle}
-          onUpdateNewsArticle={handleUpdateNewsArticle}
-          onDeleteNewsArticle={handleDeleteNewsArticle}
-          sponsors={premiumSponsors}
-          onAddSponsor={handleAddSponsor}
-          onUpdateSponsor={handleUpdateSponsor}
-          onDeleteSponsor={handleDeleteSponsor}
-          pressReleases={pressReleases}
-          onAddPressRelease={handleAddPressRelease}
-          onUpdatePressRelease={handleUpdatePressRelease}
-          onDeletePressRelease={handleDeletePressRelease}
-          heroHeading={heroHeading}
-          onUpdateHeroHeading={handleUpdateHeroHeading}
-          photojournalismPosts={photojournalismPosts}
-          onAddPhotojournalismPost={handleAddPhotojournalismPost}
-          onUpdatePhotojournalismPost={handleUpdatePhotojournalismPost}
-          onDeletePhotojournalismPost={handleDeletePhotojournalismPost}
-          fundingOpportunities={fundingOpportunities}
-          onAddFundingOpportunity={handleAddFundingOpportunity}
-          onUpdateFundingOpportunity={handleUpdateFundingOpportunity}
-          onDeleteFundingOpportunity={handleDeleteFundingOpportunity}
-          specialists={specialists}
-          onAddSpecialist={handleAddSpecialist}
-          onUpdateSpecialist={handleUpdateSpecialist}
-          onDeleteSpecialist={handleDeleteSpecialist}
-          shareablePhotos={shareablePhotos}
-          onAddShareablePhoto={handleAddShareablePhoto}
-          onUpdateShareablePhoto={handleUpdateShareablePhoto}
-          onDeleteShareablePhoto={handleDeleteShareablePhoto}
-          shortCollaborations={shortCollaborations}
-          onAddShortCollaboration={handleAddShortCollaboration}
-          onUpdateShortCollaboration={handleUpdateShortCollaboration}
-          onDeleteShortCollaboration={handleDeleteShortCollaboration}
-          entrepreneurshipTips={entrepreneurshipTips}
-          onAddEntrepreneurshipTip={handleAddEntrepreneurshipTip}
-          onUpdateEntrepreneurshipTip={handleUpdateEntrepreneurshipTip}
-          onDeleteEntrepreneurshipTip={handleDeleteEntrepreneurshipTip}
-          sponsoredAds={sponsoredAds}
-          onAddSponsoredAd={handleAddSponsoredAd}
-          onUpdateSponsoredAd={handleUpdateSponsoredAd}
-          onDeleteSponsoredAd={handleDeleteSponsoredAd}
-          specialAds={specialAds}
-          onUpdateSpecialAd={handleUpdateSpecialAd}
-          communityPosts={communityPosts}
-          onAddCommunityPost={handleAddCommunityPostAdmin}
-          onUpdateCommunityPost={handleUpdateCommunityPost}
-          onDeleteCommunityPost={handleDeleteCommunityPost}
-          events={events}
-          onAddEvent={handleAddEvent}
-          onUpdateEvent={handleUpdateEvent}
-          onDeleteEvent={handleDeleteEvent}
-          stats={stats}
-          onUpdateStat={handleUpdateStat}
-          partnerLogos={partnerLogos}
-          onAddPartnerLogo={handleAddPartnerLogo}
-          onUpdatePartnerLogo={handleUpdatePartnerLogo}
-          onDeletePartnerLogo={handleDeletePartnerLogo}
-          talentProfiles={talentProfiles}
-          onAddTalentProfile={handleAddTalentProfile}
-          onUpdateTalentProfile={handleUpdateTalentProfile}
-          onDeleteTalentProfile={handleDeleteTalentProfile}
-          rotationInterval={rotationInterval}
-          onUpdateRotationInterval={handleUpdateRotationInterval}
+          initialSection={initialTab}
+          courses={courses} onAddCourse={handleAddCourse} onUpdateCourse={handleUpdateCourse} onDeleteCourse={handleDeleteCourse}
+          jobs={jobs} onAddJob={handleAddJob} onUpdateJob={handleUpdateJob} onDeleteJob={handleDeleteJob}
+          entrepreneurs={entrepreneurs} onAddEntrepreneur={handleAddEntrepreneur} onUpdateEntrepreneur={handleUpdateEntrepreneur} onDeleteEntrepreneur={handleDeleteEntrepreneur}
+          newsArticles={newsArticles} onAddNewsArticle={handleAddNewsArticle} onUpdateNewsArticle={handleUpdateNewsArticle} onDeleteNewsArticle={handleDeleteNewsArticle}
+          sponsors={premiumSponsors} onAddSponsor={handleAddSponsor} onUpdateSponsor={handleUpdateSponsor} onDeleteSponsor={handleDeleteSponsor}
+          pressReleases={pressReleases} onAddPressRelease={handleAddPressRelease} onUpdatePressRelease={handleUpdatePressRelease} onDeletePressRelease={handleDeletePressRelease}
+          heroHeading={heroHeading} onUpdateHeroHeading={handleUpdateHeroHeading}
+          photojournalismPosts={photojournalismPosts} onAddPhotojournalismPost={handleAddPhotojournalismPost} onUpdatePhotojournalismPost={handleUpdatePhotojournalismPost} onDeletePhotojournalismPost={handleDeletePhotojournalismPost}
+          fundingOpportunities={fundingOpportunities} onAddFundingOpportunity={handleAddFundingOpportunity} onUpdateFundingOpportunity={handleUpdateFundingOpportunity} onDeleteFundingOpportunity={handleDeleteFundingOpportunity}
+          specialists={specialists} onAddSpecialist={handleAddSpecialist} onUpdateSpecialist={handleUpdateSpecialist} onDeleteSpecialist={handleDeleteSpecialist}
+          shareablePhotos={shareablePhotos} onAddShareablePhoto={handleAddShareablePhoto} onUpdateShareablePhoto={handleUpdateShareablePhoto} onDeleteShareablePhoto={handleDeleteShareablePhoto}
+          shortCollaborations={shortCollaborations} onAddShortCollaboration={handleAddShortCollaboration} onUpdateShortCollaboration={handleUpdateShortCollaboration} onDeleteShortCollaboration={handleDeleteShortCollaboration}
+          entrepreneurshipTips={entrepreneurshipTips} onAddEntrepreneurshipTip={handleAddEntrepreneurshipTip} onUpdateEntrepreneurshipTip={handleUpdateEntrepreneurshipTip} onDeleteEntrepreneurshipTip={handleDeleteEntrepreneurshipTip}
+          sponsoredAds={sponsoredAds} onAddSponsoredAd={handleAddSponsoredAd} onUpdateSponsoredAd={handleUpdateSponsoredAd} onDeleteSponsoredAd={handleDeleteSponsoredAd}
+          specialAds={specialAds} onUpdateSpecialAd={handleUpdateSpecialAd}
+          communityPosts={communityPosts} onAddCommunityPost={handleAddCommunityPostAdmin} onUpdateCommunityPost={handleUpdateCommunityPost} onDeleteCommunityPost={handleDeleteCommunityPost}
+          events={events} onAddEvent={handleAddEvent} onUpdateEvent={handleUpdateEvent} onDeleteEvent={handleDeleteEvent}
+          stats={stats} onUpdateStat={handleUpdateStat}
+          partnerLogos={partnerLogos} onAddPartnerLogo={handleAddPartnerLogo} onUpdatePartnerLogo={handleUpdatePartnerLogo} onDeletePartnerLogo={handleDeletePartnerLogo}
+          talentProfiles={talentProfiles} onAddTalentProfile={handleAddTalentProfile} onUpdateTalentProfile={handleUpdateTalentProfile} onDeleteTalentProfile={handleDeleteTalentProfile}
+          rotationInterval={rotationInterval} onUpdateRotationInterval={handleUpdateRotationInterval}
         />;
-      case 'courses':
-        return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} />;
-      case 'entrepreneurship':
-        return <EntrepreneurshipModule />;
-      case 'opportunities':
-        return <OpportunitiesModule
-          jobs={jobs}
-          onSelectJob={handleSelectJob}
-          initialTab={initialTab || 'jobs'}
-          talentProfiles={talentProfiles}
-          onAddTalentProfile={handleAddTalentProfile}
-          rotationInterval={rotationInterval}
-          freelanceServices={freelanceServices}
-          onRateFreelanceService={handleRateFreelanceService}
-        />;
-      case 'analysis':
-        return <NewsModule onSelectNewsArticle={handleSelectNewsArticle} />;
-      case 'community-ads':
-        return <CommunityAdsModule />;
-      case 'specialists':
-        return <SpecialistsModule specialists={specialists} />;
-      case 'photo-gallery':
-        return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
-      case 'photojournalism':
-        return <PhotojournalismModule />;
-      case 'resources':
-        return <ResourcesModule resources={resources} />;
-      case 'funding':
-        return <FundingModule fundingOpportunities={fundingOpportunities} />;
-      case 'events':
-        return <EventsModule events={events} />;
-      case 'legal':
-        return <LegalModule />;
-      case 'press-releases':
-        return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} />;
-      case 'about':
-        return <AboutPage onNavigate={handleNavigate} />;
-      case 'privacy-policy':
-        return <PrivacyPolicyPage onNavigate={handleNavigate} />;
-      case 'terms-of-service':
-        return <TermsOfServicePage onNavigate={handleNavigate} />;
-      case 'community-post':
-        return <CommunityPostPage
-          posts={communityPosts}
-          onAddPost={handleAddCommunityPost}
-          onNavigate={handleNavigate}
-        />;
-      case 'register':
-        return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
-      case 'upload-press-release':
-        return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
+      case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} />;
+      case 'entrepreneurship': return <EntrepreneurshipModule />;
+      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} talentProfiles={talentProfiles} onAddTalentProfile={handleAddTalentProfile} rotationInterval={rotationInterval} freelanceServices={freelanceServices} onRateFreelanceService={handleRateFreelanceService} />;
+      case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
+      case 'community-ads': return <CommunityAdsModule />;
+      case 'specialists': return <SpecialistsModule specialists={specialists} />;
+      case 'photo-gallery': return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
+      case 'photojournalism': return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} />;
+      case 'resources': return <ResourcesModule resources={resources} />;
+      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} />;
+      case 'events': return <EventsModule events={events} />;
+      case 'legal': return <LegalModule />;
+      case 'press-releases': return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} />;
+      case 'about': return <AboutPage onNavigate={handleNavigate} />;
+      case 'privacy-policy': return <PrivacyPolicyPage onNavigate={handleNavigate} />;
+      case 'terms-of-service': return <TermsOfServicePage onNavigate={handleNavigate} />;
+      case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} />;
+      case 'register': return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
+      case 'login': return <LoginPage onNavigate={handleNavigate} returnTo={returnToPage} onLoginSuccess={handleLogin} />;
+      case 'upload-press-release': return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
       case 'home':
       default:
         return <HomePage
@@ -828,13 +425,18 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
-      {currentPage !== 'register' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />}
+      {currentPage !== 'register' && currentPage !== 'login' && (
+        <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />
+      )}
 
       <main className="flex-grow">
         {renderPage()}
       </main>
-      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
-    </div >
+
+      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && !selectedPhotoPost && currentPage !== 'register' && currentPage !== 'login' && (
+        <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />
+      )}
+    </div>
   );
 };
 

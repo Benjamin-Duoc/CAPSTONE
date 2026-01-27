@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PressReleaseForm from './admin/PressReleaseForm';
 import type { PressRelease, Page, User } from '../types';
@@ -12,12 +11,12 @@ interface PressReleaseUploadPageProps {
 const PressReleaseUploadPage: React.FC<PressReleaseUploadPageProps> = ({ onNavigate, onAddPressRelease, currentUser }) => {
 
     const handleSave = async (pr: Omit<PressRelease, 'id'>) => {
+        // Usamos la lógica asíncrona de HEAD para esperar al Backend
         const success = await onAddPressRelease(pr);
         if (success) {
             alert('¡Comunicado enviado con éxito! Estará visible pendiente de aprobación.');
             onNavigate('home');
         }
-        // If not success, App.tsx already alerted error.
     };
 
     const handleClose = () => {

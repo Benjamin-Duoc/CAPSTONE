@@ -38,6 +38,25 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Función rescatada del MAIN (útil para subir fotos locales)
+    const handleImageUpload = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (readerEvent) => {
+                    const base64String = readerEvent.target?.result as string;
+                    setFormData(prev => ({ ...prev, imageUrl: base64String }));
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData);
@@ -78,9 +97,34 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
                             <textarea name="summary" value={formData.summary} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" required />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">URL de la Imagen</label>
-                            <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
+                        {/* Sección de Imagen mejorada (Fusión HEAD + MAIN) */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">Imagen Principal</label>
+                            {formData.imageUrl && (
+                                <img src={formData.imageUrl} alt="Previsualización" className="my-2 rounded max-h-40 object-contain bg-gray-100 border w-full" />
+                            )}
+                            <div>
+                                <input
+                                    type="text"
+                                    name="imageUrl"
+                                    value={formData.imageUrl}
+                                    onChange={handleChange}
+                                    placeholder="URL de la imagen (o subir archivo abajo)"
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                />
+                            </div>
+                            <div className="flex items-center space-x-2 my-2">
+                                <hr className="flex-grow border-gray-300" />
+                                <span className="text-xs text-gray-500">O SUBIR DESDE EL EQUIPO</span>
+                                <hr className="flex-grow border-gray-300" />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleImageUpload}
+                                className="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Buscar archivo...
+                            </button>
                         </div>
                     </div>
 

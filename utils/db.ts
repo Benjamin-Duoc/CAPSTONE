@@ -10,7 +10,22 @@ import type {
 
 const API_BASE = 'http://localhost:8080/api';
 
+
 // --- Generic Fetch Helpers ---
+
+export const uploadImage = async (file: File): Promise<{ success: boolean; url?: string; message?: string }> => {
+  // TODO: Implement actual backend upload. For now, return a fake URL or base64.
+  // In a real app, this would POST to /api/upload
+  console.log('Simulating upload for:', file.name);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        success: true,
+        url: URL.createObjectURL(file) // Local preview URL
+      });
+    }, 1000);
+  });
+};
 
 const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> => {
   try {
@@ -22,6 +37,7 @@ const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> 
     return fallback;
   }
 };
+
 
 const fetchOne = async <T>(endpoint: string, fallback: T | null = null): Promise<T | null> => {
   try {
@@ -99,6 +115,20 @@ export const insertUser = async (user: Omit<User, 'id' | 'createdAt'>): Promise<
     return await response.json();
   } catch (error) {
     console.error('API Error:', error);
+    return { success: false, message: 'Error de conexión con el servidor.' };
+  }
+};
+
+export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
+  try {
+    const response = await fetch(`${API_BASE}/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('API Error login:', error);
     return { success: false, message: 'Error de conexión con el servidor.' };
   }
 };

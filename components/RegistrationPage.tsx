@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import type { Page } from '../types';
+import type { Page, User } from '../types';
 import { insertUser } from '../utils/db';
 import Logo from './Logo';
 
 interface RegistrationPageProps {
     onNavigate: (page: Page) => void;
-    onLogin: (user: any) => void;
+    onLogin?: (user: User) => void; // Usamos el tipo User del Main
 }
 
 const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin }) => {
@@ -23,7 +23,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        setError(''); // Clear error on typing
+        setError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
             return;
         }
 
-        // Call the database utility
+        // Lógica asíncrona de HEAD para conectar con la API real
         try {
             const result = await insertUser({
                 firstName: formData.firstName,
@@ -46,22 +46,26 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
 
             if (result.success) {
                 setSuccess(true);
+                // Esperamos 2 segundos para que el usuario vea el mensaje de éxito
                 setTimeout(() => {
                     if (onLogin) {
-                        // Simulamos el objeto usuario para loguearlo automáticamente
+                        // Logueamos automáticamente al usuario (Simulación del objeto User)
                         onLogin({
+                            id: Date.now(), // El ID real vendrá del backend en una app completa
                             firstName: formData.firstName,
                             lastName: formData.lastName,
-                            email: formData.email
+                            email: formData.email,
+                            region: formData.region,
+                            createdAt: new Date().toISOString()
                         });
                     }
                     onNavigate('home');
                 }, 2000);
             } else {
-                setError(result.message);
+                setError(result.message || 'Error al registrar usuario.');
             }
         } catch (err) {
-            setError('Ocurrió un error inesperado al conectar con la base de datos.');
+            setError('Ocurrió un error inesperado al conectar con el servidor.');
             console.error(err);
         }
     };

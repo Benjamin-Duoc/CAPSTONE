@@ -21,6 +21,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User authenticate(String email, String password) {
+        return userRepository.findByEmail(email)
+                .filter(user -> user.getPasswordHash().equals(password)) // Simple check, use BCrypt in prod
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

@@ -12,6 +12,7 @@ interface HomePageProps {
     onSelectPressRelease: (pressRelease: PressRelease) => void;
     onSelectCourse: (course: Course) => void;
     isAdminMode: boolean;
+    currentUser?: User | null;
     courses: Course[];
     jobs: Job[];
     entrepreneurs: Entrepreneurship[];
@@ -35,7 +36,6 @@ interface HomePageProps {
     sponsoredAds: SponsoredAd[];
     specialAds: SpecialAd[];
     stats: SiteStat[];
-    currentUser?: User | null;
     onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
 }
 
@@ -199,8 +199,6 @@ const PremiumBannerCard: React.FC<{ sponsor: PremiumSponsor; onClick: () => void
 );
 
 
-// Fix: Updated NewsArticle prop to allow for a generic category string.
-// This allows the component to be reused for press releases where 'institution' is used as the category.
 const NewsCard: React.FC<{ article: Omit<NewsArticle, 'category'> & { category: string }; onClick: () => void }> = ({ article, onClick }) => (
     <button onClick={onClick} className="bg-surface p-4 rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left w-full">
         <div className="overflow-hidden rounded-md">
@@ -264,6 +262,59 @@ const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
         </a>
     </div >
 );
+
+const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const sortedPosts = [...posts].sort((a, b) => {
+        // Fallback sort by ID if createdAt is missing, assuming higher ID is newer
+        return b.id - a.id;
+    }).slice(0, 8);
+
+    const slides = [];
+    for (let i = 0; i < sortedPosts.length; i += 4) {
+        slides.push(sortedPosts.slice(i, i + 4));
+    }
+
+    const totalSlides = slides.length;
+
+    useEffect(() => {
+        if (totalSlides <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % totalSlides);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, [totalSlides]);
+
+    if (sortedPosts.length === 0) return null;
+
+    return (
+        <div className="relative group overflow-hidden pb-10">
+            <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {slides.map((slide, slideIdx) => (
+                    <div key={slideIdx} className="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-6 px-1">
+                        {slide.map(post => (
+                            <CommunityPostCard key={post.id} post={post} />
+                        ))}
+                    </div>
+                ))}
+            </div>
+
+            {totalSlides > 1 && (
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-3 z-10">
+                    {slides.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-accent w-6' : 'bg-gray-300 hover:bg-accent/40'}`}
+                            aria-label={`Ver slide ${idx + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
     <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
@@ -546,22 +597,6 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
     );
 };
 
-const FundingPreviewCard: React.FC<{ item: FundingOpportunity }> = ({ item }) => (
-    <div className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 group">
-        <div className="flex justify-between items-start">
-            <div>
-                <span className={`text-xs font-bold px-2 py-1 rounded-full ${item.type === 'Fondo' ? 'bg-accent/20 text-green-800' : item.type === 'Beca' ? 'bg-secondary/10 text-secondary' : 'bg-highlight/20 text-yellow-800'}`}>{item.type}</span>
-                <h4 className="font-semibold text-text-primary mt-2 group-hover:text-primary transition-colors">{item.title}</h4>
-                <p className="text-sm text-text-secondary">{item.organization}</p>
-            </div>
-            <TrophyIcon className="h-6 w-6 text-gray-300 group-hover:text-highlight transition-colors flex-shrink-0 ml-2" />
-        </div>
-        <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">Fecha Límite</p>
-            <p className="font-bold text-primary text-sm">{item.deadline}</p>
-        </div>
-    </div>
-);
 
 
 const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
@@ -574,7 +609,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
         freelanceServices, photojournalismPosts, events,
         resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
-        sponsoredAds, communityAds, specialAds, stats
+        sponsoredAds, communityAds, specialAds, stats,
+        currentUser, onAddPressRelease
     } = props;
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
@@ -585,9 +621,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
 
-
+    // Carousel Logic for Tips
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
     const sortedTips = [...entrepreneurshipTips].sort((a, b) => b.id - a.id);
     const currentTip = sortedTips[currentVideoIndex];
 
@@ -603,12 +638,20 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         }
     };
 
+    // Handling uploads safely with login check
     const handleUploadClick = () => {
-        if (props.currentUser) {
+        if (currentUser) {
             onNavigate('upload-press-release');
         } else {
             setIsPressReleaseModalOpen(true);
         }
+    };
+
+    const handlePressReleaseSubmit = (pr: Omit<PressRelease, 'id'>) => {
+        if (onAddPressRelease) {
+            onAddPressRelease(pr);
+        }
+        setIsPressReleaseModalOpen(false);
     };
 
     const iconMap: { [key in SiteStat['id']]: React.ReactNode } = {
@@ -624,18 +667,30 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
     const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-pr">
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
-                <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
-                        Registrarme
-                    </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-                        Ingresar
-                    </a>
-                </div>
+                {currentUser ? (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
+                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
+                        <div className="mt-6 text-left">
+                            <PressReleaseForm pressRelease={null} onSave={handlePressReleaseSubmit} onClose={onClose} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                        <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
+                                Registrarme
+                            </button>
+                            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                                Ingresar
+                            </a>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -650,7 +705,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -668,7 +723,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -686,7 +741,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -704,7 +759,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -722,7 +777,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -740,7 +795,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -786,9 +841,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </div>
     );
 
-    const mainNewsArticle = newsArticles[0];
-    const otherNewsArticles = newsArticles.slice(1, 3);
-    const entrepreneurshipTip = sortedTips[0]; // Compatibility fallback
+    // Sorting logic for News
+    const sortedNewsArticles = [...newsArticles].sort((a, b) => b.id - a.id);
+    const mainNewsArticle = sortedNewsArticles[0];
+    const otherNewsArticles = sortedNewsArticles.slice(1, 3);
+
     const legalAd = specialAds.find(ad => ad.id === 'legal');
     const entrepreneurshipAd = specialAds.find(ad => ad.id === 'entrepreneurship');
 
@@ -823,8 +880,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         <h2 className="text-center text-lg font-semibold text-text-secondary tracking-widest uppercase">Confían en CiPress</h2>
                         {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {premiumSponsors.slice(0, 4).map(sponsor => (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {premiumSponsors.map(sponsor => (
                             <PremiumBannerCard key={sponsor.id} sponsor={sponsor} onClick={() => onSelectSponsor(sponsor)} />
                         ))}
                     </div>
@@ -979,9 +1036,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <h2 className="text-3xl font-bold font-serif text-text-primary">Actividad de la Comunidad</h2>
                                 <button onClick={() => onNavigate('community-post')} className="font-semibold text-accent hover:underline">Ver toda la actividad &rarr;</button>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {communityPosts.slice(0, 4).map(post => <CommunityPostCard key={post.id} post={post} />)}
-                            </div>
+                            <CommunityActivityCarousel posts={communityPosts} />
                             <div className={`bg-accent/5 p-4 rounded-lg mt-8 border border-accent/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3e%3cpath d='M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10' stroke='%2384cc16' stroke-width='1' stroke-opacity='0.2'/%3e%3c/svg%3e")]`}>
                                 <div>
                                     <h3 className="font-semibold text-base text-green-800">¿Quieres iniciar un debate?</h3>
@@ -1011,7 +1066,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <p className="text-xs text-orange-800">Con tu suscripción gratuita, publica tu acierto y dale difusión a tu perspectiva.</p>
                                 </div>
                                 <button
-                                    onClick={() => setIsPhotojournalismModalOpen(true)}
+                                    onClick={() => {
+                                        if (currentUser) {
+                                            onNavigate('photojournalism');
+                                        } else {
+                                            setIsPhotojournalismModalOpen(true);
+                                        }
+                                    }}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm"
                                 >
                                     Sube tu foto
@@ -1090,7 +1151,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
                             </div>
                             <div className="space-y-4">
-                                {fundingOpportunities.slice(0, 2).map(item => <FundingPreviewCard key={item.id} item={item} />)}
+                                {fundingOpportunities.slice(0, 2).map(item => <FundingCard key={item.id} item={item} />)}
                             </div>
                         </section>
 

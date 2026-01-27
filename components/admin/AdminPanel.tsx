@@ -24,6 +24,7 @@ import SettingsForm from './SettingsForm';
 import { SearchIcon } from '../icons';
 
 interface AdminPanelProps {
+    initialSection?: string | null;
     courses: Course[];
     onAddCourse: (course: Omit<Course, 'id'>) => void;
     onUpdateCourse: (course: Course) => void;
@@ -105,7 +106,8 @@ interface AdminPanelProps {
 type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | null;
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
-    const [selectedSection, setSelectedSection] = useState<ManagedSection>('settings');
+    // Usamos la inicialización mejorada del MAIN
+    const [selectedSection, setSelectedSection] = useState<ManagedSection>((props.initialSection as ManagedSection) || 'settings');
 
     // Course states
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -1272,60 +1274,65 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* SIDEBAR DEL MAIN (Organizado por categorías) */}
                     <aside className="md:col-span-1">
-                        <div className="space-y-6">
-                            <div className="bg-surface p-4 rounded-lg shadow-sm border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b pb-2">Configuración General</h4>
-                                <div className="space-y-1">
-                                    <NavButton section="settings" label="Intervalo de Rotación" />
-                                    <NavButton section="stats" label="Estadísticas del Sitio" />
-                                    <NavButton section="headings" label="Título Principal (Hero)" />
-                                    <NavButton section="partnerLogos" label="Logos de Socios" />
-                                    <NavButton section="sponsors" label="Sponsors Premium" />
+                        <div className="bg-surface p-4 rounded-lg shadow-md sticky top-24">
+                            <h3 className="text-lg font-bold mb-4 border-b pb-2">Secciones</h3>
+                            <nav className="space-y-6">
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">General</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="settings" label="Configuración General" />
+                                        <NavButton section="stats" label="Estadísticas" />
+                                        <NavButton section="headings" label="Títulos Principales" />
+                                        <NavButton section="partnerLogos" label="Logos de Socios" />
+                                        <NavButton section="sponsors" label="Sponsors" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-surface p-4 rounded-lg shadow-sm border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b pb-2">Contenido Editorial</h4>
-                                <div className="space-y-1">
-                                    <NavButton section="news" label="Innovación para el Periodismo (Noticias)" />
-                                    <NavButton section="pressReleases" label="Periodistas en Acción (Comunicados)" />
-                                    <NavButton section="photojournalism" label="Fotoperiodismo" />
-                                    <NavButton section="shareablePhotos" label="Galería Fotográfica (Descargable)" />
-                                    <NavButton section="entrepreneurshipTips" label="Videos Educativos (Emprender)" />
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Noticias y Contenido (Innovación)</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="news" label="Innovación para el Periodismo" />
+                                        <NavButton section="pressReleases" label="Periodistas en Acción" />
+                                        <NavButton section="photojournalism" label="Fotoperiodismo" />
+                                        <NavButton section="shareablePhotos" label="Galería Fotográfica" />
+                                        <NavButton section="entrepreneurshipTips" label="Videos 'Emprender'" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-surface p-4 rounded-lg shadow-sm border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b pb-2">Oportunidades</h4>
-                                <div className="space-y-1">
-                                    <NavButton section="jobs" label="Bolsa de Trabajo" />
-                                    <NavButton section="courses" label="Cursos y Capacitaciones" />
-                                    <NavButton section="funding" label="Fondos y Concursos" />
-                                    <NavButton section="collaborations" label="Colaboraciones Urgentes" />
-                                    <NavButton section="talentProfiles" label="Base de Talentos" />
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Oportunidades y Servicios</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="jobs" label="Oportunidades Laborales" />
+                                        <NavButton section="courses" label="Capacitaciones (Cursos)" />
+                                        <NavButton section="funding" label="Fondos y Concursos" />
+                                        <NavButton section="collaborations" label="Colaboraciones Urgentes" />
+                                        <NavButton section="talentProfiles" label="Base de Talentos" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-surface p-4 rounded-lg shadow-sm border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b pb-2">Comunidad</h4>
-                                <div className="space-y-1">
-                                    <NavButton section="entrepreneurs" label="Emprendimientos Periodísticos" />
-                                    <NavButton section="specialists" label="Fuentes Especializadas" />
-                                    <NavButton section="communityPosts" label="Muro de la Comunidad" />
-                                    <NavButton section="events" label="Calendario de Eventos" />
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Comunidad</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="entrepreneurs" label="Emprendimientos Periodísticos" />
+                                        <NavButton section="specialists" label="Fuentes Especializadas" />
+                                        <NavButton section="communityPosts" label="Actividad Comunidad" />
+                                        <NavButton section="events" label="Eventos" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-surface p-4 rounded-lg shadow-sm border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b pb-2">Publicidad</h4>
-                                <div className="space-y-1">
-                                    <NavButton section="sponsoredAds" label="Anuncios Laterales (Barra)" />
-                                    <NavButton section="specialAds" label="Anuncios Destacados" />
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Publicidad</h4>
+                                    <div className="space-y-1">
+                                        <NavButton section="sponsoredAds" label="Anuncios Laterales" />
+                                        <NavButton section="specialAds" label="Anuncios Especiales" />
+                                    </div>
                                 </div>
-                            </div>
+                            </nav>
                         </div>
                     </aside>
+
                     <main className="md:col-span-3">
                         {renderSectionContent()}
                     </main>
