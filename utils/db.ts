@@ -1,5 +1,6 @@
 import type { User, NewsArticle, Course, Job, Entrepreneurship, PremiumSponsor, PressRelease, PhotojournalismPost, FundingOpportunity, Specialist, ShareablePhoto, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat } from '../types';
 import { newsArticles as initialNewsArticles, pressReleases as initialPressReleases } from '../data/mockData';
+// Supabase removed: using localStorage only
 
 const DB_USERS_KEY = 'cipress_db_users';
 const DB_NEWS_ARTICLES_KEY = 'cipress_db_news_articles';
@@ -20,11 +21,10 @@ const DB_SPECIAL_ADS_KEY = 'cipress_db_special_ads';
 const DB_EVENTS_KEY = 'cipress_db_events';
 const DB_STATS_KEY = 'cipress_db_stats';
 
-// Initialize the "database"
+// Initialize local caches for news/press and users (localStorage)
 export const initDatabase = () => {
   if (!localStorage.getItem(DB_USERS_KEY)) {
     localStorage.setItem(DB_USERS_KEY, JSON.stringify([]));
-    console.log('Database: Tabla "usuarios" creada.');
   }
   if (!localStorage.getItem(DB_NEWS_ARTICLES_KEY)) {
     localStorage.setItem(DB_NEWS_ARTICLES_KEY, JSON.stringify(initialNewsArticles));
@@ -32,14 +32,15 @@ export const initDatabase = () => {
   if (!localStorage.getItem(DB_PRESS_RELEASES_KEY)) {
     localStorage.setItem(DB_PRESS_RELEASES_KEY, JSON.stringify(initialPressReleases));
   }
+  console.log('Database initialized (localStorage).');
 };
 
 // User operations
-export const insertUser = (user: Omit<User, 'id'>): { success: boolean; message: string } => {
+export const insertUser = async (user: Omit<User, 'id'>): Promise<{ success: boolean; message: string }> => {
   try {
     const users = getAllUsers();
     if (users.some(existing => existing.email === user.email)) {
-      return { success: false, message: 'El correo ya está registrado.' };
+      return { success: false, message: 'El correo electrónico ya está registrado.' };
     }
     const newUser: User = {
       ...user,
@@ -47,10 +48,10 @@ export const insertUser = (user: Omit<User, 'id'>): { success: boolean; message:
       createdAt: new Date().toISOString(),
     };
     localStorage.setItem(DB_USERS_KEY, JSON.stringify([...users, newUser]));
-    return { success: true, message: 'Usuario registrado correctamente.' };
+    return { success: true, message: 'Usuario registrado exitosamente.' };
   } catch (error) {
-    console.error('Error al registrar usuario:', error);
-    return { success: false, message: 'Error al registrar usuario.' };
+    console.error('Database Error:', error);
+    return { success: false, message: 'Error inesperado al guardar usuario.' };
   }
 };
 
@@ -64,23 +65,120 @@ export const getAllUsers = (): User[] => {
   }
 };
 
+// Photojournalism Functions
+export const getPhotoPosts = async (): Promise<PhotojournalismPost[]> => {
+  const posts = loadPhotojournalismPosts();
+  return [...posts].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
+};
+
+export const insertPhotoPost = async (post: Omit<PhotojournalismPost, 'id' | 'dateAdded'>): Promise<{ success: boolean; message?: string }> => {
+  const newPost: PhotojournalismPost = {
+    ...post,
+    id: Date.now(),
+    dateAdded: new Date().toISOString(),
+  };
+  const posts = loadPhotojournalismPosts();
+  savePhotojournalismPosts([newPost, ...posts]);
+  return { success: true };
+};
+
+export const updatePhotoPost = async (post: PhotojournalismPost): Promise<{ success: boolean; message?: string }> => {
+  const posts = loadPhotojournalismPosts();
+  savePhotojournalismPosts(posts.map(item => item.id === post.id ? post : item));
+  return { success: true };
+};
+
+export const uploadImage = async (file: File): Promise<{ success: boolean; url?: string; message?: string }> => {
+  try {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+      reader.readAsDataURL(file);
+    });
+    return { success: true, url: base64 };
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return { success: false, message: 'Error al cargar la imagen.' };
+  }
+};
+
+// Login user
+export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
+  try {
+    const users = getAllUsers();
+    const user = users.find(item => item.email === email);
+    if (!user) {
+      return { success: false, message: 'El correo electrónico no está registrado.' };
+    }
+    if (user.password !== password) {
+      return { success: false, message: 'La contraseña es incorrecta.' };
+    }
+    return { success: true, message: 'Inicio de sesión exitoso.', user };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { success: false, message: 'Error al iniciar sesión.' };
+  }
+};
+// Delete photo post and image
+export const deletePhotoPost = async (postId: number, _imageUrl?: string): Promise<{ success: boolean; message?: string }> => {
+  const posts = loadPhotojournalismPosts();
+  savePhotojournalismPosts(posts.filter(item => item.id !== postId));
+  return { success: true };
+};
+
+// Community Posts Functions
+export const getCommunityPosts = async (): Promise<CommunityPost[]> => {
+  const posts = loadCommunityPosts();
+  return [...posts].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+};
+
+export const insertCommunityPost = async (
+  post: Omit<CommunityPost, 'id'> & { createdBy?: string }
+): Promise<{ success: boolean; message?: string }> => {
+  const newPost: CommunityPost = {
+    ...post,
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+  };
+  const posts = loadCommunityPosts();
+  saveCommunityPosts([newPost, ...posts]);
+  return { success: true };
+};
+
+export const updateCommunityPost = async (
+  post: CommunityPost
+): Promise<{ success: boolean; message?: string }> => {
+  const posts = loadCommunityPosts();
+  saveCommunityPosts(posts.map(item => item.id === post.id ? post : item));
+  return { success: true };
+};
+
+export const deleteCommunityPost = async (
+  postId: number
+): Promise<{ success: boolean; message?: string }> => {
+  const posts = loadCommunityPosts();
+  saveCommunityPosts(posts.filter(item => item.id !== postId));
+  return { success: true };
+};
+
 // Generic data persistence functions
-const saveData = (key: string, data: any[]) => {
+function saveData(key: string, data: any[]) {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
     console.error(`Error al guardar ${key}:`, error);
   }
-};
+}
 
-const loadData = (key: string): any[] => {
+function loadData(key: string): any[] {
   try {
     return JSON.parse(localStorage.getItem(key) || '[]');
   } catch (error) {
     console.error(`Error al cargar ${key}:`, error);
     return [];
   }
-};
+}
 
 // News Articles
 export const saveNewsArticles = (articles: NewsArticle[]) => saveData(DB_NEWS_ARTICLES_KEY, articles);

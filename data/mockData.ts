@@ -1,15 +1,15 @@
 import type { Course, Job, Entrepreneurship, NewsArticle, FreelanceService, PremiumSponsor, PromoVideo, ReportContentItem, CommunityPost, PressRelease, PhotojournalismPost, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, LegalTopic, LegalFAQ, NgoSpotlight, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, PartnerLogo, TalentProfile } from '../types';
 
 export const courses: Course[] = [
-  { 
-    id: 1, 
-    title: 'Periodismo de Datos: De Cero a Experto', 
-    category: 'Periodismo de Datos', 
-    level: 'Básico', 
-    format: 'Video', 
-    cost: '$45.000 CLP', 
-    rating: 4.9, 
-    reviewCount: 123, 
+  {
+    id: 1,
+    title: 'Periodismo de Datos: De Cero a Experto',
+    category: 'Periodismo de Datos',
+    level: 'Básico',
+    format: 'Video',
+    cost: '$45.000 CLP',
+    rating: 4.9,
+    reviewCount: 123,
     imageUrl: 'https://picsum.photos/seed/course1/1200/800',
     description: 'Sumérgete en el mundo del periodismo de datos y aprende a encontrar, analizar y visualizar información para contar historias de alto impacto. Este curso te llevará desde los fundamentos de la obtención de datos hasta la creación de visualizaciones interactivas y reportajes sólidos basados en evidencia.',
     instructorName: 'Isidora Paz',
@@ -17,12 +17,12 @@ export const courses: Course[] = [
     instructorAvatarUrl: 'https://i.pravatar.cc/80?u=isidora',
     duration: '6 Semanas',
     topics: [
-        'Introducción al Periodismo de Datos y la mentalidad de datos.',
-        'Técnicas de Web Scraping y uso de APIs.',
-        'Limpieza y análisis de datos con Hojas de Cálculo y Python.',
-        'Visualización de datos efectiva con Flourish y Datawrapper.',
-        'Narrativa y Storytelling con datos.',
-        'Ética y responsabilidad en el manejo de datos.',
+      'Introducción al Periodismo de Datos y la mentalidad de datos.',
+      'Técnicas de Web Scraping y uso de APIs.',
+      'Limpieza y análisis de datos con Hojas de Cálculo y Python.',
+      'Visualización de datos efectiva con Flourish y Datawrapper.',
+      'Narrativa y Storytelling con datos.',
+      'Ética y responsabilidad en el manejo de datos.',
     ],
     enrollmentStartDate: '2024-07-01',
     enrollmentEndDate: '2024-07-31',
@@ -30,15 +30,15 @@ export const courses: Course[] = [
     courseEndDate: '2024-09-13',
     accessLink: '#',
   },
-  { 
-    id: 2, 
-    title: 'SEO para Medios: Posiciona tus Noticias', 
-    category: 'SEO', 
-    level: 'Intermedio', 
-    format: 'Video', 
-    cost: '$60.000 CLP', 
-    rating: 4.8, 
-    reviewCount: 98, 
+  {
+    id: 2,
+    title: 'SEO para Medios: Posiciona tus Noticias',
+    category: 'SEO',
+    level: 'Intermedio',
+    format: 'Video',
+    cost: '$60.000 CLP',
+    rating: 4.8,
+    reviewCount: 98,
     imageUrl: 'https://picsum.photos/seed/course2/1200/800',
     description: 'Domina las técnicas de optimización para motores de búsqueda (SEO) aplicadas específicamente a medios de comunicación. Aprende a aumentar la visibilidad de tus artículos, atraer tráfico orgánico de calidad y competir en el ecosistema digital.',
     instructorName: 'Javier Fuentes',
@@ -59,15 +59,15 @@ export const courses: Course[] = [
     courseEndDate: '2024-10-11',
     accessLink: '#',
   },
-  { 
-    id: 3, 
-    title: 'Crea tu Podcast Informativo Desde Cero', 
-    category: 'Podcast', 
-    level: 'Básico', 
-    format: 'Webinar', 
-    cost: 'Gratis', 
-    rating: 4.7, 
-    reviewCount: 250, 
+  {
+    id: 3,
+    title: 'Crea tu Podcast Informativo Desde Cero',
+    category: 'Podcast',
+    level: 'Básico',
+    format: 'Webinar',
+    cost: 'Gratis',
+    rating: 4.7,
+    reviewCount: 250,
     imageUrl: 'https://picsum.photos/seed/course3/1200/800',
     description: 'Descubre el poder del formato audio. Este curso práctico te guiará paso a paso en la creación, producción, y distribución de tu propio podcast informativo, desde la idea inicial hasta la publicación en las principales plataformas.',
     instructorName: 'Carolina Soto',
@@ -87,15 +87,15 @@ export const courses: Course[] = [
     courseEndDate: '2024-09-12',
     accessLink: '#',
   },
-  { 
-    id: 4, 
-    title: 'Fact-Checking en la Era de la Desinformación', 
-    category: 'Fact-Checking', 
-    level: 'Intermedio', 
-    format: 'PDF', 
-    cost: 'Gratis', 
-    rating: 4.9, 
-    reviewCount: 180, 
+  {
+    id: 4,
+    title: 'Fact-Checking en la Era de la Desinformación',
+    category: 'Fact-Checking',
+    level: 'Intermedio',
+    format: 'PDF',
+    cost: 'Gratis',
+    rating: 4.9,
+    reviewCount: 180,
     imageUrl: 'https://picsum.photos/seed/course4/1200/800',
     description: 'Equípate con las herramientas y metodologías para combatir la desinformación. Aprende a verificar discursos, imágenes, videos y datos para fortalecer la confianza de tu audiencia y la calidad de tu periodismo.',
     instructorName: 'Tomás Reyes',
@@ -115,15 +115,15 @@ export const courses: Course[] = [
     courseEndDate: '2024-12-31',
     accessLink: '#',
   },
-  { 
-    id: 5, 
-    title: 'Edición de Video Móvil para Reporteros', 
-    category: 'Video Móvil', 
-    level: 'Básico', 
-    format: 'Video', 
-    cost: '$30.000 CLP', 
-    rating: 4.6, 
-    reviewCount: 75, 
+  {
+    id: 5,
+    title: 'Edición de Video Móvil para Reporteros',
+    category: 'Video Móvil',
+    level: 'Básico',
+    format: 'Video',
+    cost: '$30.000 CLP',
+    rating: 4.6,
+    reviewCount: 75,
     imageUrl: 'https://picsum.photos/seed/course5/1200/800',
     description: 'Transforma tu smartphone en una potente herramienta de producción audiovisual. Aprende a grabar, editar y publicar videos de calidad profesional utilizando solo tu teléfono, ideal para coberturas ágiles y redes sociales.',
     instructorName: 'Martín Silva',
@@ -144,15 +144,15 @@ export const courses: Course[] = [
     courseEndDate: '2025-07-09',
     accessLink: '#',
   },
-  { 
-    id: 6, 
-    title: 'Marketing Digital para Comunicadores', 
-    category: 'Marketing Digital', 
-    level: 'Avanzado', 
-    format: 'Webinar', 
-    cost: '$75.000 CLP', 
-    rating: 4.8, 
-    reviewCount: 112, 
+  {
+    id: 6,
+    title: 'Marketing Digital para Comunicadores',
+    category: 'Marketing Digital',
+    level: 'Avanzado',
+    format: 'Webinar',
+    cost: '$75.000 CLP',
+    rating: 4.8,
+    reviewCount: 112,
     imageUrl: 'https://picsum.photos/seed/course6/1200/800',
     description: 'Ve más allá de la creación de contenido. Este curso avanzado está diseñado para periodistas y comunicadores que buscan entender y aplicar estrategias de marketing digital para hacer crecer sus medios, proyectos o marcas personales.',
     instructorName: 'Andrea López',
@@ -186,165 +186,165 @@ export const jobs: Job[] = [
 ];
 
 export const entrepreneurs: Entrepreneurship[] = [
-    { 
-        id: 1, 
-        name: 'La Pública', 
-        type: 'Micromedio', 
-        founder: 'Ana González', 
-        location: 'Santiago', 
-        specialty: 'Investigación', 
-        imageUrl: 'https://picsum.photos/seed/public-square-life/1200/800', 
-        description: 'Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.',
-        reportAuthor: 'Catalina Riquelme',
-        reportDate: '18 de Julio, 2024',
-        reportContent: [
-            { type: 'paragraph', text: 'En un ecosistema mediático a menudo saturado por la inmediatez y la superficialidad, "La Pública" emerge como un faro de periodismo riguroso y profundo. Fundado por la periodista Ana González, este micromedio digital se ha propuesto la ambiciosa tarea de desentrañar las complejidades de las políticas públicas en Chile, con un enfoque que privilegia el reportaje de largo aliento y el análisis basado en datos.' },
-            { type: 'paragraph', text: 'La génesis de "La Pública" responde a una necesidad creciente de la ciudadanía por comprender no solo las decisiones que se toman en las altas esfereras del poder, sino también sus impactos directos en la vida cotidiana. "Sentíamos que había un vacío en la cobertura mediática tradicional", explica González. "Se reportan los titulares, las cuñas políticas, pero rara vez se sigue el rastro del dinero, la implementación de una ley o sus consecuencias a largo plazo. Nosotros queremos llenar ese espacio".' },
-            { type: 'quote', text: 'Nuestro compromiso no es con la primicia, sino con la verdad y la comprensión profunda de los hechos que moldean nuestra sociedad.' },
-            { type: 'image', src: 'https://picsum.photos/seed/reportaje1/800/500', alt: 'El equipo de La Pública en una sesión de trabajo.' },
-            { type: 'paragraph', text: 'El modelo de financiamiento es uno de los pilares de su independencia. A través de un sistema de membresías y el apoyo de fundaciones que promueven la transparencia y el periodismo de calidad, "La Pública" ha logrado mantenerse alejado de las presiones publicitarias y políticas. Esto les permite abordar temas sensibles, como el lobby empresarial en el Congreso o las irregularidades en licitaciones públicas, con una libertad editorial que ya les ha valido reconocimientos y, también, algunas enemistades.' },
-            { type: 'quote', text: 'Creemos en un periodismo que no solo denuncia, sino que también entrega herramientas a los ciudadanos para que puedan ejercer un control social informado.' },
-            { type: 'paragraph', text: 'Su equipo, aunque reducido, es una mezcla de periodistas experimentados y jóvenes talentos especializados en periodismo de datos, visualización de información y fact-checking. Cada reportaje es el resultado de semanas, a veces meses, de investigación, donde el cruce de bases de datos, las solicitudes por Ley de Transparencia y el trabajo de campo son la norma. El resultado son piezas visualmente atractivas, interactivas y, sobre todo, contundentes.' },
-            { type: 'image', src: 'https://picsum.photos/seed/reportaje2/800/500', alt: 'Infografía interactiva publicada en un reportaje de La Pública.' },
-            { type: 'paragraph', text: 'Mirando hacia el futuro, "La Pública" planea expandir su modelo con talleres de periodismo de investigación para estudiantes y la creación de una unidad de datos abierta al público, consolidándose no solo como un medio de comunicación, sino como una verdadera institución al servicio del interés público.' }
-        ]
-    },
-    { id: 2, 'name': 'Contenido Central', type: 'Agencia', founder: 'Carlos Pérez', location: 'Santiago', specialty: 'Cultura', imageUrl: 'https://picsum.photos/seed/ent2/400/225', description: 'Agencia de comunicaciones que crea contenido estratégico para marcas con propósito.' },
-    { id: 3, name: 'Relatos del Sur', type: 'Productora', founder: 'María Inés Soto', location: 'Concepción', specialty: 'Local', imageUrl: 'https://picsum.photos/seed/ent3/400/225', description: 'Productora audiovisual especializada en documentales y reportajes sobre la identidad del sur de Chile.' },
-    { id: 4, name: 'Deportes Al Instante', type: 'Micromedio', founder: 'Javier Rojas', location: 'Valparaíso', specialty: 'Deportes', imageUrl: 'https://picsum.photos/seed/ent4/400/225', description: 'Plataforma digital con cobertura minuto a minuto de los equipos de la V Región.' },
+  {
+    id: 1,
+    name: 'La Pública',
+    type: 'Micromedio',
+    founder: 'Ana González',
+    location: 'Santiago',
+    specialty: 'Investigación',
+    imageUrl: 'https://picsum.photos/seed/public-square-life/1200/800',
+    description: 'Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.',
+    reportAuthor: 'Catalina Riquelme',
+    reportDate: '18 de Julio, 2024',
+    reportContent: [
+      { type: 'paragraph', text: 'En un ecosistema mediático a menudo saturado por la inmediatez y la superficialidad, "La Pública" emerge como un faro de periodismo riguroso y profundo. Fundado por la periodista Ana González, este micromedio digital se ha propuesto la ambiciosa tarea de desentrañar las complejidades de las políticas públicas en Chile, con un enfoque que privilegia el reportaje de largo aliento y el análisis basado en datos.' },
+      { type: 'paragraph', text: 'La génesis de "La Pública" responde a una necesidad creciente de la ciudadanía por comprender no solo las decisiones que se toman en las altas esfereras del poder, sino también sus impactos directos en la vida cotidiana. "Sentíamos que había un vacío en la cobertura mediática tradicional", explica González. "Se reportan los titulares, las cuñas políticas, pero rara vez se sigue el rastro del dinero, la implementación de una ley o sus consecuencias a largo plazo. Nosotros queremos llenar ese espacio".' },
+      { type: 'quote', text: 'Nuestro compromiso no es con la primicia, sino con la verdad y la comprensión profunda de los hechos que moldean nuestra sociedad.' },
+      { type: 'image', src: 'https://picsum.photos/seed/reportaje1/800/500', alt: 'El equipo de La Pública en una sesión de trabajo.' },
+      { type: 'paragraph', text: 'El modelo de financiamiento es uno de los pilares de su independencia. A través de un sistema de membresías y el apoyo de fundaciones que promueven la transparencia y el periodismo de calidad, "La Pública" ha logrado mantenerse alejado de las presiones publicitarias y políticas. Esto les permite abordar temas sensibles, como el lobby empresarial en el Congreso o las irregularidades en licitaciones públicas, con una libertad editorial que ya les ha valido reconocimientos y, también, algunas enemistades.' },
+      { type: 'quote', text: 'Creemos en un periodismo que no solo denuncia, sino que también entrega herramientas a los ciudadanos para que puedan ejercer un control social informado.' },
+      { type: 'paragraph', text: 'Su equipo, aunque reducido, es una mezcla de periodistas experimentados y jóvenes talentos especializados en periodismo de datos, visualización de información y fact-checking. Cada reportaje es el resultado de semanas, a veces meses, de investigación, donde el cruce de bases de datos, las solicitudes por Ley de Transparencia y el trabajo de campo son la norma. El resultado son piezas visualmente atractivas, interactivas y, sobre todo, contundentes.' },
+      { type: 'image', src: 'https://picsum.photos/seed/reportaje2/800/500', alt: 'Infografía interactiva publicada en un reportaje de La Pública.' },
+      { type: 'paragraph', text: 'Mirando hacia el futuro, "La Pública" planea expandir su modelo con talleres de periodismo de investigación para estudiantes y la creación de una unidad de datos abierta al público, consolidándose no solo como un medio de comunicación, sino como una verdadera institución al servicio del interés público.' }
+    ]
+  },
+  { id: 2, 'name': 'Contenido Central', type: 'Agencia', founder: 'Carlos Pérez', location: 'Santiago', specialty: 'Cultura', imageUrl: 'https://picsum.photos/seed/ent2/400/225', description: 'Agencia de comunicaciones que crea contenido estratégico para marcas con propósito.' },
+  { id: 3, name: 'Relatos del Sur', type: 'Productora', founder: 'María Inés Soto', location: 'Concepción', specialty: 'Local', imageUrl: 'https://picsum.photos/seed/ent3/400/225', description: 'Productora audiovisual especializada en documentales y reportajes sobre la identidad del sur de Chile.' },
+  { id: 4, name: 'Deportes Al Instante', type: 'Micromedio', founder: 'Javier Rojas', location: 'Valparaíso', specialty: 'Deportes', imageUrl: 'https://picsum.photos/seed/ent4/400/225', description: 'Plataforma digital con cobertura minuto a minuto de los equipos de la V Región.' },
 ];
 
 export const newsArticles: NewsArticle[] = [
-    { 
-        id: 1, 
-        title: 'La IA Generativa y su Impacto en las Salas de Redacción Chilenas', 
-        category: 'Tecnología', 
-        author: 'Equipo Editorial', 
-        date: '15 de Julio, 2024', 
-        imageUrl: 'https://picsum.photos/seed/news1/400/225', 
-        summary: 'Un análisis profundo sobre cómo herramientas como Gemini y ChatGPT están transformando la producción de noticias.',
-        reportContent: [
-            { type: 'paragraph', text: 'La inteligencia artificial generativa ha irrumpido en las salas de redacción de todo el mundo, y Chile no es la excepción. Herramientas como Gemini, ChatGPT y Midjourney han pasado de ser una curiosidad tecnológica a convertirse en asistentes casi indispensables para periodistas, editores y diseñadores. Este artículo explora cómo se está adoptando esta tecnología en los medios chilenos, sus beneficios tangibles y los dilemas éticos que plantea.' },
-            { type: 'paragraph', text: 'En una encuesta informal realizada por el Círculo de Periodistas Innovadores, más del 60% de los periodistas consultados afirmaron haber utilizado alguna herramienta de IA generativa en el último mes. Los usos más comunes incluyen la transcripción de entrevistas, la generación de resúmenes de documentos extensos, la optimización de titulares para SEO y la creación de borradores para redes sociales. "Es un ahorro de tiempo brutal", comenta una periodista de un medio digital. "Lo que antes me tomaba una hora de transcripción, ahora lo tengo en cinco minutos. Ese tiempo lo puedo dedicar a lo que realmente importa: reportear".' },
-            { type: 'quote', text: 'La IA no es una amenaza para el periodismo, sino una oportunidad para potenciarlo. El juicio crítico y la ética del periodista siguen siendo insustituibles.', author: 'Directora de Innovación, Consorcio de Medios' },
-            { type: 'image', src: 'https://picsum.photos/seed/news-report1/800/500', alt: 'Una periodista trabajando en su computador con interfaces de IA en la pantalla.' },
-            { type: 'paragraph', text: 'Sin embargo, no todo es color de rosa. La adopción de estas tecnologías viene acompañada de importantes desafíos éticos. La posibilidad de generar "fake news" a gran escala, el riesgo de perpetuar sesgos algorítmicos y la cuestión de la autoría y los derechos de propiedad intelectual son temas que se discuten acaloradamente. Varios medios ya están desarrollando manuales de estilo y protocolos internos para regular el uso de la IA, estableciendo líneas rojas claras: nunca utilizarla para generar citas falsas, siempre verificar la información que entrega y ser transparente con la audiencia cuando un contenido ha sido creado con asistencia significativa de inteligencia artificial.' },
-            { type: 'paragraph', text: 'El futuro, según los expertos, no es de periodistas contra máquinas, sino de periodistas aumentados por la IA. La clave estará en la capacitación y en desarrollar un criterio sólido para saber cuándo y cómo utilizar estas potentes herramientas, asegurando que la tecnología esté siempre al servicio de la verdad y del interés público.' }
-        ]
-    },
-    { id: 2, title: 'Nuevos Modelos de Suscripción Ganan Terreno en Medios Independientes', category: 'Industria', author: 'Isidora Paz', date: '12 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news2/400/225', summary: 'Exploramos casos de éxito de medios chilenos que han logrado sostenibilidad a través del apoyo de sus audiencias.' },
-    { id: 3, title: 'Avanza Proyecto de Ley sobre Protección a Periodistas: ¿Qué Implica?', category: 'Legislación', author: 'Tomás Reyes', date: '10 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news3/400/225', summary: 'Las claves del nuevo marco legal que se discute en el Congreso y que busca proteger el ejercicio de la prensa.' },
-    { id: 4, title: 'Periodismo de Soluciones: Informando más allá del Problema', category: 'Tendencias', author: 'Valentina Camus', date: '8 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news4/400/225', summary: 'Cómo los enfoques constructivos en la reportería están generando mayor impacto y engagement con las audiencias.' },
+  {
+    id: 1,
+    title: 'La IA Generativa y su Impacto en las Salas de Redacción Chilenas',
+    category: 'Tecnología',
+    author: 'Equipo Editorial',
+    date: '15 de Julio, 2024',
+    imageUrl: 'https://picsum.photos/seed/news1/400/225',
+    summary: 'Un análisis profundo sobre cómo herramientas como Gemini y ChatGPT están transformando la producción de noticias.',
+    reportContent: [
+      { type: 'paragraph', text: 'La inteligencia artificial generativa ha irrumpido en las salas de redacción de todo el mundo, y Chile no es la excepción. Herramientas como Gemini, ChatGPT y Midjourney han pasado de ser una curiosidad tecnológica a convertirse en asistentes casi indispensables para periodistas, editores y diseñadores. Este artículo explora cómo se está adoptando esta tecnología en los medios chilenos, sus beneficios tangibles y los dilemas éticos que plantea.' },
+      { type: 'paragraph', text: 'En una encuesta informal realizada por el Círculo de Periodistas Innovadores, más del 60% de los periodistas consultados afirmaron haber utilizado alguna herramienta de IA generativa en el último mes. Los usos más comunes incluyen la transcripción de entrevistas, la generación de resúmenes de documentos extensos, la optimización de titulares para SEO y la creación de borradores para redes sociales. "Es un ahorro de tiempo brutal", comenta una periodista de un medio digital. "Lo que antes me tomaba una hora de transcripción, ahora lo tengo en cinco minutos. Ese tiempo lo puedo dedicar a lo que realmente importa: reportear".' },
+      { type: 'quote', text: 'La IA no es una amenaza para el periodismo, sino una oportunidad para potenciarlo. El juicio crítico y la ética del periodista siguen siendo insustituibles.', author: 'Directora de Innovación, Consorcio de Medios' },
+      { type: 'image', src: 'https://picsum.photos/seed/news-report1/800/500', alt: 'Una periodista trabajando en su computador con interfaces de IA en la pantalla.' },
+      { type: 'paragraph', text: 'Sin embargo, no todo es color de rosa. La adopción de estas tecnologías viene acompañada de importantes desafíos éticos. La posibilidad de generar "fake news" a gran escala, el riesgo de perpetuar sesgos algorítmicos y la cuestión de la autoría y los derechos de propiedad intelectual son temas que se discuten acaloradamente. Varios medios ya están desarrollando manuales de estilo y protocolos internos para regular el uso de la IA, estableciendo líneas rojas claras: nunca utilizarla para generar citas falsas, siempre verificar la información que entrega y ser transparente con la audiencia cuando un contenido ha sido creado con asistencia significativa de inteligencia artificial.' },
+      { type: 'paragraph', text: 'El futuro, según los expertos, no es de periodistas contra máquinas, sino de periodistas aumentados por la IA. La clave estará en la capacitación y en desarrollar un criterio sólido para saber cuándo y cómo utilizar estas potentes herramientas, asegurando que la tecnología esté siempre al servicio de la verdad y del interés público.' }
+    ]
+  },
+  { id: 2, title: 'Nuevos Modelos de Suscripción Ganan Terreno en Medios Independientes', category: 'Industria', author: 'Isidora Paz', date: '12 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news2/400/225', summary: 'Exploramos casos de éxito de medios chilenos que han logrado sostenibilidad a través del apoyo de sus audiencias.' },
+  { id: 3, title: 'Avanza Proyecto de Ley sobre Protección a Periodistas: ¿Qué Implica?', category: 'Legislación', author: 'Tomás Reyes', date: '10 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news3/400/225', summary: 'Las claves del nuevo marco legal que se discute en el Congreso y que busca proteger el ejercicio de la prensa.' },
+  { id: 4, title: 'Periodismo de Soluciones: Informando más allá del Problema', category: 'Tendencias', author: 'Valentina Camus', date: '8 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/news4/400/225', summary: 'Cómo los enfoques constructivos en la reportería están generando mayor impacto y engagement con las audiencias.' },
 ];
 
 export const pressReleases: PressRelease[] = [
-    { 
-        id: 1, 
-        title: 'Gobierno Regional Lanza Nueva Plataforma de Transparencia Activa', 
-        institution: 'Gobierno Regional Metropolitano', 
-        author: 'Comunicaciones GORE', 
-        date: '20 de Julio, 2024', 
-        imageUrl: 'https://picsum.photos/seed/pr1/400/225', 
-        summary: 'La nueva herramienta digital busca acercar la gestión pública a la ciudadanía con datos abiertos y actualizados en tiempo real.',
-        reportAuthor: 'Equipo GORE',
-        reportDate: '20 de Julio, 2024',
-        reportContent: [
-            { type: 'paragraph', text: 'El Gobierno Regional Metropolitano ha dado un paso significativo hacia la modernización y la transparencia con el lanzamiento de su nueva plataforma "GORE Abierto". Esta iniciativa, presentada hoy en una ceremonia, busca poner a disposición de la ciudadanía información detallada y en tiempo real sobre la ejecución presupuestaria, proyectos de inversión y la gestión general del organismo.' },
-            { type: 'quote', text: 'La confianza de la ciudadanía se construye con hechos, no solo con discursos. Esta plataforma es un hecho concreto que materializa nuestro compromiso con un gobierno transparente y de cara a la gente.', author: 'Gobernador Regional' },
-            { type: 'paragraph', text: 'La plataforma, desarrollada con tecnología de punta, permite a cualquier persona navegar de manera intuitiva a través de visualizaciones de datos, mapas interactivos y documentos descargables. Entre sus principales funcionalidades se encuentra el seguimiento de proyectos de inversión por comuna, el detalle de los gastos operativos y el acceso a todas las resoluciones y actas del Consejo Regional.' },
-            { type: 'image', src: 'https://picsum.photos/seed/pr-report1/800/500', alt: 'Dashboard de la nueva plataforma de transparencia.' },
-            { type: 'paragraph', text: 'Organizaciones de la sociedad civil dedicadas a la transparencia, como Chile Transparente y Fundación Datos Protegidos, valoraron la iniciativa, destacando que establece un nuevo estándar para las instituciones públicas del país. "Esperamos que este sea el primer paso y que otros organismos sigan este ejemplo, porque el acceso a la información es la base de una democracia sólida", señaló un representante de Chile Transparente.' },
-        ]
-    },
-    { id: 2, title: 'Start-Up Chile Abre Convocatoria para su Generación 2024', institution: 'CORFO', author: 'Prensa CORFO', date: '19 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr2/400/225', summary: 'El programa busca atraer a los mejores emprendimientos tecnológicos del mundo para acelerar sus negocios desde Chile.' },
-    { id: 3, title: 'Museo de la Memoria Inaugura Exposición sobre Periodismo en Dictadura', institution: 'Museo de la Memoria', author: 'Cultura y Prensa MMDH', date: '18 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr3/400/225', summary: 'La muestra "La Tinta no se Borra" recorre la historia de los medios y periodistas que resistieron a la censura.' },
-    { id: 4, title: 'Festival de Innovación Social fiiS 2024 Anuncia sus Primeros Speakers', institution: 'Festival fiiS', author: 'Equipo fiiS', date: '17 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr4/400/225', summary: 'Líderes de opinión, científicos y artistas se darán cita en el evento que busca inspirar cambios positivos en la sociedad.' },
-    { id: 5, title: 'Observatorio de Datos publica informe sobre brecha digital en Chile', institution: 'Fundación Datos Protegidos', author: 'Comunicaciones FDP', date: '16 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr5/400/225', summary: 'El estudio revela que un 30% de los hogares en zonas rurales aún no tiene acceso a internet de alta velocidad.' },
-    { id: 6, title: 'Nueva ley de medios podría incentivar la creación de radios comunitarias', institution: 'Observatorio del Derecho a la Comunicación', author: 'Prensa ODC', date: '15 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr6/400/225', summary: 'Expertos analizan el impacto de la nueva legislación en el ecosistema de medios locales y comunitarios del país.' },
-    { id: 7, title: 'Universidad de Chile presenta nuevo Magíster en Comunicación y Cambio Climático', institution: 'Universidad de Chile', author: 'Prensa U. de Chile', date: '14 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr7/400/225', summary: 'El postgrado busca formar especialistas capaces de comunicar la crisis climática de manera efectiva y basada en evidencia.' },
-    { id: 8, title: 'ANATEL publica anuario estadístico sobre la televisión chilena', institution: 'ANATEL', author: 'Comunicaciones ANATEL', date: '13 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr8/400/225', summary: 'El informe muestra una caída en el consumo de TV abierta y un aumento sostenido de las plataformas de streaming.' },
-    { id: 9, title: 'Concurso de Periodismo "Pobre el que no cambia de mirada" abre postulaciones', institution: 'Hogar de Cristo', author: 'Comunicaciones Hogar de Cristo', date: '12 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr9/400/225', summary: 'La iniciativa premiará a los reportajes que mejor visibilicen las distintas formas de pobreza y exclusión en Chile.' },
-    { id: 10, title: 'Corte Suprema confirma fallo por protección de datos contra empresa de retail', institution: 'Poder Judicial', author: 'Prensa Poder Judicial', date: '11 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr10/400/225', summary: 'El fallo sienta un precedente importante sobre la responsabilidad de las empresas en el manejo de datos personales de clientes.' },
-    { id: 11, title: 'Ministerio de Ciencia lanza consulta pública para Política de IA', institution: 'Ministerio de Ciencia', author: 'MinCiencia Prensa', date: '10 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr11/400/225', summary: 'El proceso busca recoger la opinión de la ciudadanía y expertos para la elaboración de la estrategia nacional de Inteligencia Artificial.' },
-    { id: 12, title: 'Encuesta revela que confianza en los medios tradicionales sigue a la baja', institution: 'Reuters Institute', author: 'Reuters Institute Chile', date: '9 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr12/400/225', summary: 'El Digital News Report 2024 muestra que solo un 35% de los chilenos confía en las noticias la mayor parte del tiempo.' },
-    { id: 13, title: 'ONG Derechos Digitales presenta informe sobre libertad de expresión online', institution: 'ONG Derechos Digitales', author: 'Comunicaciones DD', date: '8 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr13/400/225', summary: 'El estudio analiza el impacto de la moderación de contenidos de las grandes plataformas en el debate público chileno.' },
+  {
+    id: 1,
+    title: 'Gobierno Regional Lanza Nueva Plataforma de Transparencia Activa',
+    institution: 'Gobierno Regional Metropolitano',
+    author: 'Comunicaciones GORE',
+    date: '20 de Julio, 2024',
+    imageUrl: 'https://picsum.photos/seed/pr1/400/225',
+    summary: 'La nueva herramienta digital busca acercar la gestión pública a la ciudadanía con datos abiertos y actualizados en tiempo real.',
+    reportAuthor: 'Equipo GORE',
+    reportDate: '20 de Julio, 2024',
+    reportContent: [
+      { type: 'paragraph', text: 'El Gobierno Regional Metropolitano ha dado un paso significativo hacia la modernización y la transparencia con el lanzamiento de su nueva plataforma "GORE Abierto". Esta iniciativa, presentada hoy en una ceremonia, busca poner a disposición de la ciudadanía información detallada y en tiempo real sobre la ejecución presupuestaria, proyectos de inversión y la gestión general del organismo.' },
+      { type: 'quote', text: 'La confianza de la ciudadanía se construye con hechos, no solo con discursos. Esta plataforma es un hecho concreto que materializa nuestro compromiso con un gobierno transparente y de cara a la gente.', author: 'Gobernador Regional' },
+      { type: 'paragraph', text: 'La plataforma, desarrollada con tecnología de punta, permite a cualquier persona navegar de manera intuitiva a través de visualizaciones de datos, mapas interactivos y documentos descargables. Entre sus principales funcionalidades se encuentra el seguimiento de proyectos de inversión por comuna, el detalle de los gastos operativos y el acceso a todas las resoluciones y actas del Consejo Regional.' },
+      { type: 'image', src: 'https://picsum.photos/seed/pr-report1/800/500', alt: 'Dashboard de la nueva plataforma de transparencia.' },
+      { type: 'paragraph', text: 'Organizaciones de la sociedad civil dedicadas a la transparencia, como Chile Transparente y Fundación Datos Protegidos, valoraron la iniciativa, destacando que establece un nuevo estándar para las instituciones públicas del país. "Esperamos que este sea el primer paso y que otros organismos sigan este ejemplo, porque el acceso a la información es la base de una democracia sólida", señaló un representante de Chile Transparente.' },
+    ]
+  },
+  { id: 2, title: 'Start-Up Chile Abre Convocatoria para su Generación 2024', institution: 'CORFO', author: 'Prensa CORFO', date: '19 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr2/400/225', summary: 'El programa busca atraer a los mejores emprendimientos tecnológicos del mundo para acelerar sus negocios desde Chile.' },
+  { id: 3, title: 'Museo de la Memoria Inaugura Exposición sobre Periodismo en Dictadura', institution: 'Museo de la Memoria', author: 'Cultura y Prensa MMDH', date: '18 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr3/400/225', summary: 'La muestra "La Tinta no se Borra" recorre la historia de los medios y periodistas que resistieron a la censura.' },
+  { id: 4, title: 'Festival de Innovación Social fiiS 2024 Anuncia sus Primeros Speakers', institution: 'Festival fiiS', author: 'Equipo fiiS', date: '17 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr4/400/225', summary: 'Líderes de opinión, científicos y artistas se darán cita en el evento que busca inspirar cambios positivos en la sociedad.' },
+  { id: 5, title: 'Observatorio de Datos publica informe sobre brecha digital en Chile', institution: 'Fundación Datos Protegidos', author: 'Comunicaciones FDP', date: '16 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr5/400/225', summary: 'El estudio revela que un 30% de los hogares en zonas rurales aún no tiene acceso a internet de alta velocidad.' },
+  { id: 6, title: 'Nueva ley de medios podría incentivar la creación de radios comunitarias', institution: 'Observatorio del Derecho a la Comunicación', author: 'Prensa ODC', date: '15 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr6/400/225', summary: 'Expertos analizan el impacto de la nueva legislación en el ecosistema de medios locales y comunitarios del país.' },
+  { id: 7, title: 'Universidad de Chile presenta nuevo Magíster en Comunicación y Cambio Climático', institution: 'Universidad de Chile', author: 'Prensa U. de Chile', date: '14 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr7/400/225', summary: 'El postgrado busca formar especialistas capaces de comunicar la crisis climática de manera efectiva y basada en evidencia.' },
+  { id: 8, title: 'ANATEL publica anuario estadístico sobre la televisión chilena', institution: 'ANATEL', author: 'Comunicaciones ANATEL', date: '13 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr8/400/225', summary: 'El informe muestra una caída en el consumo de TV abierta y un aumento sostenido de las plataformas de streaming.' },
+  { id: 9, title: 'Concurso de Periodismo "Pobre el que no cambia de mirada" abre postulaciones', institution: 'Hogar de Cristo', author: 'Comunicaciones Hogar de Cristo', date: '12 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr9/400/225', summary: 'La iniciativa premiará a los reportajes que mejor visibilicen las distintas formas de pobreza y exclusión en Chile.' },
+  { id: 10, title: 'Corte Suprema confirma fallo por protección de datos contra empresa de retail', institution: 'Poder Judicial', author: 'Prensa Poder Judicial', date: '11 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr10/400/225', summary: 'El fallo sienta un precedente importante sobre la responsabilidad de las empresas en el manejo de datos personales de clientes.' },
+  { id: 11, title: 'Ministerio de Ciencia lanza consulta pública para Política de IA', institution: 'Ministerio de Ciencia', author: 'MinCiencia Prensa', date: '10 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr11/400/225', summary: 'El proceso busca recoger la opinión de la ciudadanía y expertos para la elaboración de la estrategia nacional de Inteligencia Artificial.' },
+  { id: 12, title: 'Encuesta revela que confianza en los medios tradicionales sigue a la baja', institution: 'Reuters Institute', author: 'Reuters Institute Chile', date: '9 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr12/400/225', summary: 'El Digital News Report 2024 muestra que solo un 35% de los chilenos confía en las noticias la mayor parte del tiempo.' },
+  { id: 13, title: 'ONG Derechos Digitales presenta informe sobre libertad de expresión online', institution: 'ONG Derechos Digitales', author: 'Comunicaciones DD', date: '8 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/pr13/400/225', summary: 'El estudio analiza el impacto de la moderación de contenidos de las grandes plataformas en el debate público chileno.' },
 ];
 
 export const ngoSpotlight: NgoSpotlight[] = [
-    { id: 1, title: 'Reportaje sobre Acceso al Agua en Petorca Gana Premio Internacional', institution: 'Fundación Terram', author: 'Difundido por Sofía Muñoz', date: '22 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo1/400/225', summary: 'La investigación, apoyada por la fundación, revela el impacto de la agroindustria en la escasez hídrica de la zona.'},
-    { id: 2, title: 'Plataforma "Congreso Abierto" Lanza Nueva Herramienta de Seguimiento Legislativo', institution: 'Ciudadanía Inteligente', author: 'Liderado por Javier Fuentes', date: '21 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo2/400/225', summary: 'La iniciativa busca aumentar la transparencia del poder legislativo a través de la visualización de datos y el periodismo.'},
-    { id: 3, title: 'ONG "Comunica Derechos" Inicia Talleres de Periodismo para Líderes Sociales', institution: 'Comunica Derechos', author: 'Liderado por Andrea López', date: '20 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo3/400/225', summary: 'El programa busca entregar herramientas de comunicación a dirigentes vecinales para que puedan visibilizar sus causas.'},
-    { id: 4, title: 'Documental "Memorias del Mar" Expone la Lucha de Pescadores Artesanales', institution: 'Oceana Chile', author: 'Difundido por Ricardo Núñez', date: '19 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo4/400/225', summary: 'El trabajo audiovisual, co-producido por periodistas, muestra los desafíos de la pesca sostenible en la costa chilena.'},
+  { id: 1, title: 'Reportaje sobre Acceso al Agua en Petorca Gana Premio Internacional', institution: 'Fundación Terram', author: 'Difundido por Sofía Muñoz', date: '22 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo1/400/225', summary: 'La investigación, apoyada por la fundación, revela el impacto de la agroindustria en la escasez hídrica de la zona.' },
+  { id: 2, title: 'Plataforma "Congreso Abierto" Lanza Nueva Herramienta de Seguimiento Legislativo', institution: 'Ciudadanía Inteligente', author: 'Liderado por Javier Fuentes', date: '21 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo2/400/225', summary: 'La iniciativa busca aumentar la transparencia del poder legislativo a través de la visualización de datos y el periodismo.' },
+  { id: 3, title: 'ONG "Comunica Derechos" Inicia Talleres de Periodismo para Líderes Sociales', institution: 'Comunica Derechos', author: 'Liderado por Andrea López', date: '20 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo3/400/225', summary: 'El programa busca entregar herramientas de comunicación a dirigentes vecinales para que puedan visibilizar sus causas.' },
+  { id: 4, title: 'Documental "Memorias del Mar" Expone la Lucha de Pescadores Artesanales', institution: 'Oceana Chile', author: 'Difundido por Ricardo Núñez', date: '19 de Julio, 2024', imageUrl: 'https://picsum.photos/seed/ngo4/400/225', summary: 'El trabajo audiovisual, co-producido por periodistas, muestra los desafíos de la pesca sostenible en la costa chilena.' },
 ];
 
 export const freelanceServices: FreelanceService[] = [
-    { id: 1, service: 'Redacción de Artículos SEO', provider: 'Camila Rojas', category: 'Redacción', rate: '$30.000 / artículo', imageUrl: 'https://picsum.photos/seed/freelance1/400/225', description: 'Contenido optimizado para posicionar tu marca y atraer tráfico de calidad.', portfolioUrl: 'https://www.linkedin.com/', rating: { average: 6.5, count: 22 } },
-    { id: 2, service: 'Corrección de Estilo Académico', provider: 'Javier Fuentes', category: 'Corrección', rate: '$15.000 / 1000 palabras', imageUrl: 'https://picsum.photos/seed/freelance2/400/225', description: 'Garantizamos claridad, coherencia y rigurosidad normativa en tus textos académicos.', portfolioUrl: 'https://www.instagram.com/', rating: { average: 6.8, count: 15 } },
-    { id: 3, service: 'Fotografía de Eventos Corporativos', provider: 'Andrea López', category: 'Fotografía', rate: '$80.000 / hora', imageUrl: 'https://picsum.photos/seed/freelance3/400/225', description: 'Capturamos los momentos clave de tus eventos con un enfoque profesional y alta calidad.', portfolioUrl: 'https://www.youtube.com/', rating: { average: 7.0, count: 31 } },
-    { id: 4, service: 'Gestión de Redes Sociales para PYMEs', provider: 'Martín Silva', category: 'Community Management', rate: 'Desde $150.000 / mes', imageUrl: 'https://picsum.photos/seed/freelance4/400/225', description: 'Potenciamos tu negocio con contenido atractivo y gestión experta de tu comunidad online.', portfolioUrl: 'https://www.linkedin.com/', rating: { average: 6.2, count: 18 } },
-    { id: 5, service: 'Locución para Videos y Podcast', provider: 'Valentina Soto', category: 'Locución', rate: 'A convenir', imageUrl: 'https://picsum.photos/seed/freelance5/400/225', description: 'Voces profesionales para dar vida a tus proyectos audiovisuales y sonoros.', portfolioUrl: 'https://www.youtube.com/', rating: { average: 6.9, count: 45 } },
+  { id: 1, service: 'Redacción de Artículos SEO', provider: 'Camila Rojas', category: 'Redacción', rate: '$30.000 / artículo', imageUrl: 'https://picsum.photos/seed/freelance1/400/225', description: 'Contenido optimizado para posicionar tu marca y atraer tráfico de calidad.', portfolioUrl: 'https://www.linkedin.com/', rating: { average: 6.5, count: 22 } },
+  { id: 2, service: 'Corrección de Estilo Académico', provider: 'Javier Fuentes', category: 'Corrección', rate: '$15.000 / 1000 palabras', imageUrl: 'https://picsum.photos/seed/freelance2/400/225', description: 'Garantizamos claridad, coherencia y rigurosidad normativa en tus textos académicos.', portfolioUrl: 'https://www.instagram.com/', rating: { average: 6.8, count: 15 } },
+  { id: 3, service: 'Fotografía de Eventos Corporativos', provider: 'Andrea López', category: 'Fotografía', rate: '$80.000 / hora', imageUrl: 'https://picsum.photos/seed/freelance3/400/225', description: 'Capturamos los momentos clave de tus eventos con un enfoque profesional y alta calidad.', portfolioUrl: 'https://www.youtube.com/', rating: { average: 7.0, count: 31 } },
+  { id: 4, service: 'Gestión de Redes Sociales para PYMEs', provider: 'Martín Silva', category: 'Community Management', rate: 'Desde $150.000 / mes', imageUrl: 'https://picsum.photos/seed/freelance4/400/225', description: 'Potenciamos tu negocio con contenido atractivo y gestión experta de tu comunidad online.', portfolioUrl: 'https://www.linkedin.com/', rating: { average: 6.2, count: 18 } },
+  { id: 5, service: 'Locución para Videos y Podcast', provider: 'Valentina Soto', category: 'Locución', rate: 'A convenir', imageUrl: 'https://picsum.photos/seed/freelance5/400/225', description: 'Voces profesionales para dar vida a tus proyectos audiovisuales y sonoros.', portfolioUrl: 'https://www.youtube.com/', rating: { average: 6.9, count: 45 } },
 ];
 
 export const communityAds: CommunityAd[] = [
-    { id: 1, title: 'Vendo cámara Sony A7 III casi nueva', description: 'Poco uso, con lente 28-70mm y dos baterías. Ideal para fotoperiodismo y video. La vendo por renovación de equipo. Precio conversable.', category: 'Venta', authorName: 'Ignacio Paredes', authorAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321' },
-    { id: 2, title: 'Busco fuente experta en crisis hídrica', description: 'Para reportaje de largo aliento sobre la sequía en la zona central. Necesito contactar a hidrólogos, agrónomos o activistas medioambientales. ¡Agradezco cualquier dato!', category: 'Búsqueda', authorName: 'Catalina Riquelme', authorAvatarUrl: 'https://i.pravatar.cc/40?u=catalina', whatsappContact: '56912345678' },
-    { id: 3, title: 'Ofrezco colaboración para transcribir entrevistas', description: 'Tengo tiempo disponible y ofrezco mis servicios de transcripción rápida y precisa de entrevistas en audio o video. Tarifas especiales para miembros del Círculo.', category: 'Colaboración', authorName: 'Mateo Rojas', authorAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', whatsappContact: '56955554444' },
-    { id: 4, title: 'Vendo micrófono RODE VideoMic Pro+', description: 'Excelente micrófono direccional para cámara. Incluye paravientos y batería recargable. Perfecto estado. Lo vendo porque me regalaron otro similar.', category: 'Venta', authorName: 'Javiera Latorre', authorAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555' },
+  { id: 1, title: 'Vendo cámara Sony A7 III casi nueva', description: 'Poco uso, con lente 28-70mm y dos baterías. Ideal para fotoperiodismo y video. La vendo por renovación de equipo. Precio conversable.', category: 'Venta', authorName: 'Ignacio Paredes', authorAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321' },
+  { id: 2, title: 'Busco fuente experta en crisis hídrica', description: 'Para reportaje de largo aliento sobre la sequía en la zona central. Necesito contactar a hidrólogos, agrónomos o activistas medioambientales. ¡Agradezco cualquier dato!', category: 'Búsqueda', authorName: 'Catalina Riquelme', authorAvatarUrl: 'https://i.pravatar.cc/40?u=catalina', whatsappContact: '56912345678' },
+  { id: 3, title: 'Ofrezco colaboración para transcribir entrevistas', description: 'Tengo tiempo disponible y ofrezco mis servicios de transcripción rápida y precisa de entrevistas en audio o video. Tarifas especiales para miembros del Círculo.', category: 'Colaboración', authorName: 'Mateo Rojas', authorAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', whatsappContact: '56955554444' },
+  { id: 4, title: 'Vendo micrófono RODE VideoMic Pro+', description: 'Excelente micrófono direccional para cámara. Incluye paravientos y batería recargable. Perfecto estado. Lo vendo porque me regalaron otro similar.', category: 'Venta', authorName: 'Javiera Latorre', authorAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555' },
 ];
 
 export const premiumSponsors: PremiumSponsor[] = [
-    { 
-        id: 1, 
-        name: 'Tech Solutions', 
-        tagline: 'Impulsando la transformación digital del periodismo.', 
-        imageUrl: 'https://picsum.photos/seed/premium1/1200/800', 
-        ctaText: 'Descubre Nuestras Herramientas', 
-        ctaLink: '#', 
-        nameColor: '#FFFFFF', 
-        ctaColor: '#FFC300',
-        reportAuthor: 'Equipo de Contenidos Tech Solutions',
-        reportDate: '25 de Julio, 2024',
-        reportContent: [
-            { type: 'paragraph', text: 'En Tech Solutions, creemos que el futuro del periodismo es digital, interactivo y basado en datos. Nuestra misión es proporcionar a los medios de comunicación, desde grandes redacciones hasta micromedios emergentes, las herramientas tecnológicas necesarias para prosperar en un panorama mediático en constante evolución.' },
-            { type: 'paragraph', text: 'Entendemos los desafíos únicos que enfrentan los periodistas hoy en día: la necesidad de producir contenido de alta calidad a gran velocidad, la lucha por la sostenibilidad financiera y la batalla constante contra la desinformación. Por eso, hemos desarrollado un conjunto de soluciones integradas que abordan estos problemas de frente.' },
-            { type: 'quote', text: 'Nuestra tecnología está diseñada para potenciar la narración, no para reemplazarla. Liberamos a los periodistas de tareas repetitivas para que puedan centrarse en lo que mejor saben hacer: investigar y contar historias que importan.', author: 'CEO de Tech Solutions' },
-            { type: 'image', src: 'https://picsum.photos/seed/sponsor-report1/800/500', alt: 'El equipo de Tech Solutions colaborando en un proyecto.' },
-            { type: 'paragraph', text: 'Desde plataformas de gestión de contenido (CMS) impulsadas por IA que optimizan el SEO y la distribución, hasta herramientas de visualización de datos que transforman hojas de cálculo complejas en gráficos interactivos y comprensibles, nuestro objetivo es hacer que la tecnología de vanguardia sea accesible y fácil de usar. Apoyar al Círculo de Periodistas Innovadores de Chile es un paso natural en nuestro compromiso por fortalecer un ecosistema de medios robusto, independiente y preparado para el futuro.' },
-        ]
-    },
-    { 
-        id: 2, 
-        name: 'Banco Futuro', 
-        tagline: 'La banca para los que innovan', 
-        imageUrl: 'https://picsum.photos/seed/premium2/500/300', 
-        ctaText: 'Conoce nuestros planes', 
-        ctaLink: '#', 
-        nameColor: '#FFFFFF', 
-        ctaColor: '#FFC300',
-        reportAuthor: 'Daniela Vega',
-        reportDate: '24 de Julio, 2024',
-        reportContent: [
-            { type: 'paragraph', text: 'En un mundo donde la innovación es el motor del progreso, Banco Futuro se establece como el aliado financiero de quienes se atreven a crear. Más que una institución bancaria tradicional, nos vemos como una plataforma de lanzamiento para emprendedores, startups y, especialmente, para los nuevos medios de comunicación que están redefiniendo la industria. Nuestro lema, "La banca para los que innovan", es el pilar de cada producto y servicio que diseñamos.' },
-            { type: 'paragraph', text: 'Entendemos que los modelos de negocio de los emprendimientos mediáticos son únicos y requieren flexibilidad. Por eso, hemos creado soluciones a medida: desde créditos blandos para la adquisición de equipos y tecnología, hasta cuentas corrientes sin costos de mantención para profesionales freelance y gestores de contenido. Nuestro objetivo es eliminar las barreras financieras para que las buenas ideas puedan crecer y ser sostenibles.' },
-            { type: 'quote', text: 'Creemos firmemente que el próximo gran medio de comunicación puede nacer en un garaje o en un café. Nuestra misión es asegurarnos de que tengan el respaldo y las herramientas financieras para competir en el gran escenario.', author: 'Gerente General, Banco Futuro' },
-            { type: 'image', src: 'https://picsum.photos/seed/banco-futuro-report/800/500', alt: 'Un equipo de emprendedores discutiendo un proyecto financiero.' },
-            { type: 'paragraph', text: 'Nuestra alianza con el Círculo de Periodistas Innovadores de Chile es una prueba de nuestro compromiso. Apoyar a esta comunidad significa invertir en la calidad de la información, en la diversidad de voces y en el fortalecimiento de un ecosistema de medios más robusto y plural. Estamos convencidos de que el periodismo emprendedor es clave para una sociedad informada y democrática.' },
-        ]
-    },
-    { id: 3, name: 'Innovate Latam', tagline: 'Conectando startups con el mundo', imageUrl: 'https://picsum.photos/seed/premium3/500/300', ctaText: 'Únete al ecosistema', ctaLink: '#', nameColor: '#FFFFFF', ctaColor: '#FFC300' },
+  {
+    id: 1,
+    name: 'Tech Solutions',
+    tagline: 'Impulsando la transformación digital del periodismo.',
+    imageUrl: 'https://picsum.photos/seed/premium1/1200/800',
+    ctaText: 'Descubre Nuestras Herramientas',
+    ctaLink: '#',
+    nameColor: '#FFFFFF',
+    ctaColor: '#FFC300',
+    reportAuthor: 'Equipo de Contenidos Tech Solutions',
+    reportDate: '25 de Julio, 2024',
+    reportContent: [
+      { type: 'paragraph', text: 'En Tech Solutions, creemos que el futuro del periodismo es digital, interactivo y basado en datos. Nuestra misión es proporcionar a los medios de comunicación, desde grandes redacciones hasta micromedios emergentes, las herramientas tecnológicas necesarias para prosperar en un panorama mediático en constante evolución.' },
+      { type: 'paragraph', text: 'Entendemos los desafíos únicos que enfrentan los periodistas hoy en día: la necesidad de producir contenido de alta calidad a gran velocidad, la lucha por la sostenibilidad financiera y la batalla constante contra la desinformación. Por eso, hemos desarrollado un conjunto de soluciones integradas que abordan estos problemas de frente.' },
+      { type: 'quote', text: 'Nuestra tecnología está diseñada para potenciar la narración, no para reemplazarla. Liberamos a los periodistas de tareas repetitivas para que puedan centrarse en lo que mejor saben hacer: investigar y contar historias que importan.', author: 'CEO de Tech Solutions' },
+      { type: 'image', src: 'https://picsum.photos/seed/sponsor-report1/800/500', alt: 'El equipo de Tech Solutions colaborando en un proyecto.' },
+      { type: 'paragraph', text: 'Desde plataformas de gestión de contenido (CMS) impulsadas por IA que optimizan el SEO y la distribución, hasta herramientas de visualización de datos que transforman hojas de cálculo complejas en gráficos interactivos y comprensibles, nuestro objetivo es hacer que la tecnología de vanguardia sea accesible y fácil de usar. Apoyar al Círculo de Periodistas Innovadores de Chile es un paso natural en nuestro compromiso por fortalecer un ecosistema de medios robusto, independiente y preparado para el futuro.' },
+    ]
+  },
+  {
+    id: 2,
+    name: 'Banco Futuro',
+    tagline: 'La banca para los que innovan',
+    imageUrl: 'https://picsum.photos/seed/premium2/500/300',
+    ctaText: 'Conoce nuestros planes',
+    ctaLink: '#',
+    nameColor: '#FFFFFF',
+    ctaColor: '#FFC300',
+    reportAuthor: 'Daniela Vega',
+    reportDate: '24 de Julio, 2024',
+    reportContent: [
+      { type: 'paragraph', text: 'En un mundo donde la innovación es el motor del progreso, Banco Futuro se establece como el aliado financiero de quienes se atreven a crear. Más que una institución bancaria tradicional, nos vemos como una plataforma de lanzamiento para emprendedores, startups y, especialmente, para los nuevos medios de comunicación que están redefiniendo la industria. Nuestro lema, "La banca para los que innovan", es el pilar de cada producto y servicio que diseñamos.' },
+      { type: 'paragraph', text: 'Entendemos que los modelos de negocio de los emprendimientos mediáticos son únicos y requieren flexibilidad. Por eso, hemos creado soluciones a medida: desde créditos blandos para la adquisición de equipos y tecnología, hasta cuentas corrientes sin costos de mantención para profesionales freelance y gestores de contenido. Nuestro objetivo es eliminar las barreras financieras para que las buenas ideas puedan crecer y ser sostenibles.' },
+      { type: 'quote', text: 'Creemos firmemente que el próximo gran medio de comunicación puede nacer en un garaje o en un café. Nuestra misión es asegurarnos de que tengan el respaldo y las herramientas financieras para competir en el gran escenario.', author: 'Gerente General, Banco Futuro' },
+      { type: 'image', src: 'https://picsum.photos/seed/banco-futuro-report/800/500', alt: 'Un equipo de emprendedores discutiendo un proyecto financiero.' },
+      { type: 'paragraph', text: 'Nuestra alianza con el Círculo de Periodistas Innovadores de Chile es una prueba de nuestro compromiso. Apoyar a esta comunidad significa invertir en la calidad de la información, en la diversidad de voces y en el fortalecimiento de un ecosistema de medios más robusto y plural. Estamos convencidos de que el periodismo emprendedor es clave para una sociedad informada y democrática.' },
+    ]
+  },
+  { id: 3, name: 'Innovate Latam', tagline: 'Conectando startups con el mundo', imageUrl: 'https://picsum.photos/seed/premium3/500/300', ctaText: 'Únete al ecosistema', ctaLink: '#', nameColor: '#FFFFFF', ctaColor: '#FFC300' },
 ];
 
 export const promoVideos: PromoVideo[] = [
-    { id: 1, title: 'Por qué unirte al Círculo', description: 'Descubre los beneficios y oportunidades que te esperan.', thumbnailUrl: 'https://picsum.photos/seed/video1/400/225' },
-    { id: 2, title: 'La Voz de la Industria', description: 'Líderes de opinión y stakeholders sobre la importancia de innovar.', thumbnailUrl: 'https://picsum.photos/seed/video2/400/225' },
+  { id: 1, title: 'Por qué unirte al Círculo', description: 'Descubre los beneficios y oportunidades que te esperan.', thumbnailUrl: 'https://picsum.photos/seed/video1/400/225' },
+  { id: 2, title: 'La Voz de la Industria', description: 'Líderes de opinión y stakeholders sobre la importancia de innovar.', thumbnailUrl: 'https://picsum.photos/seed/video2/400/225' },
 ];
 
 export const communityPosts: CommunityPost[] = [
-  { id: 1, authorName: 'Javiera Latorre', authorAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', postTitle: 'The Guardian launches new paid-for ‘digital experience’', postUrl: '#', comment: 'Interesante el nuevo modelo que está probando The Guardian. ¿Podría ser una alternativa para medios en Chile?' },
-  { id: 2, authorName: 'Ricardo Núñez', authorAvatarUrl: 'https://i.pravatar.cc/40?u=ricardo', postTitle: 'How Axios is using AI to expand local news coverage', postUrl: '#', comment: 'El uso de IA para potenciar el periodismo local es una tendencia que no podemos ignorar. Axios está marcando la pauta.' },
-  { id: 3, authorName: 'Carolina Soto', authorAvatarUrl: 'https://i.pravatar.cc/40?u=carolina', postTitle: 'SembraMedia report on digital media entrepreneurship trends', postUrl: '#', comment: 'El último reporte de SembraMedia tiene datos muy relevantes para quienes estamos emprendiendo en medios digitales en LATAM.' },
-  { id: 4, authorName: 'Mateo Rojas', authorAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', postTitle: 'VICE News documentary on environmental conflicts in Chile', postUrl: '#', comment: 'Impresionante el nivel de detalle y la valentía del último reportaje de VICE. Un referente del periodismo de investigación.' },
-  { id: 5, authorName: 'Daniela Vega', authorAvatarUrl: 'https://i.pravatar.cc/40?u=daniela', postTitle: 'Ethical guidelines for using generative AI in newsrooms', postUrl: '#', comment: 'Abro debate: ¿Cuáles deberían ser las líneas rojas éticas al usar IA para generar contenido periodístico? ¿Lo han implementado?' }
+  { id: 1, authorName: 'Javiera Latorre', authorAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', postTitle: 'The Guardian launches new paid-for ‘digital experience’', postUrl: '#', comment: 'Interesante el nuevo modelo que está probando The Guardian. ¿Podría ser una alternativa para medios en Chile?', createdAt: '2024-07-20T10:00:00Z' },
+  { id: 2, authorName: 'Ricardo Núñez', authorAvatarUrl: 'https://i.pravatar.cc/40?u=ricardo', postTitle: 'How Axios is using AI to expand local news coverage', postUrl: '#', comment: 'El uso de IA para potenciar el periodismo local es una tendencia que no podemos ignorar. Axios está marcando la pauta.', createdAt: '2024-07-21T11:00:00Z' },
+  { id: 3, authorName: 'Carolina Soto', authorAvatarUrl: 'https://i.pravatar.cc/40?u=carolina', postTitle: 'SembraMedia report on digital media entrepreneurship trends', postUrl: '#', comment: 'El último reporte de SembraMedia tiene datos muy relevantes para quienes estamos emprendiendo en medios digitales en LATAM.', createdAt: '2024-07-22T12:00:00Z' },
+  { id: 4, authorName: 'Mateo Rojas', authorAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', postTitle: 'VICE News documentary on environmental conflicts in Chile', postUrl: '#', comment: 'Impresionante el nivel de detalle y la valentía del último reportaje de VICE. Un referente del periodismo de investigación.', createdAt: '2024-07-23T13:00:00Z' },
+  { id: 5, authorName: 'Daniela Vega', authorAvatarUrl: 'https://i.pravatar.cc/40?u=daniela', postTitle: 'Ethical guidelines for using generative AI in newsrooms', postUrl: '#', comment: 'Abro debate: ¿Cuáles deberían ser las líneas rojas éticas al usar IA para generar contenido periodístico? ¿Lo han implementado?', createdAt: '2024-07-24T14:00:00Z' }
 ];
 
 export const photojournalismPosts: PhotojournalismPost[] = [
@@ -403,7 +403,7 @@ export const photojournalismPosts: PhotojournalismPost[] = [
     whatsappContact: '56955554444',
     dateAdded: '2024-07-22T18:00:00Z',
   },
-   {
+  {
     id: 6,
     title: 'Corazón Gaucho de la Patagonia',
     imageUrl: 'https://picsum.photos/seed/photojournalism6/800/450',
@@ -417,94 +417,94 @@ export const photojournalismPosts: PhotojournalismPost[] = [
 ];
 
 export const specialists: Specialist[] = [
-    { id: 1, name: 'Dra. Carolina Vera', title: 'Climatóloga, U. de Chile', imageUrl: 'https://picsum.photos/seed/spec1/400/400', specialtyDescription: 'Experta en cambio climático, modelos atmosféricos y fenómenos extremos en Sudamérica. Ideal para análisis sobre sequía y eventos climáticos.', whatsappContact: '56911112222', dateAdded: '2024-07-25', textColor: '#FFFFFF' },
-    { id: 2, name: 'Marcos Sánchez', title: 'Analista Económico Senior', imageUrl: 'https://picsum.photos/seed/spec2/400/400', specialtyDescription: 'Especialista en macroeconomía, mercados financieros chilenos y proyecciones de crecimiento. Comenta sobre IPC, IMACEC y políticas fiscales.', whatsappContact: '56922223333', dateAdded: '2024-07-24', textColor: '#FFFFFF' },
-    { id: 3, name: 'Javiera Lorca', title: 'Socióloga y Urbanista, PUCV', imageUrl: 'https://picsum.photos/seed/spec3/400/400', specialtyDescription: 'Investiga sobre desarrollo urbano, segregación residencial y políticas de vivienda. Voz autorizada en planificación de ciudades.', whatsappContact: '56933334444', dateAdded: '2024-07-23', textColor: '#FFFFFF' },
-    { id: 4, name: 'Ricardo Núñez', title: 'Experto en Ciberseguridad', imageUrl: 'https://picsum.photos/seed/spec4/400/400', specialtyDescription: 'Analiza tendencias en ciberataques, protección de datos y legislación digital. Perfecto para temas de hacking y seguridad informática.', whatsappContact: '56944445555', dateAdded: '2024-07-22', textColor: '#FFFFFF' },
-    { id: 5, name: 'Andrea Campos', title: 'Especialista en IA y Ética', imageUrl: 'https://picsum.photos/seed/spec5/400/400', specialtyDescription: 'Filósofa de la tecnología, aborda los dilemas éticos de la inteligencia artificial, sesgos algorítmicos y el futuro del trabajo.', whatsappContact: '56955556666', dateAdded: '2024-07-21', textColor: '#FFFFFF' },
-    { id: 6, name: 'Tomás Reyes', title: 'Constitucionalista, UAI', imageUrl: 'https://picsum.photos/seed/spec6/400/400', specialtyDescription: 'Experto en derecho constitucional y procesos políticos. Analiza reformas, sistema político y el debate constituyente en Chile.', whatsappContact: '56966667777', dateAdded: '2024-07-20', textColor: '#FFFFFF' },
-    { id: 7, name: 'Dra. Isabel Soto', title: 'Epidemióloga, MINSAL', imageUrl: 'https://picsum.photos/seed/spec7/400/400', specialtyDescription: 'Voz líder en salud pública, enfermedades infecciosas y estrategias de vacunación. Ideal para reportajes sobre crisis sanitarias.', whatsappContact: '56977778888', dateAdded: '2024-07-19', textColor: '#FFFFFF' },
-    { id: 8, name: 'Benjamín Parra', title: 'Ingeniero en Energías Renovables', imageUrl: 'https://picsum.photos/seed/spec8/400/400', specialtyDescription: 'Especialista en energía solar, hidrógeno verde y transición energética en Chile. Comenta sobre políticas y proyectos de ERNC.', whatsappContact: '56988889999', dateAdded: '2024-07-18', textColor: '#FFFFFF' },
-    { id: 9, name: 'Sofía Muñoz', title: 'Experta en Política Educacional', imageUrl: 'https://picsum.photos/seed/spec9/400/400', specialtyDescription: 'Analiza las brechas en el sistema educativo chileno, políticas de acceso y calidad de la educación superior.', whatsappContact: '56999990000', dateAdded: '2024-07-17', textColor: '#FFFFFF' },
+  { id: 1, name: 'Dra. Carolina Vera', title: 'Climatóloga, U. de Chile', imageUrl: 'https://picsum.photos/seed/spec1/400/400', specialtyDescription: 'Experta en cambio climático, modelos atmosféricos y fenómenos extremos en Sudamérica. Ideal para análisis sobre sequía y eventos climáticos.', whatsappContact: '56911112222', dateAdded: '2024-07-25', textColor: '#FFFFFF' },
+  { id: 2, name: 'Marcos Sánchez', title: 'Analista Económico Senior', imageUrl: 'https://picsum.photos/seed/spec2/400/400', specialtyDescription: 'Especialista en macroeconomía, mercados financieros chilenos y proyecciones de crecimiento. Comenta sobre IPC, IMACEC y políticas fiscales.', whatsappContact: '56922223333', dateAdded: '2024-07-24', textColor: '#FFFFFF' },
+  { id: 3, name: 'Javiera Lorca', title: 'Socióloga y Urbanista, PUCV', imageUrl: 'https://picsum.photos/seed/spec3/400/400', specialtyDescription: 'Investiga sobre desarrollo urbano, segregación residencial y políticas de vivienda. Voz autorizada en planificación de ciudades.', whatsappContact: '56933334444', dateAdded: '2024-07-23', textColor: '#FFFFFF' },
+  { id: 4, name: 'Ricardo Núñez', title: 'Experto en Ciberseguridad', imageUrl: 'https://picsum.photos/seed/spec4/400/400', specialtyDescription: 'Analiza tendencias en ciberataques, protección de datos y legislación digital. Perfecto para temas de hacking y seguridad informática.', whatsappContact: '56944445555', dateAdded: '2024-07-22', textColor: '#FFFFFF' },
+  { id: 5, name: 'Andrea Campos', title: 'Especialista en IA y Ética', imageUrl: 'https://picsum.photos/seed/spec5/400/400', specialtyDescription: 'Filósofa de la tecnología, aborda los dilemas éticos de la inteligencia artificial, sesgos algorítmicos y el futuro del trabajo.', whatsappContact: '56955556666', dateAdded: '2024-07-21', textColor: '#FFFFFF' },
+  { id: 6, name: 'Tomás Reyes', title: 'Constitucionalista, UAI', imageUrl: 'https://picsum.photos/seed/spec6/400/400', specialtyDescription: 'Experto en derecho constitucional y procesos políticos. Analiza reformas, sistema político y el debate constituyente en Chile.', whatsappContact: '56966667777', dateAdded: '2024-07-20', textColor: '#FFFFFF' },
+  { id: 7, name: 'Dra. Isabel Soto', title: 'Epidemióloga, MINSAL', imageUrl: 'https://picsum.photos/seed/spec7/400/400', specialtyDescription: 'Voz líder en salud pública, enfermedades infecciosas y estrategias de vacunación. Ideal para reportajes sobre crisis sanitarias.', whatsappContact: '56977778888', dateAdded: '2024-07-19', textColor: '#FFFFFF' },
+  { id: 8, name: 'Benjamín Parra', title: 'Ingeniero en Energías Renovables', imageUrl: 'https://picsum.photos/seed/spec8/400/400', specialtyDescription: 'Especialista en energía solar, hidrógeno verde y transición energética en Chile. Comenta sobre políticas y proyectos de ERNC.', whatsappContact: '56988889999', dateAdded: '2024-07-18', textColor: '#FFFFFF' },
+  { id: 9, name: 'Sofía Muñoz', title: 'Experta en Política Educacional', imageUrl: 'https://picsum.photos/seed/spec9/400/400', specialtyDescription: 'Analiza las brechas en el sistema educativo chileno, políticas de acceso y calidad de la educación superior.', whatsappContact: '56999990000', dateAdded: '2024-07-17', textColor: '#FFFFFF' },
 ];
 
 export const shareablePhotos: ShareablePhoto[] = [
-    { id: 1, imageUrl: 'https://picsum.photos/seed/gallery1/600/400', caption: 'Protestas ciudadanas en Plaza Italia.', photographerName: 'Javiera Latorre', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555', keywords: ['protesta', 'santiago', 'gente', 'manifestacion'], dateAdded: '2024-07-26', textColor: '#FFFFFF' },
-    { id: 2, imageUrl: 'https://picsum.photos/seed/gallery2/600/400', caption: 'Incendio forestal en las cercanías de Valparaíso.', photographerName: 'Ignacio Paredes', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321', keywords: ['incendio', 'valparaiso', 'fuego', 'naturaleza'], dateAdded: '2024-07-25', textColor: '#FFFFFF' },
-    { id: 3, imageUrl: 'https://picsum.photos/seed/gallery3/600/400', caption: 'Congreso Nacional en sesión plenaria.', photographerName: 'Catalina Riquelme', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=catalina', whatsappContact: '56912345678', keywords: ['congreso', 'politica', 'valparaiso', 'diputados'], dateAdded: '2024-07-24', textColor: '#FFFFFF' },
-    { id: 4, imageUrl: 'https://picsum.photos/seed/gallery4/600/400', caption: 'Vista del atardecer en el Desierto de Atacama.', photographerName: 'Mateo Rojas', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', whatsappContact: '56955554444', keywords: ['desierto', 'atacama', 'paisaje', 'naturaleza', 'atardecer'], dateAdded: '2024-07-23', textColor: '#FFFFFF' },
-    { id: 5, imageUrl: 'https://picsum.photos/seed/gallery5/600/400', caption: 'Palafitos de Chiloé bajo un cielo nublado.', photographerName: 'Javiera Latorre', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555', keywords: ['chiloe', 'palafitos', 'sur', 'cultura'], dateAdded: '2024-07-22', textColor: '#FFFFFF' },
-    { id: 6, imageUrl: 'https://picsum.photos/seed/gallery6/600/400', caption: 'Detalle de un músico callejero en Valparaíso.', photographerName: 'Ignacio Paredes', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321', keywords: ['musica', 'valparaiso', 'calle', 'arte'], dateAdded: '2024-07-21', textColor: '#FFFFFF' },
+  { id: 1, imageUrl: 'https://picsum.photos/seed/gallery1/600/400', caption: 'Protestas ciudadanas en Plaza Italia.', photographerName: 'Javiera Latorre', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555', keywords: ['protesta', 'santiago', 'gente', 'manifestacion'], dateAdded: '2024-07-26', textColor: '#FFFFFF' },
+  { id: 2, imageUrl: 'https://picsum.photos/seed/gallery2/600/400', caption: 'Incendio forestal en las cercanías de Valparaíso.', photographerName: 'Ignacio Paredes', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321', keywords: ['incendio', 'valparaiso', 'fuego', 'naturaleza'], dateAdded: '2024-07-25', textColor: '#FFFFFF' },
+  { id: 3, imageUrl: 'https://picsum.photos/seed/gallery3/600/400', caption: 'Congreso Nacional en sesión plenaria.', photographerName: 'Catalina Riquelme', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=catalina', whatsappContact: '56912345678', keywords: ['congreso', 'politica', 'valparaiso', 'diputados'], dateAdded: '2024-07-24', textColor: '#FFFFFF' },
+  { id: 4, imageUrl: 'https://picsum.photos/seed/gallery4/600/400', caption: 'Vista del atardecer en el Desierto de Atacama.', photographerName: 'Mateo Rojas', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=mateo', whatsappContact: '56955554444', keywords: ['desierto', 'atacama', 'paisaje', 'naturaleza', 'atardecer'], dateAdded: '2024-07-23', textColor: '#FFFFFF' },
+  { id: 5, imageUrl: 'https://picsum.photos/seed/gallery5/600/400', caption: 'Palafitos de Chiloé bajo un cielo nublado.', photographerName: 'Javiera Latorre', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=javiera', whatsappContact: '56944445555', keywords: ['chiloe', 'palafitos', 'sur', 'cultura'], dateAdded: '2024-07-22', textColor: '#FFFFFF' },
+  { id: 6, imageUrl: 'https://picsum.photos/seed/gallery6/600/400', caption: 'Detalle de un músico callejero en Valparaíso.', photographerName: 'Ignacio Paredes', photographerAvatarUrl: 'https://i.pravatar.cc/40?u=ignacio', whatsappContact: '56987654321', keywords: ['musica', 'valparaiso', 'calle', 'arte'], dateAdded: '2024-07-21', textColor: '#FFFFFF' },
 ];
 
 export const resources: Resource[] = [
-    { id: 1, name: 'Flourish', category: 'Visualización', description: 'Crea visualizaciones de datos, mapas e historias interactivas de forma sencilla y sin código.', type: 'Herramienta', link: '#' },
-    { id: 2, name: 'Otter.ai', category: 'Transcripción', description: 'Transcribe entrevistas y audios automáticamente con alta precisión, ahorrando horas de trabajo.', type: 'Software', link: '#' },
-    { id: 3, name: 'Guía de Fact-Checking', category: 'Fact-Checking', description: 'Metodologías y herramientas esenciales para la verificación de datos en la era de la desinformación.', type: 'Guía', link: '#' },
-    { id: 4, name: 'Miro', category: 'Productividad', description: 'Pizarra colaborativa online para organizar ideas, planificar investigaciones y trabajar en equipo a distancia.', type: 'Herramienta', link: '#' },
-    { id: 5, name: 'Prompting para Periodistas', category: 'IA Generativa', description: 'Aprende a escribir prompts efectivos para modelos como Gemini y saca el máximo provecho a la IA.', type: 'Guía', link: '#' },
-    { id: 6, name: 'Datawrapper', category: 'Visualización', description: 'Herramienta líder para crear gráficos y mapas responsivos, optimizados para medios de comunicación.', type: 'Herramienta', link: '#' },
+  { id: 1, name: 'Flourish', category: 'Visualización', description: 'Crea visualizaciones de datos, mapas e historias interactivas de forma sencilla y sin código.', type: 'Herramienta', link: '#' },
+  { id: 2, name: 'Otter.ai', category: 'Transcripción', description: 'Transcribe entrevistas y audios automáticamente con alta precisión, ahorrando horas de trabajo.', type: 'Software', link: '#' },
+  { id: 3, name: 'Guía de Fact-Checking', category: 'Fact-Checking', description: 'Metodologías y herramientas esenciales para la verificación de datos en la era de la desinformación.', type: 'Guía', link: '#' },
+  { id: 4, name: 'Miro', category: 'Productividad', description: 'Pizarra colaborativa online para organizar ideas, planificar investigaciones y trabajar en equipo a distancia.', type: 'Herramienta', link: '#' },
+  { id: 5, name: 'Prompting para Periodistas', category: 'IA Generativa', description: 'Aprende a escribir prompts efectivos para modelos como Gemini y saca el máximo provecho a la IA.', type: 'Guía', link: '#' },
+  { id: 6, name: 'Datawrapper', category: 'Visualización', description: 'Herramienta líder para crear gráficos y mapas responsivos, optimizados para medios de comunicación.', type: 'Herramienta', link: '#' },
 ];
 
 export const fundingOpportunities: FundingOpportunity[] = [
-    { id: 1, title: 'Fondo de Apoyo a Medios de Comunicación Social Regionales', organization: 'Gobierno de Chile', deadline: '31 de Agosto, 2024', type: 'Fondo', link: '#' },
-    { id: 2, title: 'Beca de Periodismo de Investigación', organization: 'Fundación para la Prensa', deadline: '15 de Septiembre, 2024', type: 'Beca', link: '#' },
-    { id: 3, title: 'Premio Nacional de Periodismo Digital', organization: 'Universidad Alberto Hurtado', deadline: '30 de Septiembre, 2024', type: 'Premio', link: '#' },
-    { id: 4, title: 'Google News Initiative - Innovation Challenge', organization: 'Google', deadline: '10 de Octubre, 2024', type: 'Fondo', link: '#' },
+  { id: 1, title: 'Fondo de Apoyo a Medios de Comunicación Social Regionales', organization: 'Gobierno de Chile', deadline: '31 de Agosto, 2024', type: 'Fondo', link: '#' },
+  { id: 2, title: 'Beca de Periodismo de Investigación', organization: 'Fundación para la Prensa', deadline: '15 de Septiembre, 2024', type: 'Beca', link: '#' },
+  { id: 3, title: 'Premio Nacional de Periodismo Digital', organization: 'Universidad Alberto Hurtado', deadline: '30 de Septiembre, 2024', type: 'Premio', link: '#' },
+  { id: 4, title: 'Google News Initiative - Innovation Challenge', organization: 'Google', deadline: '10 de Octubre, 2024', type: 'Fondo', link: '#' },
 ];
 
 export const events: Event[] = [
-    { id: 1, title: 'Webinar: Cómo usar la IA para potenciar tu medio', date: '05 AGO', fullDate: 'Lunes 05 de Agosto, 19:00 hrs.', location: 'Online', type: 'Webinar', link: '#' },
-    { id: 2, title: 'Taller presencial de Fotoperiodismo con celular', date: '17 AGO', fullDate: 'Sábado 17 de Agosto, 10:00 hrs.', location: 'Santiago, Chile', type: 'Taller', link: '#' },
-    { id: 3, title: 'Conferencia Anual de Periodismo y Emprendimiento', date: '28 SEP', fullDate: 'Sábado 28 de Septiembre, 09:00 hrs.', location: 'Valparaíso, Chile', type: 'Conferencia', link: '#' },
+  { id: 1, title: 'Webinar: Cómo usar la IA para potenciar tu medio', date: '05 AGO', fullDate: 'Lunes 05 de Agosto, 19:00 hrs.', location: 'Online', type: 'Webinar', link: '#' },
+  { id: 2, title: 'Taller presencial de Fotoperiodismo con celular', date: '17 AGO', fullDate: 'Sábado 17 de Agosto, 10:00 hrs.', location: 'Santiago, Chile', type: 'Taller', link: '#' },
+  { id: 3, title: 'Conferencia Anual de Periodismo y Emprendimiento', date: '28 SEP', fullDate: 'Sábado 28 de Septiembre, 09:00 hrs.', location: 'Valparaíso, Chile', type: 'Conferencia', link: '#' },
 ];
 
 export const legalTopics: LegalTopic[] = [
-    { id: 1, title: 'Protección de Fuentes', description: 'Entiende el marco legal que ampara el secreto profesional y cómo actuar frente a presiones.' },
-    { id: 2, title: 'Derecho a la Imagen', description: 'Conoce los límites y permisos necesarios al utilizar imágenes de personas en tus reportajes.' },
-    { id: 3, title: 'Calumnias e Injurias', description: 'Diferencias clave y cómo evitar riesgos legales al realizar denuncias periodísticas.' },
+  { id: 1, title: 'Protección de Fuentes', description: 'Entiende el marco legal que ampara el secreto profesional y cómo actuar frente a presiones.' },
+  { id: 2, title: 'Derecho a la Imagen', description: 'Conoce los límites y permisos necesarios al utilizar imágenes de personas en tus reportajes.' },
+  { id: 3, title: 'Calumnias e Injurias', description: 'Diferencias clave y cómo evitar riesgos legales al realizar denuncias periodísticas.' },
 ];
 
 export const legalFAQs: LegalFAQ[] = [
-    { id: 1, question: '¿Estoy obligado a revelar mis fuentes si un tribunal me lo exige?', answer: 'La ley chilena ampara el secreto profesional del periodista como una garantía para la libertad de prensa. En general, no puedes ser obligado a revelar tus fuentes. Sin embargo, existen excepciones muy específicas y el tema puede ser complejo. Es crucial contar con asesoría legal si te enfrentas a esta situación.' },
-    { id: 2, question: '¿Puedo tomar una foto a cualquier persona en la calle y publicarla?', answer: 'En lugares públicos, generalmente se puede fotografiar a personas sin su consentimiento si son parte de un contexto noticioso y no se atenta contra su honra. Sin embargo, el uso de la imagen para fines comerciales o para denostar a la persona requiere consentimiento explícito. La ley pondera el derecho a la información con el derecho a la propia imagen.' },
-    { id: 3, question: '¿Qué hago si recibo una amenaza por un reportaje que publiqué?', answer: 'Debes tomarlo muy en serio. Documenta la amenaza (capturas de pantalla, correos, etc.), informa a tu editor o medio, y considera realizar una denuncia ante la policía o fiscalía. También puedes buscar apoyo en organizaciones de defensa de la libertad de prensa.' },
-    { id: 4, question: '¿Cuál es la diferencia entre una calumnia y una injuria?', answer: 'De forma simple: una injuria es una ofensa que daña la honra o el crédito de una persona. Una calumnia es imputar falsamente un delito a alguien. La calumnia es más grave. Como periodista, es fundamental que todo lo que publiques esté debidamente verificado para evitar caer en estas figuras legales.' },
+  { id: 1, question: '¿Estoy obligado a revelar mis fuentes si un tribunal me lo exige?', answer: 'La ley chilena ampara el secreto profesional del periodista como una garantía para la libertad de prensa. En general, no puedes ser obligado a revelar tus fuentes. Sin embargo, existen excepciones muy específicas y el tema puede ser complejo. Es crucial contar con asesoría legal si te enfrentas a esta situación.' },
+  { id: 2, question: '¿Puedo tomar una foto a cualquier persona en la calle y publicarla?', answer: 'En lugares públicos, generalmente se puede fotografiar a personas sin su consentimiento si son parte de un contexto noticioso y no se atenta contra su honra. Sin embargo, el uso de la imagen para fines comerciales o para denostar a la persona requiere consentimiento explícito. La ley pondera el derecho a la información con el derecho a la propia imagen.' },
+  { id: 3, question: '¿Qué hago si recibo una amenaza por un reportaje que publiqué?', answer: 'Debes tomarlo muy en serio. Documenta la amenaza (capturas de pantalla, correos, etc.), informa a tu editor o medio, y considera realizar una denuncia ante la policía o fiscalía. También puedes buscar apoyo en organizaciones de defensa de la libertad de prensa.' },
+  { id: 4, question: '¿Cuál es la diferencia entre una calumnia y una injuria?', answer: 'De forma simple: una injuria es una ofensa que daña la honra o el crédito de una persona. Una calumnia es imputar falsamente un delito a alguien. La calumnia es más grave. Como periodista, es fundamental que todo lo que publiques esté debidamente verificado para evitar caer en estas figuras legales.' },
 ];
 
 export const heroHeading: HeroHeading = {
-    mainText: 'El periodismo chileno está',
-    highlightedText: 'emprendiendo',
-    subText: 'Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile',
-    featuredLabel: 'Emprendimiento de la Semana',
-    textColor: '#FFFFFF',
+  mainText: 'El periodismo chileno está',
+  highlightedText: 'emprendiendo',
+  subText: 'Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile',
+  featuredLabel: 'Emprendimiento de la Semana',
+  textColor: '#FFFFFF',
 };
 
 export const shortCollaborations: ShortCollaboration[] = [
-  { 
-    id: 1, 
-    title: 'Periodista para cubrir evento de tecnología (2 días)', 
-    deadline: 'Postular antes del 30/07', 
-    budget: '$150.000 CLP', 
-    author: 'Agencia Comms', 
+  {
+    id: 1,
+    title: 'Periodista para cubrir evento de tecnología (2 días)',
+    deadline: 'Postular antes del 30/07',
+    budget: '$150.000 CLP',
+    author: 'Agencia Comms',
     authorAvatarUrl: 'https://i.pravatar.cc/40?u=comms',
     whatsappContact: '56911223344',
   },
-  { 
-    id: 2, 
-    title: 'Redactor para 5 notas sobre sustentabilidad', 
-    deadline: 'Entrega en 1 semana', 
-    budget: '$200.000 CLP', 
-    author: 'ONG Verde Chile', 
+  {
+    id: 2,
+    title: 'Redactor para 5 notas sobre sustentabilidad',
+    deadline: 'Entrega en 1 semana',
+    budget: '$200.000 CLP',
+    author: 'ONG Verde Chile',
     authorAvatarUrl: 'https://i.pravatar.cc/40?u=verdechile',
     whatsappContact: '56922334455',
   },
-  { 
-    id: 3, 
-    title: 'Apoyo en transcripción de 10 entrevistas (urgente)', 
-    deadline: 'Necesario para hoy', 
-    budget: 'A convenir', 
-    author: 'Productora Relatos', 
+  {
+    id: 3,
+    title: 'Apoyo en transcripción de 10 entrevistas (urgente)',
+    deadline: 'Necesario para hoy',
+    budget: 'A convenir',
+    author: 'Productora Relatos',
     authorAvatarUrl: 'https://i.pravatar.cc/40?u=relatos',
     whatsappContact: '56933445566',
   },

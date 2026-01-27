@@ -13,6 +13,7 @@ interface HomePageProps {
     onSelectPressRelease: (pressRelease: PressRelease) => void;
     onSelectCourse: (course: Course) => void;
     isAdminMode: boolean;
+    currentUser?: User | null;
     courses: Course[];
     jobs: Job[];
     entrepreneurs: Entrepreneurship[];
@@ -36,7 +37,6 @@ interface HomePageProps {
     sponsoredAds: SponsoredAd[];
     specialAds: SpecialAd[];
     stats: SiteStat[];
-    currentUser?: User | null;
     onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
 }
 
@@ -258,10 +258,70 @@ const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
     </div>
 );
 
+const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    // Sort posts by createdAt (descending) or id if createdAt is missing
+    const sortedPosts = [...posts].sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+        if (dateA !== dateB) {
+            return dateB - dateA;
+        }
+        return b.id - a.id;
+    }).slice(0, 8);
+
+    const slides = [];
+    for (let i = 0; i < sortedPosts.length; i += 4) {
+        slides.push(sortedPosts.slice(i, i + 4));
+    }
+
+    const totalSlides = slides.length;
+
+    useEffect(() => {
+        if (totalSlides <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % totalSlides);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, [totalSlides]);
+
+    if (sortedPosts.length === 0) return null;
+
+    return (
+        <div className="relative group overflow-hidden pb-10">
+            <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {slides.map((slide, slideIdx) => (
+                    <div key={slideIdx} className="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-6 px-1">
+                        {slide.map(post => (
+                            <CommunityPostCard key={post.id} post={post} />
+                        ))}
+                    </div>
+                ))}
+            </div>
+
+            {/* Navigation Dots */}
+            {totalSlides > 1 && (
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-3 z-10">
+                    {slides.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-accent w-6' : 'bg-gray-300 hover:bg-accent/40'}`}
+                            aria-label={`Ver slide ${idx + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
-    <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+    <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
         <img src={post.imageUrl} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
-        <div className="p-6">
+        <div className="p-6 pb-12"> {/* Added padding bottom for dots */}
             <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4">
                 <div>
                     <h3 className="text-2xl font-bold font-serif text-text-primary">{post.title}</h3>
@@ -282,6 +342,41 @@ const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) 
         </div>
     </div>
 );
+
+const PhotojournalismCarousel: React.FC<{ posts: PhotojournalismPost[] }> = ({ posts }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (posts.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % posts.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [posts.length]);
+
+    if (posts.length === 0) return null;
+    const post = posts[currentIndex];
+
+    return (
+        <div className="relative group">
+            <div className="transition-opacity duration-500 ease-in-out">
+                <PhotojournalismCard post={post} />
+            </div>
+
+            {/* Navigation Dots */}
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+                {posts.map((_, idx) => (
+                    <button
+                        key={idx}
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 shadow-sm border border-white/50 ${idx === currentIndex ? 'bg-primary scale-110' : 'bg-gray-300/80 hover:bg-white'}`}
+                        aria-label={`Ver foto ${idx + 1}`}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+};
 
 const EntrepreneurialJournalistCard: React.FC<{ service: FreelanceService }> = ({ service }) => (
     <div className="bg-surface rounded-lg border border-gray-200 flex flex-col hover:shadow-md transition-shadow duration-300 h-full group overflow-hidden">
@@ -675,11 +770,40 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-press">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
-                <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
-                <div className="mt-6 text-left">
-                    <PressReleaseForm onSave={handlePressReleaseSubmit} onClose={onClose} currentUser={currentUser || undefined} />
-                </div>
+                {currentUser ? (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
+                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
+                        <div className="mt-6 text-left">
+                            <PressReleaseForm onSave={handlePressReleaseSubmit} onClose={onClose} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                        <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    onNavigate('register');
+                                }}
+                                className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors"
+                            >
+                                Registrarme
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    onNavigate('login');
+                                }}
+                                className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                            >
+                                Ingresar
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -853,18 +977,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             </div>
                         </section>
 
-                        {/* Courses Section */}
-                        <section>
-                            <div className="flex justify-between items-center border-b-2 border-primary pb-2 mb-6">
-                                <h2 className="text-3xl font-bold font-serif text-text-primary">Capacitación</h2>
-                                <button onClick={() => onNavigate('courses')} className="font-semibold text-primary hover:underline">Ver todo &rarr;</button>
-                                {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                                {courses.slice(0, 4).map(course => <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />)}
-                            </div>
-                        </section>
-
                         {/* Emprender es Mundial Section */}
                         {entrepreneurshipTip && (
                             <section>
@@ -919,9 +1031,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <h2 className="text-3xl font-bold font-serif text-text-primary">Actividad de la Comunidad</h2>
                                 <button onClick={() => onNavigate('community-post')} className="font-semibold text-accent hover:underline">Ver toda la actividad &rarr;</button>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {communityPosts.slice(0, 4).map(post => <CommunityPostCard key={post.id} post={post} />)}
-                            </div>
+                            <CommunityActivityCarousel posts={communityPosts} />
                             <div className={`bg-accent/5 p-4 rounded-lg mt-8 border border-accent/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3e%3cpath d='M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10' stroke='%2384cc16' stroke-width='1' stroke-opacity='0.2'/%3e%3c/svg%3e")]`}>
                                 <div>
                                     <h3 className="font-semibold text-base text-green-800">¿Quieres iniciar un debate?</h3>
@@ -943,7 +1053,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <button onClick={() => onNavigate('photojournalism')} className="font-semibold text-primary hover:underline">Ver repositorio &rarr;</button>
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
                             </div>
-                            {photojournalismPosts.length > 0 && <PhotojournalismCard post={photojournalismPosts[0]} />}
+                            {photojournalismPosts.length > 0 && <PhotojournalismCarousel posts={photojournalismPosts.slice(0, 3)} />}
 
                             <div className="bg-primary/5 p-4 rounded-lg mt-8 border border-primary/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4">
                                 <div>
@@ -951,18 +1061,23 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <p className="text-xs text-orange-800">Con tu suscripción gratuita, publica tu acierto y dale difusión a tu perspectiva.</p>
                                 </div>
                                 <button
-                                    onClick={() => setIsPhotojournalismModalOpen(true)}
+                                    onClick={() => {
+                                        if (currentUser) {
+                                            onNavigate('photojournalism');
+                                        } else {
+                                            setIsPhotojournalismModalOpen(true);
+                                        }
+                                    }}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm"
                                 >
                                     Sube tu foto
                                 </button>
-                            </div>
-                        </section>
+                        </div>
+                    </section>
 
                     </div>
 
-                    {/* Right Sidebar */}
-                    <aside className="lg:col-span-1 space-y-8">
+                    <aside className="space-y-8">
                         {/* Opportunities Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-4">
@@ -1125,7 +1240,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         </button>
                     </div>
                 </section>
-
                 {/* New Opportunities Banner */}
                 <section>
                     <div className="bg-gradient-to-r from-secondary to-blue-900 text-white rounded-lg p-8 md:p-12">
@@ -1169,8 +1283,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     </div>
                     <StatsCounter stats={statsWithIcons} />
                 </section>
-            </div >
-
+            </div>
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
             {isEntrepreneurModalOpen && <EntrepreneurPublicationModal onClose={() => setIsEntrepreneurModalOpen(false)} />}
@@ -1178,7 +1291,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
-        </div >
+            </div>
     );
 };
 

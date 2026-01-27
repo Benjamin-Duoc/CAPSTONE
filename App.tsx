@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PressReleaseUploadPage from './components/PressReleaseUploadPage';
-import { NewsManager } from './components/admin/NewsManager';
 import HomePage from './components/HomePage';
 import CoursesModule from './components/CoursesModule';
 import EntrepreneurshipModule from './components/EntrepreneurshipModule';
@@ -30,30 +29,85 @@ import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
+import LoginPage from './components/LoginPage';
+import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, loadNewsArticles, saveNewsArticles, loadCourses, saveCourses, loadJobs, saveJobs, loadEntrepreneurs, saveEntrepreneurs, loadSponsors, saveSponsors, loadPressReleases, savePressReleases, loadPhotojournalismPosts, savePhotojournalismPosts, loadFundingOpportunities, saveFundingOpportunities, loadSpecialists, saveSpecialists, loadShareablePhotos, saveShareablePhotos, loadShortCollaborations, saveShortCollaborations, loadEntrepreneurshipTips, saveEntrepreneurshipTips, loadSponsoredAds, saveSponsoredAds, loadCommunityPosts, saveCommunityPosts, loadSpecialAds, saveSpecialAds, loadEvents, saveEvents, loadStats, saveStats } from './utils/db';
+import {
+  initDatabase,
+  getAllNews,
+  addNews,
+  updateNews,
+  deleteNews,
+  getAllPressReleases,
+  addPressRelease,
+  updatePressRelease,
+  deletePressRelease,
+  loadNewsArticles,
+  saveNewsArticles,
+  loadCourses,
+  saveCourses,
+  loadJobs,
+  saveJobs,
+  loadEntrepreneurs,
+  saveEntrepreneurs,
+  loadSponsors,
+  saveSponsors,
+  loadPressReleases,
+  savePressReleases,
+  loadPhotojournalismPosts,
+  savePhotojournalismPosts,
+  loadFundingOpportunities,
+  saveFundingOpportunities,
+  loadSpecialists,
+  saveSpecialists,
+  loadShareablePhotos,
+  saveShareablePhotos,
+  loadShortCollaborations,
+  saveShortCollaborations,
+  loadEntrepreneurshipTips,
+  saveEntrepreneurshipTips,
+  loadSponsoredAds,
+  saveSponsoredAds,
+  loadCommunityPosts,
+  saveCommunityPosts,
+  loadSpecialAds,
+  saveSpecialAds,
+  loadEvents,
+  saveEvents,
+  loadStats,
+  saveStats,
+  getPhotoPosts,
+  getCommunityPosts,
+  insertCommunityPost,
+  deleteCommunityPost,
+  updateCommunityPost,
+} from './utils/db';
 
 import * as data from './data/mockData';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [returnToPage, setReturnToPage] = useState<Page>('home'); // Track page to return to after login
   const [initialTab, setInitialTab] = useState<string | null>(null);
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneurship | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<PremiumSponsor | null>(null);
   const [selectedNewsArticle, setSelectedNewsArticle] = useState<NewsArticle | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null); // State for selected course
+  const [selectedPhotoPost, setSelectedPhotoPost] = useState<PhotojournalismPost | null>(null); // State for selected photo post
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null); // Persistent user state
 
   const handleLogin = (user: User) => {
     setCurrentUser(user);
+    localStorage.setItem('cipress_user', JSON.stringify(user));
     handleNavigate('home');
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    localStorage.removeItem('cipress_user');
     handleNavigate('home');
   };
 
@@ -139,17 +193,58 @@ const App: React.FC = () => {
 
   useEffect(() => {
     initDatabase();
-    // Load News from DB
-    getAllNews().then(articles => {
-      setNewsArticles(articles);
-    }).catch(err => console.error("Error loading news:", err));
 
-    // Load Press Releases from DB
-    getAllPressReleases().then(prs => {
-      setPressReleases(prs);
-    }).catch(err => console.error("Error loading press releases:", err));
+    getPhotoPosts().then(dbPosts => {
+      if (dbPosts && dbPosts.length > 0) {
+        setPhotojournalismPosts(dbPosts);
+      }
+    });
+
+    getCommunityPosts().then(dbPosts => {
+      if (dbPosts && dbPosts.length > 0) {
+        setCommunityPosts(dbPosts);
+      }
+    });
+
+    getAllNews().then(setNewsArticles).catch(err => console.error('Error loading news:', err));
+    getAllPressReleases().then(setPressReleases).catch(err => console.error('Error loading press releases:', err));
+
+    const savedUser = localStorage.getItem('cipress_user');
+    if (savedUser) {
+      try {
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error('Error restoring session:', e);
+        localStorage.removeItem('cipress_user');
+      }
+    }
   }, []);
 
+  const refreshPhotoPosts = async () => {
+    const dbPosts = await getPhotoPosts();
+    if (dbPosts && dbPosts.length > 0) {
+      setPhotojournalismPosts(dbPosts);
+    }
+  };
+
+  const refreshCommunityPosts = async () => {
+    const dbPosts = await getCommunityPosts();
+    if (dbPosts && dbPosts.length > 0) {
+      setCommunityPosts(dbPosts);
+    }
+  };
+
+  const isCommunityPostOwner = (post: CommunityPost) => {
+    if (isAdminMode || currentPage === 'admin') return true;
+    if (!currentUser) return false;
+
+    if (post.createdBy) {
+      return post.createdBy === currentUser.email;
+    }
+
+    const fullName = `${currentUser.firstName} ${currentUser.lastName}`.trim();
+    return post.authorName === fullName;
+  };
   // Save data to localStorage whenever it changes
   useEffect(() => {
     saveNewsArticles(newsArticles);
@@ -220,12 +315,18 @@ const App: React.FC = () => {
   }, [stats]);
 
   const handleNavigate = (page: Page, subPage?: string) => {
+    // If navigating to login, save the current page (unless we are already on login or register)
+    if (page === 'login' && currentPage !== 'login' && currentPage !== 'register') {
+      setReturnToPage(currentPage);
+    }
+
     setSelectedEntrepreneur(null); // Reset detail page when navigating
     setSelectedSponsor(null);
     setSelectedNewsArticle(null);
     setSelectedJob(null);
     setSelectedPressRelease(null);
     setSelectedCourse(null);
+    setSelectedPhotoPost(null);
     setCurrentPage(page);
     setInitialTab(subPage || null);
     window.scrollTo(0, 0); // Scroll to top on navigation
@@ -258,6 +359,11 @@ const App: React.FC = () => {
 
   const handleSelectCourse = (course: Course) => {
     setSelectedCourse(course);
+    window.scrollTo(0, 0);
+  };
+
+  const handleSelectPhotoPost = (post: PhotojournalismPost) => {
+    setSelectedPhotoPost(post);
     window.scrollTo(0, 0);
   };
 
@@ -446,24 +552,59 @@ const App: React.FC = () => {
   };
 
   // CRUD for Community Posts
-  const handleAddCommunityPost = (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
-    const newCommunityPost: CommunityPost = {
+  const handleAddCommunityPost = async (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
+    if (!currentUser) {
+      alert('Debes iniciar sesión para publicar.');
+      return;
+    }
+
+    const result = await insertCommunityPost({
       ...newPost,
-      id: Date.now(),
-      authorName: 'Usuario Activo', // Hardcoded for now
-      authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
-    };
-    setCommunityPosts(prev => [newCommunityPost, ...prev]);
+      authorName: `${currentUser.firstName} ${currentUser.lastName}`,
+      authorAvatarUrl: `https://i.pravatar.cc/40?u=${currentUser.email}`,
+      createdBy: currentUser.email,
+    });
+
+    if (result.success) {
+      await refreshCommunityPosts();
+      alert('¡Publicación compartida exitosamente!');
+    } else {
+      alert(result.message || 'Error al publicar. Inténtalo de nuevo.');
+    }
   };
   const handleAddCommunityPostAdmin = (newPost: Omit<CommunityPost, 'id'>) => {
     setCommunityPosts(prev => [{ ...newPost, id: Date.now() }, ...prev]);
   };
-  const handleUpdateCommunityPost = (updatedPost: CommunityPost) => {
-    setCommunityPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
+  const handleUpdateCommunityPost = async (updatedPost: CommunityPost) => {
+    if (!isCommunityPostOwner(updatedPost)) {
+      alert('Solo puedes editar tus propias publicaciones.');
+      return;
+    }
+
+    const result = await updateCommunityPost(updatedPost);
+    if (!result.success) {
+      alert(result.message || 'Error al actualizar la publicación.');
+      return;
+    }
+
+    await refreshCommunityPosts();
   };
-  const handleDeleteCommunityPost = (postId: number) => {
+  const handleDeleteCommunityPost = async (postId: number) => {
+    const post = communityPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    if (!isCommunityPostOwner(post)) {
+      alert('Solo puedes eliminar tus propias publicaciones.');
+      return;
+    }
+
     if (window.confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
-      setCommunityPosts(prev => prev.filter(p => p.id !== postId));
+      const result = await deleteCommunityPost(postId);
+      if (!result.success) {
+        alert(result.message || 'Error al eliminar la publicación.');
+        return;
+      }
+      await refreshCommunityPosts();
     }
   };
 
@@ -603,6 +744,9 @@ const App: React.FC = () => {
     if (selectedPressRelease) {
       return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
     }
+    if (selectedPhotoPost) {
+      return <PhotojournalismDetailPage post={selectedPhotoPost} onBack={() => setSelectedPhotoPost(null)} />;
+    }
     if (selectedCourse) {
       return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
     }
@@ -712,7 +856,7 @@ const App: React.FC = () => {
       case 'photo-gallery':
         return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
       case 'photojournalism':
-        return <PhotojournalismModule />;
+        return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} />;
       case 'resources':
         return <ResourcesModule resources={resources} />;
       case 'funding':
@@ -733,10 +877,22 @@ const App: React.FC = () => {
         return <CommunityPostPage
           posts={communityPosts}
           onAddPost={handleAddCommunityPost}
+          onUpdatePost={handleUpdateCommunityPost}
+          onDeletePost={handleDeleteCommunityPost}
           onNavigate={handleNavigate}
+          currentUser={currentUser}
         />;
       case 'register':
         return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
+      case 'login':
+        return <LoginPage
+          onNavigate={handleNavigate}
+          returnTo={returnToPage}
+          onLoginSuccess={(user) => {
+            handleLogin(user);
+            handleNavigate(returnToPage);
+          }}
+        />;
       case 'upload-press-release':
         return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
       case 'home':
@@ -782,13 +938,15 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
-      {currentPage !== 'register' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />}
+      {currentPage !== 'register' && currentPage !== 'login' && (
+        <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />
+      )}
 
       <main className="flex-grow">
         {renderPage()}
       </main>
       {/* Hide footer on detail page for a more focused view */}
-      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
+      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && currentPage !== 'login' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
     </div>
   );
 };
