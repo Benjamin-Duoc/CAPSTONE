@@ -65,7 +65,6 @@ export const getAllUsers = (): User[] => {
   }
 };
 
-<<<<<<< HEAD
 // Photojournalism Functions
 export const getPhotoPosts = async (): Promise<PhotojournalismPost[]> => {
   const posts = loadPhotojournalismPosts();
