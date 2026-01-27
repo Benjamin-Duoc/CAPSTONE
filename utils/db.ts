@@ -21,7 +21,7 @@ const DB_SPECIAL_ADS_KEY = 'cipress_db_special_ads';
 const DB_EVENTS_KEY = 'cipress_db_events';
 const DB_STATS_KEY = 'cipress_db_stats';
 
-// Initialize local caches for news/press and ensure users table exists (supabase)
+// Initialize local caches for news/press and users (localStorage)
 export const initDatabase = () => {
   if (!localStorage.getItem(DB_USERS_KEY)) {
     localStorage.setItem(DB_USERS_KEY, JSON.stringify([]));
@@ -32,10 +32,10 @@ export const initDatabase = () => {
   if (!localStorage.getItem(DB_PRESS_RELEASES_KEY)) {
     localStorage.setItem(DB_PRESS_RELEASES_KEY, JSON.stringify(initialPressReleases));
   }
-  console.log('Database initialized (local cache + Supabase).');
+  console.log('Database initialized (localStorage).');
 };
 
-// Insert a user (Supabase)
+// User operations
 export const insertUser = async (user: Omit<User, 'id'>): Promise<{ success: boolean; message: string }> => {
   try {
     const users = getAllUsers();
@@ -65,6 +65,7 @@ export const getAllUsers = (): User[] => {
   }
 };
 
+<<<<<<< HEAD
 // Photojournalism Functions
 export const getPhotoPosts = async (): Promise<PhotojournalismPost[]> => {
   const posts = loadPhotojournalismPosts();
