@@ -601,38 +601,10 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
                     <p className="text-xs text-primary font-semibold">{specialist.title}</p>
                 </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-text-secondary text-center mb-2">"{specialist.specialtyDescription}"</p>
-                <a
-                    href={`https://wa.me/${specialist.whatsappContact}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full mt-2 px-4 py-2 text-xs font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-1"
-                >
-                    <WhatsAppIcon className="h-4 w-4" />
-                    <span>Contactar</span>
-                </a>
-            </div>
+            <p className="text-xs text-text-secondary mt-3">{specialist.specialtyDescription}</p>
         </div>
     );
 };
-
-const FundingPreviewCard: React.FC<{ item: FundingOpportunity }> = ({ item }) => (
-    <div className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 group">
-        <div className="flex justify-between items-start">
-            <div>
-                <span className={`text-xs font-bold px-2 py-1 rounded-full ${item.type === 'Fondo' ? 'bg-accent/20 text-green-800' : item.type === 'Beca' ? 'bg-secondary/10 text-secondary' : 'bg-highlight/20 text-yellow-800'}`}>{item.type}</span>
-                <h4 className="font-semibold text-text-primary mt-2 group-hover:text-primary transition-colors">{item.title}</h4>
-                <p className="text-sm text-text-secondary">{item.organization}</p>
-            </div>
-            <TrophyIcon className="h-6 w-6 text-gray-300 group-hover:text-highlight transition-colors flex-shrink-0 ml-2" />
-        </div>
-        <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">Fecha Límite</p>
-            <p className="font-bold text-primary text-sm">{item.deadline}</p>
-        </div>
-    </div>
-);
 
 
 const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
@@ -641,11 +613,39 @@ const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const HomePage: React.FC<HomePageProps> = (props) => {
     const {
-        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
-        pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
-        freelanceServices, photojournalismPosts, events,
-        resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
-        sponsoredAds, communityAds, specialAds, stats, currentUser
+        onNavigate,
+        onSelectEntrepreneur,
+        onSelectSponsor,
+        onSelectNewsArticle,
+        onSelectJob,
+        onSelectPressRelease,
+        onSelectCourse,
+        isAdminMode,
+        courses,
+        jobs,
+        entrepreneurs,
+        newsArticles,
+        pressReleases,
+        ngoSpotlight,
+        freelanceServices,
+        communityAds,
+        premiumSponsors,
+        promoVideos,
+        communityPosts,
+        photojournalismPosts,
+        specialists,
+        shareablePhotos,
+        resources,
+        fundingOpportunities,
+        events,
+        heroHeading,
+        shortCollaborations,
+        entrepreneurshipTips,
+        sponsoredAds,
+        specialAds,
+        stats,
+        onAddPressRelease,
+        currentUser,
     } = props;
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
@@ -657,58 +657,24 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
 
     const handleUploadClick = () => {
-        if (currentUser) {
-            onNavigate('upload-press-release');
-        } else {
-            setIsPressReleaseModalOpen(true);
-        }
+        setIsPressReleaseModalOpen(true);
     };
 
-    const iconMap: { [key in SiteStat['id']]: React.ReactNode } = {
-        subscribers: <UserGroupIcon className="h-12 w-12 text-highlight" />,
-        visits: <ChartBarIcon className="h-12 w-12 text-highlight" />,
-        regions: <LatinAmericaMapIcon className="h-12 w-12 text-highlight" />,
+    const handlePressReleaseSubmit = (pr: Omit<PressRelease, 'id'>) => {
+        if (onAddPressRelease) {
+            onAddPressRelease(pr);
+        }
+        setIsPressReleaseModalOpen(false);
     };
 
     const statsWithIcons = stats.map(stat => ({
         ...stat,
-        icon: iconMap[stat.id]
+        icon: stat.id === 'subscribers'
+            ? <UserGroupIcon className="h-10 w-10 text-orange-100" />
+            : stat.id === 'visits'
+                ? <ChartBarIcon className="h-10 w-10 text-orange-100" />
+                : <LatinAmericaMapIcon className="h-10 w-10 text-orange-100" />,
     }));
-
-    const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-pr">
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
-                <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
-                        Registrarme
-                    </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-                        Ingresar
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-    const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
-                <p className="mt-4 text-text-secondary">Para publicar una fuente experta en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
-                        Registrarme
-                    </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-                        Ingresar
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
 
     const EntrepreneurPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-entrepreneur">
@@ -800,6 +766,66 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </div>
     );
 
+    const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-press">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
+                {currentUser ? (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
+                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
+                        <div className="mt-6 text-left">
+                            <PressReleaseForm onSave={handlePressReleaseSubmit} onClose={onClose} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                        <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    onNavigate('register');
+                                }}
+                                className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors"
+                            >
+                                Registrarme
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    onNavigate('login');
+                                }}
+                                className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                            >
+                                Ingresar
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+
+    const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
+                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <p className="mt-4 text-text-secondary">Para publicar tu perfil como especialista, necesitas una suscripción gratuita activa en CiPress.</p>
+                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
+                        Registrarme
+                    </button>
+                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                        Ingresar
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+
     const SponsoredAdCard: React.FC<{ ad: SponsoredAd }> = ({ ad }) => (
         <a href={ad.ctaLink} target="_blank" rel="noopener noreferrer" className="block relative bg-surface rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 group overflow-hidden h-64 text-left">
             <img src={ad.imageUrl} alt={ad.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -838,8 +864,10 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </div>
     );
 
-    const mainNewsArticle = newsArticles[0];
-    const otherNewsArticles = newsArticles.slice(1, 3);
+    // Sort news articles by ID (newest first - higher IDs are more recent)
+    const sortedNewsArticles = [...newsArticles].sort((a, b) => b.id - a.id);
+    const mainNewsArticle = sortedNewsArticles[0];
+    const otherNewsArticles = sortedNewsArticles.slice(1, 3);
     const entrepreneurshipTip = [...entrepreneurshipTips].sort((a, b) => b.id - a.id)[0];
     const legalAd = specialAds.find(ad => ad.id === 'legal');
     const entrepreneurshipAd = specialAds.find(ad => ad.id === 'entrepreneurship');
@@ -1117,7 +1145,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
                             </div>
                             <div className="space-y-4">
-                                {fundingOpportunities.slice(0, 2).map(item => <FundingPreviewCard key={item.id} item={item} />)}
+                                {fundingOpportunities.slice(0, 2).map(item => <FundingCard key={item.id} item={item} />)}
                             </div>
                         </section>
 

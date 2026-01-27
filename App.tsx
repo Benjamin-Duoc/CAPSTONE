@@ -32,7 +32,56 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, getPhotoPosts, getCommunityPosts, insertCommunityPost, deleteCommunityPost, updateCommunityPost } from './utils/db';
+import {
+  initDatabase,
+  getAllNews,
+  addNews,
+  updateNews,
+  deleteNews,
+  getAllPressReleases,
+  addPressRelease,
+  updatePressRelease,
+  deletePressRelease,
+  loadNewsArticles,
+  saveNewsArticles,
+  loadCourses,
+  saveCourses,
+  loadJobs,
+  saveJobs,
+  loadEntrepreneurs,
+  saveEntrepreneurs,
+  loadSponsors,
+  saveSponsors,
+  loadPressReleases,
+  savePressReleases,
+  loadPhotojournalismPosts,
+  savePhotojournalismPosts,
+  loadFundingOpportunities,
+  saveFundingOpportunities,
+  loadSpecialists,
+  saveSpecialists,
+  loadShareablePhotos,
+  saveShareablePhotos,
+  loadShortCollaborations,
+  saveShortCollaborations,
+  loadEntrepreneurshipTips,
+  saveEntrepreneurshipTips,
+  loadSponsoredAds,
+  saveSponsoredAds,
+  loadCommunityPosts,
+  saveCommunityPosts,
+  loadSpecialAds,
+  saveSpecialAds,
+  loadEvents,
+  saveEvents,
+  loadStats,
+  saveStats,
+  getPhotoPosts,
+  getCommunityPosts,
+  insertCommunityPost,
+  deleteCommunityPost,
+  updateCommunityPost,
+} from './utils/db';
 
 import * as data from './data/mockData';
 
@@ -62,31 +111,82 @@ const App: React.FC = () => {
     handleNavigate('home');
   };
 
-  // Centralized data state for the entire application
-  const [courses, setCourses] = useState(data.courses);
-  const [jobs, setJobs] = useState(data.jobs);
-  const [entrepreneurs, setEntrepreneurs] = useState(data.entrepreneurs);
-  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]); // Initialize empty, load from DB
-  const [pressReleases, setPressReleases] = useState<PressRelease[]>([]); // Initialize empty, load from DB
+  // Centralized data state for the entire application - Load from localStorage or use mockData
+  const [courses, setCourses] = useState<Course[]>(() => {
+    const saved = loadCourses();
+    return saved.length > 0 ? saved : data.courses;
+  });
+  const [jobs, setJobs] = useState<Job[]>(() => {
+    const saved = loadJobs();
+    return saved.length > 0 ? saved : data.jobs;
+  });
+  const [entrepreneurs, setEntrepreneurs] = useState<Entrepreneurship[]>(() => {
+    const saved = loadEntrepreneurs();
+    return saved.length > 0 ? saved : data.entrepreneurs;
+  });
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(() => {
+    const saved = loadNewsArticles();
+    return saved.length > 0 ? saved : data.newsArticles;
+  });
+  const [pressReleases, setPressReleases] = useState<PressRelease[]>(() => {
+    const saved = loadPressReleases();
+    return saved.length > 0 ? saved : data.pressReleases;
+  });
   const [ngoSpotlight, setNgoSpotlight] = useState(data.ngoSpotlight);
   const [freelanceServices, setFreelanceServices] = useState(data.freelanceServices);
   const [communityAds, setCommunityAds] = useState(data.communityAds);
-  const [premiumSponsors, setPremiumSponsors] = useState(data.premiumSponsors);
+  const [premiumSponsors, setPremiumSponsors] = useState<PremiumSponsor[]>(() => {
+    const saved = loadSponsors();
+    return saved.length > 0 ? saved : data.premiumSponsors;
+  });
   const [promoVideos, setPromoVideos] = useState(data.promoVideos);
-  const [communityPosts, setCommunityPosts] = useState(data.communityPosts);
-  const [photojournalismPosts, setPhotojournalismPosts] = useState(data.photojournalismPosts);
-  const [specialists, setSpecialists] = useState(data.specialists);
-  const [shareablePhotos, setShareablePhotos] = useState(data.shareablePhotos);
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => {
+    const saved = loadCommunityPosts();
+    return saved.length > 0 ? saved : data.communityPosts;
+  });
+  const [photojournalismPosts, setPhotojournalismPosts] = useState<PhotojournalismPost[]>(() => {
+    const saved = loadPhotojournalismPosts();
+    return saved.length > 0 ? saved : data.photojournalismPosts;
+  });
+  const [specialists, setSpecialists] = useState<Specialist[]>(() => {
+    const saved = loadSpecialists();
+    return saved.length > 0 ? saved : data.specialists;
+  });
+  const [shareablePhotos, setShareablePhotos] = useState<ShareablePhoto[]>(() => {
+    const saved = loadShareablePhotos();
+    return saved.length > 0 ? saved : data.shareablePhotos;
+  });
   const [resources, setResources] = useState(data.resources);
-  const [fundingOpportunities, setFundingOpportunities] = useState(data.fundingOpportunities);
-  const [events, setEvents] = useState(data.events);
+  const [fundingOpportunities, setFundingOpportunities] = useState<FundingOpportunity[]>(() => {
+    const saved = loadFundingOpportunities();
+    return saved.length > 0 ? saved : data.fundingOpportunities;
+  });
+  const [events, setEvents] = useState<Event[]>(() => {
+    const saved = loadEvents();
+    return saved.length > 0 ? saved : data.events;
+  });
   const [legalTopics, setLegalTopics] = useState(data.legalTopics);
   const [heroHeading, setHeroHeading] = useState(data.heroHeading);
-  const [shortCollaborations, setShortCollaborations] = useState(data.shortCollaborations);
-  const [entrepreneurshipTips, setEntrepreneurshipTips] = useState(data.entrepreneurshipTips);
-  const [sponsoredAds, setSponsoredAds] = useState(data.sponsoredAds);
-  const [specialAds, setSpecialAds] = useState(data.specialAds);
-  const [stats, setStats] = useState(data.siteStats);
+  const [shortCollaborations, setShortCollaborations] = useState<ShortCollaboration[]>(() => {
+    const saved = loadShortCollaborations();
+    return saved.length > 0 ? saved : data.shortCollaborations;
+  });
+  const [entrepreneurshipTips, setEntrepreneurshipTips] = useState<EntrepreneurshipTip[]>(() => {
+    const saved = loadEntrepreneurshipTips();
+    return saved.length > 0 ? saved : data.entrepreneurshipTips;
+  });
+  const [sponsoredAds, setSponsoredAds] = useState<SponsoredAd[]>(() => {
+    const saved = loadSponsoredAds();
+    return saved.length > 0 ? saved : data.sponsoredAds;
+  });
+  const [specialAds, setSpecialAds] = useState<SpecialAd[]>(() => {
+    const saved = loadSpecialAds();
+    return saved.length > 0 ? saved : data.specialAds;
+  });
+  const [stats, setStats] = useState<SiteStat[]>(() => {
+    const saved = loadStats();
+    return saved.length > 0 ? saved : data.siteStats;
+  });
   const [partnerLogos, setPartnerLogos] = useState(data.partnerLogos);
   const [talentProfiles, setTalentProfiles] = useState(data.talentProfiles);
   const [rotationInterval, setRotationInterval] = useState(data.rotationInterval);
@@ -145,6 +245,74 @@ const App: React.FC = () => {
     const fullName = `${currentUser.firstName} ${currentUser.lastName}`.trim();
     return post.authorName === fullName;
   };
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    saveNewsArticles(newsArticles);
+  }, [newsArticles]);
+
+  useEffect(() => {
+    saveCourses(courses);
+  }, [courses]);
+
+  useEffect(() => {
+    saveJobs(jobs);
+  }, [jobs]);
+
+  useEffect(() => {
+    saveEntrepreneurs(entrepreneurs);
+  }, [entrepreneurs]);
+
+  useEffect(() => {
+    saveSponsors(premiumSponsors);
+  }, [premiumSponsors]);
+
+  useEffect(() => {
+    savePressReleases(pressReleases);
+  }, [pressReleases]);
+
+  useEffect(() => {
+    savePhotojournalismPosts(photojournalismPosts);
+  }, [photojournalismPosts]);
+
+  useEffect(() => {
+    saveFundingOpportunities(fundingOpportunities);
+  }, [fundingOpportunities]);
+
+  useEffect(() => {
+    saveSpecialists(specialists);
+  }, [specialists]);
+
+  useEffect(() => {
+    saveShareablePhotos(shareablePhotos);
+  }, [shareablePhotos]);
+
+  useEffect(() => {
+    saveShortCollaborations(shortCollaborations);
+  }, [shortCollaborations]);
+
+  useEffect(() => {
+    saveEntrepreneurshipTips(entrepreneurshipTips);
+  }, [entrepreneurshipTips]);
+
+  useEffect(() => {
+    saveSponsoredAds(sponsoredAds);
+  }, [sponsoredAds]);
+
+  useEffect(() => {
+    saveCommunityPosts(communityPosts);
+  }, [communityPosts]);
+
+  useEffect(() => {
+    saveSpecialAds(specialAds);
+  }, [specialAds]);
+
+  useEffect(() => {
+    saveEvents(events);
+  }, [events]);
+
+  useEffect(() => {
+    saveStats(stats);
+  }, [stats]);
 
   const handleNavigate = (page: Page, subPage?: string) => {
     // If navigating to login, save the current page (unless we are already on login or register)
@@ -317,7 +485,23 @@ const App: React.FC = () => {
 
   // CRUD for Photojournalism
   const handleAddPhotojournalismPost = (newPost: Omit<PhotojournalismPost, 'id'>) => {
-    setPhotojournalismPosts(prev => [{ ...newPost, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
+    const timestamp = Date.now();
+    const currentDate = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    // Add to photojournalism posts
+    setPhotojournalismPosts(prev => [{ ...newPost, id: timestamp, dateAdded: new Date().toISOString() }, ...prev]);
+    
+    // Also add to news articles so it appears in "Innovación para el Periodismo Emprendedor"
+    const newsArticle: NewsArticle = {
+      id: timestamp + 1, // Unique ID
+      title: newPost.title,
+      category: 'Industria',
+      author: newPost.photographerName,
+      date: currentDate,
+      imageUrl: newPost.imageUrl,
+      summary: newPost.caption,
+    };
+    setNewsArticles(prev => [newsArticle, ...prev]);
   };
   const handleUpdatePhotojournalismPost = (updatedPost: PhotojournalismPost) => {
     setPhotojournalismPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
@@ -570,6 +754,7 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'admin':
         return <AdminPanel
+          initialSection={initialTab}
           courses={courses}
           onAddCourse={handleAddCourse}
           onUpdateCourse={handleUpdateCourse}
@@ -663,7 +848,7 @@ const App: React.FC = () => {
           onRateFreelanceService={handleRateFreelanceService}
         />;
       case 'analysis':
-        return <NewsModule onSelectNewsArticle={handleSelectNewsArticle} />;
+        return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
       case 'community-ads':
         return <CommunityAdsModule />;
       case 'specialists':
