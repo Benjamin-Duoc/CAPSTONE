@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PressReleaseUploadPage from './components/PressReleaseUploadPage';
+import { NewsManager } from './components/admin/NewsManager';
 import HomePage from './components/HomePage';
 import CoursesModule from './components/CoursesModule';
 import EntrepreneurshipModule from './components/EntrepreneurshipModule';
@@ -28,8 +30,8 @@ import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
 import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
-import type { Page, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, loadNewsArticles, saveNewsArticles, loadCourses, saveCourses, loadJobs, saveJobs, loadEntrepreneurs, saveEntrepreneurs, loadSponsors, saveSponsors, loadPressReleases, savePressReleases, loadPhotojournalismPosts, savePhotojournalismPosts, loadFundingOpportunities, saveFundingOpportunities, loadSpecialists, saveSpecialists, loadShareablePhotos, saveShareablePhotos, loadShortCollaborations, saveShortCollaborations, loadEntrepreneurshipTips, saveEntrepreneurshipTips, loadSponsoredAds, saveSponsoredAds, loadCommunityPosts, saveCommunityPosts, loadSpecialAds, saveSpecialAds, loadEvents, saveEvents, loadStats, saveStats } from './utils/db';
+import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
+import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, loadNewsArticles, saveNewsArticles, loadCourses, saveCourses, loadJobs, saveJobs, loadEntrepreneurs, saveEntrepreneurs, loadSponsors, saveSponsors, loadPressReleases, savePressReleases, loadPhotojournalismPosts, savePhotojournalismPosts, loadFundingOpportunities, saveFundingOpportunities, loadSpecialists, saveSpecialists, loadShareablePhotos, saveShareablePhotos, loadShortCollaborations, saveShortCollaborations, loadEntrepreneurshipTips, saveEntrepreneurshipTips, loadSponsoredAds, saveSponsoredAds, loadCommunityPosts, saveCommunityPosts, loadSpecialAds, saveSpecialAds, loadEvents, saveEvents, loadStats, saveStats } from './utils/db';
 
 import * as data from './data/mockData';
 
@@ -43,6 +45,17 @@ const App: React.FC = () => {
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+    handleNavigate('home');
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    handleNavigate('home');
+  };
 
   // Centralized data state for the entire application - Load from localStorage or use mockData
   const [courses, setCourses] = useState<Course[]>(() => {
@@ -126,6 +139,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     initDatabase();
+    // Load News from DB
+    getAllNews().then(articles => {
+      setNewsArticles(articles);
+    }).catch(err => console.error("Error loading news:", err));
+
+    // Load Press Releases from DB
+    getAllPressReleases().then(prs => {
+      setPressReleases(prs);
+    }).catch(err => console.error("Error loading press releases:", err));
   }, []);
 
   // Save data to localStorage whenever it changes
@@ -208,35 +230,35 @@ const App: React.FC = () => {
     setInitialTab(subPage || null);
     window.scrollTo(0, 0); // Scroll to top on navigation
   };
-  
+
   const handleSelectEntrepreneur = (entrepreneur: Entrepreneurship) => {
-      setSelectedEntrepreneur(entrepreneur);
-      window.scrollTo(0, 0);
+    setSelectedEntrepreneur(entrepreneur);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectSponsor = (sponsor: PremiumSponsor) => {
-      setSelectedSponsor(sponsor);
-      window.scrollTo(0, 0);
+    setSelectedSponsor(sponsor);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectNewsArticle = (article: NewsArticle) => {
-      setSelectedNewsArticle(article);
-      window.scrollTo(0, 0);
+    setSelectedNewsArticle(article);
+    window.scrollTo(0, 0);
   };
 
   const handleSelectJob = (job: Job) => {
-      setSelectedJob(job);
-      window.scrollTo(0, 0);
+    setSelectedJob(job);
+    window.scrollTo(0, 0);
   };
 
   const handleSelectPressRelease = (pressRelease: PressRelease) => {
-      setSelectedPressRelease(pressRelease);
-      window.scrollTo(0, 0);
+    setSelectedPressRelease(pressRelease);
+    window.scrollTo(0, 0);
   };
-  
+
   const handleSelectCourse = (course: Course) => {
-      setSelectedCourse(course);
-      window.scrollTo(0, 0);
+    setSelectedCourse(course);
+    window.scrollTo(0, 0);
   };
 
   // CRUD Operations for Courses
@@ -247,7 +269,7 @@ const App: React.FC = () => {
     setCourses(prev => prev.map(c => c.id === updatedCourse.id ? updatedCourse : c));
   };
   const handleDeleteCourse = (courseId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este curso?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este curso?')) {
       setCourses(prev => prev.filter(c => c.id !== courseId));
     }
   };
@@ -260,7 +282,7 @@ const App: React.FC = () => {
     setJobs(prev => prev.map(j => j.id === updatedJob.id ? updatedJob : j));
   };
   const handleDeleteJob = (jobId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta oportunidad?')) {
       setJobs(prev => prev.filter(j => j.id !== jobId));
     }
   };
@@ -273,21 +295,40 @@ const App: React.FC = () => {
     setEntrepreneurs(prev => prev.map(e => e.id === updatedEntrepreneur.id ? updatedEntrepreneur : e));
   };
   const handleDeleteEntrepreneur = (entrepreneurId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este emprendimiento?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este emprendimiento?')) {
       setEntrepreneurs(prev => prev.filter(e => e.id !== entrepreneurId));
     }
   };
-  
+
   // CRUD Operations for News Articles
-  const handleAddNewsArticle = (newArticle: Omit<NewsArticle, 'id'>) => {
-    setNewsArticles(prev => [{ ...newArticle, id: Date.now() }, ...prev]);
+  const handleAddNewsArticle = async (newArticle: Omit<NewsArticle, 'id'>) => {
+    const articleWithId = { ...newArticle, id: Date.now() };
+    try {
+      await addNews(articleWithId);
+      setNewsArticles(prev => [articleWithId, ...prev]);
+    } catch (error) {
+      console.error("Failed to add news article:", error);
+      alert("Error al guardar la noticia en la base de datos.");
+    }
   };
-  const handleUpdateNewsArticle = (updatedArticle: NewsArticle) => {
-    setNewsArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+  const handleUpdateNewsArticle = async (updatedArticle: NewsArticle) => {
+    try {
+      await updateNews(updatedArticle);
+      setNewsArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+    } catch (error) {
+      console.error("Failed to update news article:", error);
+      alert("Error al actualizar la noticia.");
+    }
   };
-  const handleDeleteNewsArticle = (articleId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
-      setNewsArticles(prev => prev.filter(a => a.id !== articleId));
+  const handleDeleteNewsArticle = async (articleId: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
+      try {
+        await deleteNews(articleId);
+        setNewsArticles(prev => prev.filter(a => a.id !== articleId));
+      } catch (error) {
+        console.error("Failed to delete news article:", error);
+        alert("Error al eliminar la noticia.");
+      }
     }
   };
 
@@ -299,21 +340,40 @@ const App: React.FC = () => {
     setPremiumSponsors(prev => prev.map(s => s.id === updatedSponsor.id ? updatedSponsor : s));
   };
   const handleDeleteSponsor = (sponsorId: number) => {
-    if(window.confirm('¿Estás seguro de que quieres eliminar este sponsor?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este sponsor?')) {
       setPremiumSponsors(prev => prev.filter(s => s.id !== sponsorId));
     }
   };
 
   // CRUD Operations for Press Releases
-  const handleAddPressRelease = (newPressRelease: Omit<PressRelease, 'id'>) => {
-    setPressReleases(prev => [{ ...newPressRelease, id: Date.now() }, ...prev]);
+  const handleAddPressRelease = async (newPressRelease: Omit<PressRelease, 'id'>) => {
+    const prWithId = { ...newPressRelease, id: Date.now() };
+    try {
+      await addPressRelease(prWithId);
+      setPressReleases(prev => [prWithId, ...prev]);
+    } catch (error) {
+      console.error("Failed to add press release:", error);
+      alert("Error al guardar el comunicado en la base de datos.");
+    }
   };
-  const handleUpdatePressRelease = (updatedPressRelease: PressRelease) => {
-    setPressReleases(prev => prev.map(pr => pr.id === updatedPressRelease.id ? updatedPressRelease : pr));
+  const handleUpdatePressRelease = async (updatedPressRelease: PressRelease) => {
+    try {
+      await updatePressRelease(updatedPressRelease);
+      setPressReleases(prev => prev.map(pr => pr.id === updatedPressRelease.id ? updatedPressRelease : pr));
+    } catch (error) {
+      console.error("Failed to update press release:", error);
+      alert("Error al actualizar el comunicado.");
+    }
   };
-  const handleDeletePressRelease = (pressReleaseId: number) => {
+  const handleDeletePressRelease = async (pressReleaseId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este comunicado?')) {
-      setPressReleases(prev => prev.filter(pr => pr.id !== pressReleaseId));
+      try {
+        await deletePressRelease(pressReleaseId);
+        setPressReleases(prev => prev.filter(pr => pr.id !== pressReleaseId));
+      } catch (error) {
+        console.error("Failed to delete press release:", error);
+        alert("Error al eliminar el comunicado.");
+      }
     }
   };
 
@@ -358,45 +418,45 @@ const App: React.FC = () => {
       setFundingOpportunities(prev => prev.filter(f => f.id !== fundingId));
     }
   };
-  
+
   // CRUD for Specialists
   const handleAddSpecialist = (newSpecialist: Omit<Specialist, 'id' | 'dateAdded'>) => {
     setSpecialists(prev => [{ ...newSpecialist, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
   };
   const handleUpdateSpecialist = (updatedSpecialist: Specialist) => {
-      setSpecialists(prev => prev.map(s => s.id === updatedSpecialist.id ? updatedSpecialist : s));
+    setSpecialists(prev => prev.map(s => s.id === updatedSpecialist.id ? updatedSpecialist : s));
   };
   const handleDeleteSpecialist = (specialistId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este especialista?')) {
-          setSpecialists(prev => prev.filter(s => s.id !== specialistId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este especialista?')) {
+      setSpecialists(prev => prev.filter(s => s.id !== specialistId));
+    }
   };
 
   // CRUD for Shareable Photos
   const handleAddShareablePhoto = (newPhoto: Omit<ShareablePhoto, 'id' | 'dateAdded'>) => {
-      setShareablePhotos(prev => [{ ...newPhoto, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
+    setShareablePhotos(prev => [{ ...newPhoto, id: Date.now(), dateAdded: new Date().toISOString() }, ...prev]);
   };
   const handleUpdateShareablePhoto = (updatedPhoto: ShareablePhoto) => {
-      setShareablePhotos(prev => prev.map(p => p.id === updatedPhoto.id ? updatedPhoto : p));
+    setShareablePhotos(prev => prev.map(p => p.id === updatedPhoto.id ? updatedPhoto : p));
   };
   const handleDeleteShareablePhoto = (photoId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar esta foto?')) {
-          setShareablePhotos(prev => prev.filter(p => p.id !== photoId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta foto?')) {
+      setShareablePhotos(prev => prev.filter(p => p.id !== photoId));
+    }
   };
 
   // CRUD for Community Posts
   const handleAddCommunityPost = (newPost: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
     const newCommunityPost: CommunityPost = {
-        ...newPost,
-        id: Date.now(),
-        authorName: 'Usuario Activo', // Hardcoded for now
-        authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
+      ...newPost,
+      id: Date.now(),
+      authorName: 'Usuario Activo', // Hardcoded for now
+      authorAvatarUrl: 'https://i.pravatar.cc/40?u=activeuser', // Hardcoded
     };
     setCommunityPosts(prev => [newCommunityPost, ...prev]);
   };
   const handleAddCommunityPostAdmin = (newPost: Omit<CommunityPost, 'id'>) => {
-    setCommunityPosts(prev => [{...newPost, id: Date.now()}, ...prev]);
+    setCommunityPosts(prev => [{ ...newPost, id: Date.now() }, ...prev]);
   };
   const handleUpdateCommunityPost = (updatedPost: CommunityPost) => {
     setCommunityPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
@@ -412,14 +472,14 @@ const App: React.FC = () => {
     setShortCollaborations(prev => [{ ...newCollaboration, id: Date.now() }, ...prev]);
   };
   const handleUpdateShortCollaboration = (updatedCollaboration: ShortCollaboration) => {
-      setShortCollaborations(prev => prev.map(c => c.id === updatedCollaboration.id ? updatedCollaboration : c));
+    setShortCollaborations(prev => prev.map(c => c.id === updatedCollaboration.id ? updatedCollaboration : c));
   };
   const handleDeleteShortCollaboration = (collaborationId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar esta colaboración?')) {
-          setShortCollaborations(prev => prev.filter(c => c.id !== collaborationId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta colaboración?')) {
+      setShortCollaborations(prev => prev.filter(c => c.id !== collaborationId));
+    }
   };
-  
+
   // CRUD for Entrepreneurship Tips
   const handleAddEntrepreneurshipTip = (newTip: Omit<EntrepreneurshipTip, 'id'>) => {
     setEntrepreneurshipTips(prev => [{ ...newTip, id: Date.now() }, ...prev]);
@@ -432,7 +492,7 @@ const App: React.FC = () => {
       setEntrepreneurshipTips(prev => prev.filter(t => t.id !== tipId));
     }
   };
-  
+
   // CRUD for Sponsored Ads
   const handleAddSponsoredAd = (newAd: Omit<SponsoredAd, 'id'>) => {
     setSponsoredAds(prev => [...prev, { ...newAd, id: Date.now() }]);
@@ -451,12 +511,12 @@ const App: React.FC = () => {
     setEvents(prev => [...prev, { ...newEvent, id: Date.now() }]);
   };
   const handleUpdateEvent = (updatedEvent: Event) => {
-      setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
   };
   const handleDeleteEvent = (eventId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este evento?')) {
-          setEvents(prev => prev.filter(e => e.id !== eventId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este evento?')) {
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+    }
   };
 
   // CRUD for Partner Logos
@@ -464,25 +524,25 @@ const App: React.FC = () => {
     setPartnerLogos(prev => [...prev, { ...newLogo, id: Date.now() }]);
   };
   const handleUpdatePartnerLogo = (updatedLogo: PartnerLogo) => {
-      setPartnerLogos(prev => prev.map(logo => logo.id === updatedLogo.id ? updatedLogo : logo));
+    setPartnerLogos(prev => prev.map(logo => logo.id === updatedLogo.id ? updatedLogo : logo));
   };
   const handleDeletePartnerLogo = (logoId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este logo?')) {
-          setPartnerLogos(prev => prev.filter(logo => logo.id !== logoId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este logo?')) {
+      setPartnerLogos(prev => prev.filter(logo => logo.id !== logoId));
+    }
   };
-  
+
   // CRUD for Talent Profiles
   const handleAddTalentProfile = (newProfile: Omit<TalentProfile, 'id'>) => {
     setTalentProfiles(prev => [{ ...newProfile, id: Date.now() }, ...prev]);
   };
   const handleUpdateTalentProfile = (updatedProfile: TalentProfile) => {
-      setTalentProfiles(prev => prev.map(p => p.id === updatedProfile.id ? updatedProfile : p));
+    setTalentProfiles(prev => prev.map(p => p.id === updatedProfile.id ? updatedProfile : p));
   };
   const handleDeleteTalentProfile = (profileId: number) => {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este perfil de talento?')) {
-          setTalentProfiles(prev => prev.filter(p => p.id !== profileId));
-      }
+    if (window.confirm('¿Estás seguro de que quieres eliminar este perfil de talento?')) {
+      setTalentProfiles(prev => prev.filter(p => p.id !== profileId));
+    }
   };
 
   // CRUD for Freelance Services (rating)
@@ -510,17 +570,17 @@ const App: React.FC = () => {
   const handleUpdateHeroHeading = (updatedHeading: HeroHeading) => {
     setHeroHeading(updatedHeading);
   };
-  
+
   // Update operation for Special Ads
   const handleUpdateSpecialAd = (updatedAd: SpecialAd) => {
     setSpecialAds(prev => prev.map(ad => ad.id === updatedAd.id ? updatedAd : ad));
   };
-  
+
   // Update operation for Stats
   const handleUpdateStat = (updatedStat: SiteStat) => {
     setStats(prev => prev.map(s => s.id === updatedStat.id ? updatedStat : s));
   };
-  
+
   // Update operation for Rotation Interval
   const handleUpdateRotationInterval = (interval: number) => {
     setRotationInterval(interval);
@@ -529,27 +589,27 @@ const App: React.FC = () => {
 
   const renderPage = () => {
     if (selectedSponsor) {
-        return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
+      return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
     }
     if (selectedEntrepreneur) {
-        return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
+      return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
     }
     if (selectedNewsArticle) {
-        return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
+      return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
     }
     if (selectedJob) {
-        return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
+      return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
     }
     if (selectedPressRelease) {
-        return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
+      return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
     }
     if (selectedCourse) {
-        return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
+      return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
     }
-  
+
     switch (currentPage) {
       case 'admin':
-        return <AdminPanel 
+        return <AdminPanel
           initialSection={initialTab}
           courses={courses}
           onAddCourse={handleAddCourse}
@@ -633,9 +693,9 @@ const App: React.FC = () => {
       case 'entrepreneurship':
         return <EntrepreneurshipModule />;
       case 'opportunities':
-        return <OpportunitiesModule 
-          jobs={jobs} 
-          onSelectJob={handleSelectJob} 
+        return <OpportunitiesModule
+          jobs={jobs}
+          onSelectJob={handleSelectJob}
           initialTab={initialTab || 'jobs'}
           talentProfiles={talentProfiles}
           onAddTalentProfile={handleAddTalentProfile}
@@ -670,17 +730,21 @@ const App: React.FC = () => {
       case 'terms-of-service':
         return <TermsOfServicePage onNavigate={handleNavigate} />;
       case 'community-post':
-        return <CommunityPostPage 
-            posts={communityPosts} 
-            onAddPost={handleAddCommunityPost}
-            onNavigate={handleNavigate} 
+        return <CommunityPostPage
+          posts={communityPosts}
+          onAddPost={handleAddCommunityPost}
+          onNavigate={handleNavigate}
         />;
       case 'register':
-        return <RegistrationPage onNavigate={handleNavigate} />;
+        return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
+      case 'upload-press-release':
+        return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
       case 'home':
       default:
-        return <HomePage 
-          onNavigate={handleNavigate} 
+        return <HomePage
+          currentUser={currentUser}
+          onAddPressRelease={handleAddPressRelease}
+          onNavigate={handleNavigate}
           onSelectEntrepreneur={handleSelectEntrepreneur}
           onSelectSponsor={handleSelectSponsor}
           onSelectNewsArticle={handleSelectNewsArticle}
@@ -718,8 +782,8 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {/* Conditionally render Header: Keep it for consistency unless specific design requires hiding */}
-      {currentPage !== 'register' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} />}
-      
+      {currentPage !== 'register' && <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />}
+
       <main className="flex-grow">
         {renderPage()}
       </main>
