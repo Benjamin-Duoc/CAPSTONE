@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { newsArticles } from '../data/mockData';
 import type { NewsArticle } from '../types';
 
 interface NewsModuleProps {
+    newsArticles: NewsArticle[];
     onSelectNewsArticle: (article: NewsArticle) => void;
 }
 
@@ -27,7 +27,7 @@ const NewsCard: React.FC<{ article: NewsArticle; isFeatured?: boolean; onClick: 
     return (
         <button onClick={onClick} className="bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group border border-gray-200 text-left w-full">
             <div className="overflow-hidden">
-                <img src={article.imageUrl} alt={article.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"/>
+                <img src={article.imageUrl} alt={article.title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"/>
             </div>
             <div className="p-5">
                 <span className="text-xs font-bold uppercase text-primary tracking-wide">{article.category}</span>
@@ -39,27 +39,32 @@ const NewsCard: React.FC<{ article: NewsArticle; isFeatured?: boolean; onClick: 
     );
 }
 
-const NewsModule: React.FC<NewsModuleProps> = ({ onSelectNewsArticle }) => {
+const NewsModule: React.FC<NewsModuleProps> = ({ newsArticles, onSelectNewsArticle }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 7; // 1 noticia en grande + 6 normales
     
-    const featuredArticle = newsArticles[0];
-    const otherArticles = newsArticles.slice(1);
+    // Sort articles by date (newest first) - assuming date field exists
+    const sortedArticles = useMemo(() => {
+        return [...newsArticles].sort((a, b) => {
+            // Convert date strings to comparable format
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            return dateB - dateA; // Newest first
+        });
+    }, [newsArticles]);
+    
+    // Calculate total pages based on all articles (10 per page)
+    const totalPages = Math.ceil(sortedArticles.length / ITEMS_PER_PAGE);
 
-    const totalPages = Math.ceil(otherArticles.length / ITEMS_PER_PAGE);
-
-    const currentArticles = useMemo(() => {
+    // Get current page articles
+    const currentPageArticles = useMemo(() => {
         const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        return otherArticles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    }, [currentPage, otherArticles]);
+        return sortedArticles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [currentPage, sortedArticles]);
     
-    const handlePageChange = (page: number) => {
-        if (page > 0 && page <= totalPages) {
-            setCurrentPage(page);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    };
-
+    // First article of current page is featured, rest are normal
+    const featuredArticle = currentPageArticles[0];
+    const otherArticles = currentPageArticles.slice(1);
 
     return (
         <div className="bg-background min-h-screen">
@@ -71,32 +76,49 @@ const NewsModule: React.FC<NewsModuleProps> = ({ onSelectNewsArticle }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {featuredArticle && <NewsCard article={featuredArticle} isFeatured={true} onClick={() => onSelectNewsArticle(featuredArticle)} />}
-                    {currentArticles.map(article => (
+                    {otherArticles.map(article => (
                         <NewsCard key={article.id} article={article} onClick={() => onSelectNewsArticle(article)} />
                     ))}
                 </div>
 
-                {totalPages > 1 && (
-                    <div className="flex justify-center items-center space-x-4 mt-12">
-                        <button
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-surface border border-gray-300 rounded-md text-sm font-medium text-text-secondary hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Anterior
-                        </button>
-                        <span className="text-sm text-text-secondary">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <button
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-surface border border-gray-300 rounded-md text-sm font-medium text-text-secondary hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Siguiente
-                        </button>
-                    </div>
-                )}
+                {/* Paginación personalizada */}
+                <div className="flex justify-center items-center space-x-3 mt-16 mb-8">
+                    <button
+                        onClick={() => {
+                            if (currentPage > 1) {
+                                window.scrollTo(0, 0);
+                                setCurrentPage(currentPage - 1);
+                            }
+                        }}
+                        disabled={currentPage === 1}
+                        className={`px-5 py-2 rounded-md text-sm font-semibold transition-colors ${
+                            currentPage === 1
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-primary text-white hover:bg-orange-600'
+                        }`}
+                    >
+                        Atrás
+                    </button>
+                    <span className="text-base font-semibold text-text-primary">
+                        {currentPage}/{totalPages}
+                    </span>
+                    <button
+                        onClick={() => {
+                            if (currentPage < totalPages) {
+                                window.scrollTo(0, 0);
+                                setCurrentPage(currentPage + 1);
+                            }
+                        }}
+                        disabled={currentPage === totalPages}
+                        className={`px-5 py-2 rounded-md text-sm font-semibold transition-colors ${
+                            currentPage === totalPages
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-primary text-white hover:bg-orange-600'
+                        }`}
+                    >
+                        Siguiente
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -38,6 +38,24 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleImageUpload = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (readerEvent) => {
+                    const base64String = readerEvent.target?.result as string;
+                    setFormData(prev => ({ ...prev, imageUrl: base64String }));
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData);
@@ -80,6 +98,20 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
                             <label className="block text-sm font-medium text-gray-700">URL de la Imagen</label>
                             <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">Imagen del Artículo</label>
+                        {formData.imageUrl && (
+                            <img src={formData.imageUrl} alt="Previsualización" className="my-2 rounded max-h-40 object-contain bg-gray-100 border w-full" />
+                        )}
+                        <button
+                            type="button"
+                            onClick={handleImageUpload}
+                            className="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                            Buscar archivo en el equipo...
+                        </button>
                     </div>
 
                     <div className="p-4 border rounded-lg">
