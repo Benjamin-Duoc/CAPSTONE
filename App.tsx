@@ -834,7 +834,7 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
       {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && currentPage !== 'register' && <Footer onNavigate={handleNavigate} isAdminMode={isAdminMode} onToggleAdmin={() => setIsAdminMode(!isAdminMode)} partnerLogos={partnerLogos} />}
-    </div>
+    </div >
   );
 };
 

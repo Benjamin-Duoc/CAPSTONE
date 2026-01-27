@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Page } from '../types';
 import { insertUser } from '../utils/db';
@@ -30,7 +29,6 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
             return;
@@ -49,18 +47,21 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
             if (result.success) {
                 setSuccess(true);
                 setTimeout(() => {
-                    onNavigate('home');
                     if (onLogin) {
-                        // Automatically login the user or ask them to login?
-                        // For now we just redirect. The backend returns userId.
-                        // We could potentially fetch the full user here if needed, but let's stick to simple redirect.
+                        // Simulamos el objeto usuario para loguearlo automáticamente
+                        onLogin({
+                            firstName: formData.firstName,
+                            lastName: formData.lastName,
+                            email: formData.email
+                        });
                     }
+                    onNavigate('home');
                 }, 2000);
             } else {
                 setError(result.message);
             }
         } catch (err) {
-            setError('Ocurrió un error inesperado.');
+            setError('Ocurrió un error inesperado al conectar con la base de datos.');
             console.error(err);
         }
     };

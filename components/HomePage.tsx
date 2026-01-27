@@ -132,11 +132,11 @@ const NgoSpotlightCard: React.FC<{ item: NgoSpotlight }> = ({ item }) => (
     <div className="bg-surface p-4 rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left w-full">
         <div className="overflow-hidden rounded-md">
             <img src={item.imageUrl || DEFAULT_IMAGE} alt={item.title} onError={handleImageError} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
+        </div >
         <span className="text-xs font-bold uppercase text-secondary mt-4 inline-block">{item.institution}</span>
         <h3 className="font-semibold font-serif text-text-primary mt-1">{item.title}</h3>
         <p className="text-sm text-text-secondary mt-1">{item.summary}</p>
-    </div>
+    </div >
 );
 
 const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onClick: () => void; label: string; textColor: string; }> = ({ entrepreneur, onClick, label, textColor }) => (
@@ -170,8 +170,8 @@ const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onCli
             >
                 {entrepreneur.description}
             </p>
-        </div>
-    </button>
+        </div >
+    </button >
 );
 
 
@@ -205,10 +205,10 @@ const NewsCard: React.FC<{ article: Omit<NewsArticle, 'category'> & { category: 
     <button onClick={onClick} className="bg-surface p-4 rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left w-full">
         <div className="overflow-hidden rounded-md">
             <img src={article.imageUrl || DEFAULT_IMAGE} alt={article.title} onError={handleImageError} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
+        </div >
         <span className="text-xs font-bold uppercase text-primary mt-4 inline-block">{article.category}</span>
         <h3 className="font-semibold font-serif text-text-primary mt-1 group-hover:text-primary transition-colors">{article.title}</h3>
-    </button>
+    </button >
 );
 
 const VideoCard: React.FC<{ video: PromoVideo }> = ({ video }) => (
@@ -218,12 +218,12 @@ const VideoCard: React.FC<{ video: PromoVideo }> = ({ video }) => (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <PlayIcon className="h-14 w-14 text-white/70 group-hover:text-white transition-colors duration-300" />
             </div>
-        </div>
+        </div >
         <div className="p-4">
             <h3 className="font-semibold font-serif text-text-primary group-hover:text-primary transition-colors">{video.title}</h3>
             <p className="text-sm text-text-secondary mt-1">{video.description}</p>
         </div>
-    </a>
+    </a >
 );
 
 
@@ -246,7 +246,7 @@ const CourseCard: React.FC<{ course: Course, onSelect: () => void }> = ({ course
             <span className={`text-xs font-bold uppercase ${course.cost === 'Gratis' ? 'text-green-600' : 'text-highlight'}`}>{course.category}</span>
             <h3 className="font-semibold text-base text-text-primary mt-1 flex-grow h-12">{course.title}</h3>
         </div>
-    </button>
+    </button >
 );
 
 const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
@@ -257,12 +257,12 @@ const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
                 <p className="font-semibold text-text-primary text-sm">{post.authorName}</p>
                 <p className="text-sm text-text-secondary italic">"{post.comment}"</p>
             </div>
-        </div>
+        </div >
         <a href={post.postUrl} target="_blank" rel="noopener noreferrer" className="mt-3 group flex items-center justify-between bg-background p-3 rounded-md hover:bg-gray-200 transition-colors">
             <span className="font-semibold text-sm text-primary group-hover:underline pr-2">{post.postTitle}</span>
             <ArrowUpRightIcon className="h-5 w-5 text-primary flex-shrink-0" />
         </a>
-    </div>
+    </div >
 );
 
 const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
@@ -283,11 +283,11 @@ const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) 
                             Contactar
                         </a>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
             <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">{post.caption}</p>
-        </div>
-    </div>
+        </div >
+    </div >
 );
 
 // --- COMPONENTE PROTEGIDO CONTRA FALLOS DE RATING ---
@@ -333,16 +333,16 @@ const CommunityAdCard: React.FC<{ ad: CommunityAd }> = ({ ad }) => {
                 <div className="flex items-center space-x-3">
                     <img src={ad.authorAvatarUrl || DEFAULT_IMAGE} alt={ad.authorName} onError={handleImageError} className="w-10 h-10 rounded-full object-cover" />
                     <p className="font-semibold text-text-primary">{ad.authorName}</p>
-                </div>
+                </div >
                 <span className={`text-xs font-bold px-2 py-1 rounded-full ${categoryColors[ad.category]}`}>{ad.category}</span>
-            </div>
+            </div >
             <h3 className="font-bold font-serif text-lg text-text-primary mt-1 flex-grow">{ad.title}</h3>
             <p className="text-sm text-text-secondary my-3">{ad.description}</p>
             <a href={`https://wa.me/${ad.whatsappContact}`} target="_blank" rel="noopener noreferrer" className="w-full mt-auto px-4 py-2 text-sm font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-2">
                 <WhatsAppIcon className="h-5 w-5" />
                 <span>Contactar por WhatsApp</span>
             </a>
-        </div>
+        </div >
     );
 };
 
@@ -356,7 +356,7 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
                     <h3 className="text-2xl font-bold font-serif" style={{ color: specialist.textColor }}>{specialist.name}</h3>
                     <p className="text-base font-bold" style={{ color: specialist.textColor, opacity: 0.9 }}>{specialist.title}</p>
                 </div>
-            </div>
+            </div >
             <div className="p-4 flex flex-col flex-grow">
                 <p className="text-sm text-text-secondary flex-grow">{specialist.specialtyDescription}</p>
                 <a
@@ -368,8 +368,8 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
                     <WhatsAppIcon className="h-5 w-5" />
                     <span>Contactar</span>
                 </a>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
@@ -392,7 +392,7 @@ const ShareablePhotoCard: React.FC<{ photo: ShareablePhoto }> = ({ photo }) => (
                 </a>
             </div>
         </div>
-    </div>
+    </div >
 );
 
 // --- COMPONENTE CORREGIDO Y BLINDADO (EventCard) ---
@@ -460,9 +460,9 @@ const LegalModulePreview: React.FC<{ ad: SpecialAd, onNavigate: (page: Page) => 
                 >
                     {ad.ctaText}
                 </button>
-            </div>
-        </div>
-    </div>
+            </div >
+        </div >
+    </div >
 );
 
 const EntrepreneurshipAdCard: React.FC<{ ad: SpecialAd }> = ({ ad }) => (
@@ -479,9 +479,9 @@ const EntrepreneurshipAdCard: React.FC<{ ad: SpecialAd }> = ({ ad }) => (
                 >
                     {ad.ctaText}
                 </button>
-            </div>
-        </div>
-    </div>
+            </div >
+        </div >
+    </div >
 );
 
 const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = ({ collaboration }) => {
@@ -493,7 +493,7 @@ const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = 
                     <p className="font-semibold text-sm text-text-primary">{collaboration.author}</p>
                     <p className="text-xs text-text-secondary">Busca Colaborador</p>
                 </div>
-            </div>
+            </div >
             <h3 className="font-semibold text-text-primary group-hover:text-primary transition-colors leading-tight">{collaboration.title}</h3>
             <div className="flex justify-between items-center text-xs text-text-secondary mt-3 pt-3 border-t border-gray-100">
                 <div>
@@ -509,7 +509,7 @@ const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = 
                 <WhatsAppIcon className="h-5 w-5" />
                 <span>Contactar</span>
             </a>
-        </div>
+        </div >
     )
 };
 
@@ -541,8 +541,8 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
                     <WhatsAppIcon className="h-4 w-4" />
                     <span>Contactar</span>
                 </a>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
@@ -1229,7 +1229,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     </div>
                     <StatsCounter stats={statsWithIcons} />
                 </section>
-            </div >
+            </div>
 
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
@@ -1238,7 +1238,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
-        </div >
+        </div>
     );
 };
 

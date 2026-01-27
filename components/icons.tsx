@@ -44,6 +44,7 @@ export const ChevronDownIcon: React.FC<{ className?: string }> = ({ className })
   </svg>
 );
 
+// --- ESTOS SON TUYOS (HEAD) Y SON NECESARIOS ---
 export const ChevronLeftIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -55,6 +56,7 @@ export const ChevronRightIcon: React.FC<{ className?: string }> = ({ className }
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
   </svg>
 );
+// ----------------------------------------------
 
 export const MapPinIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -151,18 +153,15 @@ export const GlobeAltIcon: React.FC<{ className?: string }> = ({ className }) =>
 
 export const LatinAmericaMapIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125" fill="currentColor">
-    {/* South & Central America continent path with lower opacity */}
     <g opacity="0.4">
-      {/* South America Body */}
       <path d="M59.2,114.4c-6.8,4.1-15.4,6.2-25.8,6.2c-9.2,0-16.3-2.5-21.5-7.5c-4.3-4.2-6.5-9.4-6.5-15.6 c0-6.1,2.4-11.5,7.1-16.1c4.7-4.6,10.9-6.9,18.7-6.9c5.2,0,9.9,1,14.1,3c4.2,2,7.5,4.6,10,7.9c1.9,2.4,3.3,5,4.1,7.8 c-0.8-4.4-1.2-8.7-1.2-12.9c0-8.2,2.8-15.2,8.3-21.1c5.5-5.9,12.6-8.8,21.3-8.8c5.4,0,10.2,1.3,14.3,3.9l-2.2,7.3 c-3-1.8-6.5-2.6-10.4-2.6c-5.9,0-10.6,2.2-14.1,6.5c-3.5,4.3-5.3,9.9-5.3,16.7c0,3.9,0.7,7.7,2.1,11.3c-2.8-0.9-5.9-1.4-9.2-1.4 c-8.6,0-15.5,3.6-20.6,10.7c-3.7,5-5.6,11.3-5.6,18.7c0,5.9,1.5,11.1,4.6,15.6c3.1,4.5,7.4,6.8,13,6.8c4.8,0,9.4-1.2,13.7-3.6 L59.2,114.4z" />
-      {/* Central America & Mexico */}
       <path d="M60.6,67.6c-0.4-2.8-0.6-5.6-0.6-8.3c0-8.2,2.3-15.2,7-21.2c4.7-6,10.6-9,17.7-9c5,0,9.4,1.1,13.2,3.4l-2,6.3 c-2.8-1.5-6-2.3-9.6-2.3c-5.1,0-9.2,2-12.3,6.1c-3.1,4.1-4.7,9-4.7,14.7c0,2.1,0.3,4.3,0.9,6.4c-2.4-0.8-5-1.2-7.8-1.2 c-2.4,0-4.8,0.4-7,1.1L60.6,67.6z M55.3,16.9C51.6,12.4,46.9,10,41.2,10c-5.2,0-9.6,1.8-13.3,5.3c-3.7,3.5-5.5,8-5.5,13.3 c0,5.5,1.8,10.2,5.3,14.1c3.5,3.9,7.9,5.8,13.1,5.8c5.5,0,10.2-1.9,14.1-5.9c3.9-4,5.9-8.9,5.9-14.7 C61.3,25.5,58.9,20.4,55.3,16.9z" />
     </g>
-    {/* Chile path - highlighted */}
     <path d="M41.4,115.1c0.1-4.1,0.2-9.9-0.1-17.3c-0.3-7.4-1.2-14.3-2.6-20.7c-1.4-6.4-3.5-12.1-6.1-17.1 c-2.6-5-5.8-9.1-9.4-12.4c0.7,5.1,1,10.5,1,16.1c0,7.4-0.7,14.9-2.1,22.3c-1.4,7.4-3.5,14.5-6.1,21.3 c-2.6,6.8-5.8,13-9.4,18.7l2.4,0.5c4.7-1,8.8-2.6,12.3-4.9c3.5-2.3,6.4-5.2,8.8-8.7C38.8,126,40.4,120.7,41.4,115.1z" />
   </svg>
 );
 
+// --- ESTOS VIENEN DEL MAIN (Y SON UTILES PARA ADMIN) ---
 export const DragHandleIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -186,3 +185,4 @@ export const ArrowDownIcon: React.FC<{ className?: string }> = ({ className }) =
     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
   </svg>
 );
+// ------------------------------------------------------

@@ -48,6 +48,8 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
             <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4">{article ? 'Editar Artículo' : 'Añadir Nuevo Artículo'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
+
+                    {/* Sección 1: Información Básica */}
                     <div className="p-4 border rounded-lg">
                         <h3 className="text-lg font-semibold mb-2 text-gray-700">Información Básica</h3>
                         <div className="mb-4">
@@ -82,6 +84,7 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
                         </div>
                     </div>
 
+                    {/* Sección 2: Editor de Contenido Rico */}
                     <div className="p-4 border rounded-lg">
                         <h3 className="text-lg font-semibold mb-2 text-gray-700">Contenido Detallado del Artículo</h3>
                         <ContentEditor
@@ -92,7 +95,7 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
 
                     <div className="flex justify-end space-x-4 pt-4">
                         <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-red-700">Guardar Cambios</button>
+                        <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
