@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignorar compilados de Java
+backend/target/
+backend/*.log
+backend/.mvn/wrapper/maven-wrapper.properties
+
+# Ignorar dependencias de Node (Frontend)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Ignorar archivos de sistema y IDEs
+.DS_Store
+.idea/
+.vscode/
+*.class

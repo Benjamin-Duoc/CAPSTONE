@@ -106,7 +106,9 @@ interface AdminPanelProps {
 type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | null;
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
+    // Usamos la inicialización mejorada del MAIN
     const [selectedSection, setSelectedSection] = useState<ManagedSection>((props.initialSection as ManagedSection) || 'settings');
+
     // Course states
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [isCourseFormOpen, setIsCourseFormOpen] = useState(false);
@@ -503,7 +505,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Cursos</h2>
+                            <h2 className="text-2xl font-bold">Cursos y Capacitaciones</h2>
                             <button onClick={handleAddNewCourse} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Curso</button>
                         </div>
                         <div className="mb-4">
@@ -577,7 +579,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Oportunidades Laborales</h2>
+                            <h2 className="text-2xl font-bold">Bolsa de Trabajo</h2>
                             <button onClick={handleAddNewJob} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nueva Oportunidad</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -611,7 +613,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Emprendimientos</h2>
+                            <h2 className="text-2xl font-bold">Emprendimientos Periodísticos</h2>
                             <button onClick={handleAddNewEntrepreneur} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Emprendimiento</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -645,7 +647,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Análisis y Noticias</h2>
+                            <h2 className="text-2xl font-bold">Innovación para el Periodismo (Noticias)</h2>
                             <button onClick={handleAddNewNewsArticle} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Artículo</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -679,7 +681,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Sponsors</h2>
+                            <h2 className="text-2xl font-bold">Sponsors Premium</h2>
                             <button onClick={handleAddNewSponsor} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Sponsor</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -711,7 +713,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar "Periodistas en Acción"</h2>
+                            <h2 className="text-2xl font-bold">Periodistas en Acción (Comunicados)</h2>
                             <button onClick={handleAddNewPressRelease} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Comunicado</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -745,7 +747,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Título Principal</h2>
+                            <h2 className="text-2xl font-bold">Título Principal (Hero)</h2>
                         </div>
                         <div className="bg-surface p-6 rounded-lg shadow">
                             <h3 className="text-lg font-semibold text-gray-600">Título de la Página de Inicio</h3>
@@ -764,7 +766,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Fotoperiodismo</h2>
+                            <h2 className="text-2xl font-bold">Fotoperiodismo</h2>
                             <button onClick={handleAddNewPhotoPost} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Publicación</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -796,7 +798,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Fondos y Concursos</h2>
+                            <h2 className="text-2xl font-bold">Fondos y Concursos</h2>
                             <button onClick={handleAddNewFunding} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Oportunidad</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -830,7 +832,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Fuentes Especializadas</h2>
+                            <h2 className="text-2xl font-bold">Fuentes Especializadas</h2>
                             <button onClick={handleAddNewSpecialist} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Especialista</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -862,7 +864,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Galería Fotográfica</h2>
+                            <h2 className="text-2xl font-bold">Galería Fotográfica (Descargable)</h2>
                             <button onClick={handleAddNewShareablePhoto} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Foto</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -894,7 +896,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Colaboraciones Urgentes</h2>
+                            <h2 className="text-2xl font-bold">Colaboraciones Urgentes</h2>
                             <button onClick={handleAddNewCollaboration} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Colaboración</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -928,7 +930,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Videos "Emprender es Mundial"</h2>
+                            <h2 className="text-2xl font-bold">Videos Educativos (Emprender)</h2>
                             <button onClick={handleAddNewEntrepreneurshipTip} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Video</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -960,7 +962,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Anuncios Laterales</h2>
+                            <h2 className="text-2xl font-bold">Anuncios Laterales (Barra)</h2>
                             <button onClick={handleAddNewSponsoredAd} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Anuncio</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -992,7 +994,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Anuncios Especiales</h2>
+                            <h2 className="text-2xl font-bold">Anuncios Destacados</h2>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
                             <table className="min-w-full divide-y divide-gray-200">
@@ -1020,7 +1022,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Actividad de la Comunidad</h2>
+                            <h2 className="text-2xl font-bold">Muro de la Comunidad</h2>
                             <button onClick={handleAddNewCommunityPost} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Publicación</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -1052,7 +1054,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Próximos Eventos</h2>
+                            <h2 className="text-2xl font-bold">Calendario de Eventos</h2>
                             <button onClick={handleAddNewEvent} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Evento</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -1086,7 +1088,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Contador de Estadísticas</h2>
+                            <h2 className="text-2xl font-bold">Estadísticas del Sitio</h2>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
                             <table className="min-w-full divide-y divide-gray-200">
@@ -1118,7 +1120,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Logos de Socios</h2>
+                            <h2 className="text-2xl font-bold">Logos de Socios</h2>
                             <button onClick={handleAddNewPartnerLogo} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Logo</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">
@@ -1171,7 +1173,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Gestionar Base de Talentos</h2>
+                            <h2 className="text-2xl font-bold">Base de Talentos</h2>
                             <button onClick={handleAddNewTalentProfile} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Perfil</button>
                         </div>
                         <div className="mb-4 relative">
@@ -1272,6 +1274,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* SIDEBAR DEL MAIN (Organizado por categorías) */}
                     <aside className="md:col-span-1">
                         <div className="bg-surface p-4 rounded-lg shadow-md sticky top-24">
                             <h3 className="text-lg font-bold mb-4 border-b pb-2">Secciones</h3>
@@ -1329,6 +1332,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                             </nav>
                         </div>
                     </aside>
+
                     <main className="md:col-span-3">
                         {renderSectionContent()}
                     </main>

@@ -22,7 +22,6 @@ const initialPressReleaseState: Omit<PressRelease, 'id'> = {
 };
 
 const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSave, onClose, isModal = true }) => {
-    // ... (keep state and effects)
     const [formData, setFormData] = useState<Omit<PressRelease, 'id'> | PressRelease>(initialPressReleaseState);
 
     useEffect(() => {
@@ -71,7 +70,7 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
         <div className={`bg-white rounded-lg shadow-2xl p-6 w-full ${isModal ? 'max-w-2xl max-h-[90vh] overflow-y-auto' : 'max-w-4xl'}`}>
             <h2 className="text-2xl font-bold mb-4 font-serif text-primary">{pressRelease ? 'Editar Comunicado' : 'Añadir Nuevo Comunicado'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* ... Form fields ... */}
+
                 <div className="p-4 border rounded-lg bg-gray-50">
                     <h3 className="text-lg font-semibold mb-2 text-gray-700">Información Básica</h3>
                     <div>
@@ -82,14 +81,18 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
                         <label className="block text-sm font-medium text-gray-700">Institución</label>
                         <input type="text" name="institution" value={formData.institution} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-primary focus:border-primary" required />
                     </div>
+
+                    {/* Campo de Autor Principal (Contacto) */}
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-700">Autor / Contacto</label>
                         <input type="text" name="author" value={formData.author} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-primary focus:border-primary" required />
                     </div>
+
                     <div className="mt-4">
                         <label className="block text-sm font-medium text-gray-700">Resumen</label>
                         <textarea name="summary" value={formData.summary} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-primary focus:border-primary" required />
                     </div>
+
                     <div className="mt-4 space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Imagen Principal</label>
                         {formData.imageUrl && <img src={formData.imageUrl} alt="Previsualización" className="my-2 rounded max-h-40 object-contain bg-gray-200 border" />}
@@ -121,6 +124,8 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
 
                 <div className="p-4 border rounded-lg bg-gray-50">
                     <h3 className="text-lg font-semibold mb-2 text-gray-700">Cuerpo del Comunicado</h3>
+
+                    {/* Campos opcionales del reporte (Integración del Main) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Autor del Reportaje (opcional)</label>
@@ -132,6 +137,7 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
                         </div>
                     </div>
 
+                    {/* Editor Rico (Integración del HEAD) */}
                     <ContentEditor
                         content={formData.reportContent || []}
                         onChange={(newContent) => setFormData(prev => ({ ...prev, reportContent: newContent }))}

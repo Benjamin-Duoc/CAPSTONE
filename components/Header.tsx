@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Page, User } from '../types';
 import Logo from './Logo';
@@ -15,8 +14,9 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout }) => {
     const [showUsersModal, setShowUsersModal] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
-    const [showUserMenu, setShowUserMenu] = useState(false); // State for dropdown menu
+    const [showUserMenu, setShowUserMenu] = useState(false); // Estado para el menú desplegable (Del Main)
 
+    // Usamos la lista del MAIN porque incluye "Fotoperiodismo"
     const mainNavItems: { page: Page; label: string }[] = [
         { page: 'opportunities', label: 'Oportunidades Laborales' },
         { page: 'courses', label: 'Capacitación' },
@@ -65,15 +65,17 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                             ))}
                         </nav>
                         <div className="flex items-center space-x-4">
-                            {/* DB View Button */}
+
+                            {/* Botón de Debugging (Tu versión HEAD) */}
                             <button
                                 onClick={handleShowUsers}
-                                className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors hidden lg:block"
+                                className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors"
                                 title="Ver tabla 'usuario' de la base de datos"
                             >
-                                DB
+                                Ver Usuarios DB
                             </button>
 
+                            {/* Menú de Usuario con Dropdown (Versión MAIN mejorada) */}
                             {currentUser ? (
                                 <div className="relative">
                                     <button
@@ -82,7 +84,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                     >
                                         <div className="text-left hidden sm:block">
                                             <p className="text-sm font-bold text-text-primary leading-tight">{currentUser.firstName} {currentUser.lastName}</p>
-                                            <p className="text-xs text-text-secondary">{currentUser.email}</p>
+                                            <p className="text-xs text-text-secondary truncate w-24">{currentUser.email}</p>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                            {currentUser.firstName.charAt(0)}
                                         </div>
                                         <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showUserMenu ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
@@ -131,14 +136,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                 </div>
             </header>
 
-            {/* Modal de Usuarios */}
+            {/* Modal de Usuarios (Tu lógica HEAD para depuración) */}
             {showUsersModal && (
                 <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowUsersModal(false)}>
                     <div className="bg-surface rounded-lg shadow-2xl p-6 w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col border border-gray-200" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
                             <div>
                                 <h3 className="text-2xl font-bold font-serif text-text-primary">Base de Datos: Tabla 'usuario'</h3>
-                                <p className="text-sm text-text-secondary mt-1">Mostrando todos los registros almacenados localmente.</p>
+                                <p className="text-sm text-text-secondary mt-1">Mostrando todos los registros almacenados en PostgreSQL.</p>
                             </div>
                             <button onClick={() => setShowUsersModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -148,9 +153,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                         <div className="overflow-auto flex-grow bg-gray-50 rounded-md border border-gray-200">
                             {users.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-64 text-text-secondary">
-                                    <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    <p className="text-lg font-medium">La tabla está vacía.</p>
-                                    <p className="text-sm">Regístrate para ver datos aquí.</p>
+                                    <p className="text-lg font-medium">Cargando o tabla vacía...</p>
                                 </div>
                             ) : (
                                 <table className="min-w-full divide-y divide-gray-200">
@@ -158,34 +161,22 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">ID</th>
                                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nombre</th>
-                                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Apellido</th>
                                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Email</th>
                                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Región</th>
-                                            <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Contraseña</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {users.map((u, index) => (
                                             <tr key={u.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{u.id}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.firstName}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{u.lastName}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.firstName} {u.lastName}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">{u.email}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{u.region}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono tracking-widest">••••••</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             )}
-                        </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                onClick={() => setShowUsersModal(false)}
-                                className="px-6 py-2 bg-primary text-white font-bold rounded-md hover:bg-orange-600 transition-colors shadow-md"
-                            >
-                                Cerrar
-                            </button>
                         </div>
                     </div>
                 </div>

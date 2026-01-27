@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { entrepreneurs } from '../data/mockData'; // Fallback / unused for now
 import type { PhotojournalismPost, User } from '../types';
 import { WhatsAppIcon } from './icons';
-import { getPhotoPosts, insertPhotoPost, updatePhotoPost, uploadImage, deletePhotoPost } from '../utils/db';
+import { getPhotojournalismPosts as getPhotoPosts, createPhotojournalismPost as insertPhotoPost, updatePhotojournalismPost as updatePhotoPost, uploadImage, deletePhotojournalismPost as deletePhotoPost } from '../utils/db';
 
 interface PhotojournalismModuleProps {
     posts?: PhotojournalismPost[];

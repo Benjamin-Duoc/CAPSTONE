@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'upload-press-release';
+=======
 
 export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'login' | 'upload-press-release';
+>>>>>>> origin/main
 
 export interface User {
     id: number;

@@ -11,11 +11,23 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*") // Allow requests from frontend
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> payload) {
+        try {
+            User user = userService.authenticate(payload.get("email"), payload.get("password"));
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Login exitoso",
+                    "user", user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {

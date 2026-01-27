@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon } from './icons';
+import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
 
@@ -39,6 +38,12 @@ interface HomePageProps {
     stats: SiteStat[];
     onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
 }
+
+const DEFAULT_IMAGE = "data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3e%3crect fill='%23e2e8f0' width='300' height='200'/%3e%3ctext fill='%2364748b' font-family='sans-serif' font-size='16' dy='6' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3eImagen no disponible%3c/text%3e%3c/svg%3e";
+
+const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = DEFAULT_IMAGE;
+};
 
 // A custom hook for counting up animation
 const useCountUp = (end: number, duration: number, start: boolean) => {
@@ -126,12 +131,12 @@ const StatsCounter: React.FC<{ stats: any[] }> = ({ stats }) => {
 const NgoSpotlightCard: React.FC<{ item: NgoSpotlight }> = ({ item }) => (
     <div className="bg-surface p-4 rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left w-full">
         <div className="overflow-hidden rounded-md">
-            <img src={item.imageUrl} alt={item.title} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
+            <img src={item.imageUrl || DEFAULT_IMAGE} alt={item.title} onError={handleImageError} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
+        </div >
         <span className="text-xs font-bold uppercase text-secondary mt-4 inline-block">{item.institution}</span>
         <h3 className="font-semibold font-serif text-text-primary mt-1">{item.title}</h3>
         <p className="text-sm text-text-secondary mt-1">{item.summary}</p>
-    </div>
+    </div >
 );
 
 const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onClick: () => void; label: string; textColor: string; }> = ({ entrepreneur, onClick, label, textColor }) => (
@@ -140,8 +145,9 @@ const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onCli
         className="relative w-full text-left rounded-lg overflow-hidden group col-span-1 md:col-span-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-96 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50"
     >
         <img
-            src={entrepreneur.imageUrl}
+            src={entrepreneur.imageUrl || DEFAULT_IMAGE}
             alt={entrepreneur.name}
+            onError={handleImageError}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -164,8 +170,8 @@ const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onCli
             >
                 {entrepreneur.description}
             </p>
-        </div>
-    </button>
+        </div >
+    </button >
 );
 
 
@@ -176,8 +182,9 @@ const PremiumBannerCard: React.FC<{ sponsor: PremiumSponsor; onClick: () => void
     >
         <div className="h-32 overflow-hidden bg-gray-100">
             <img
-                src={sponsor.imageUrl}
+                src={sponsor.imageUrl || DEFAULT_IMAGE}
                 alt={sponsor.name}
+                onError={handleImageError}
                 className="w-full h-full object-cover"
             />
         </div>
@@ -192,37 +199,35 @@ const PremiumBannerCard: React.FC<{ sponsor: PremiumSponsor; onClick: () => void
 );
 
 
-// Fix: Updated NewsArticle prop to allow for a generic category string.
-// This allows the component to be reused for press releases where 'institution' is used as the category.
 const NewsCard: React.FC<{ article: Omit<NewsArticle, 'category'> & { category: string }; onClick: () => void }> = ({ article, onClick }) => (
     <button onClick={onClick} className="bg-surface p-4 rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left w-full">
         <div className="overflow-hidden rounded-md">
-            <img src={article.imageUrl} alt={article.title} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
+            <img src={article.imageUrl || DEFAULT_IMAGE} alt={article.title} onError={handleImageError} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
+        </div >
         <span className="text-xs font-bold uppercase text-primary mt-4 inline-block">{article.category}</span>
         <h3 className="font-semibold font-serif text-text-primary mt-1 group-hover:text-primary transition-colors">{article.title}</h3>
-    </button>
+    </button >
 );
 
 const VideoCard: React.FC<{ video: PromoVideo }> = ({ video }) => (
     <a href="#" className="bg-surface rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <div className="relative">
-            <img src={video.thumbnailUrl} alt={video.title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+            <img src={video.thumbnailUrl || DEFAULT_IMAGE} alt={video.title} onError={handleImageError} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <PlayIcon className="h-14 w-14 text-white/70 group-hover:text-white transition-colors duration-300" />
             </div>
-        </div>
+        </div >
         <div className="p-4">
             <h3 className="font-semibold font-serif text-text-primary group-hover:text-primary transition-colors">{video.title}</h3>
             <p className="text-sm text-text-secondary mt-1">{video.description}</p>
         </div>
-    </a>
+    </a >
 );
 
 
 const JobCard: React.FC<{ job: Job; onSelect: () => void; }> = ({ job, onSelect }) => (
     <button onClick={onSelect} className="bg-surface p-4 rounded-lg flex items-center space-x-4 border border-gray-200 hover:shadow-md transition-shadow duration-300 w-full text-left group">
-        <img src={job.logoUrl} alt={`${job.company} logo`} className="w-12 h-12 rounded-full flex-shrink-0 object-cover" />
+        <img src={job.logoUrl || DEFAULT_IMAGE} alt={`${job.company} logo`} onError={handleImageError} className="w-12 h-12 rounded-full flex-shrink-0 object-cover" />
         <div className="flex-grow">
             <p className="text-sm text-text-secondary">{job.company}</p>
             <h3 className="font-semibold text-text-primary leading-tight truncate group-hover:text-primary transition-colors">{job.title}</h3>
@@ -234,41 +239,35 @@ const JobCard: React.FC<{ job: Job; onSelect: () => void; }> = ({ job, onSelect 
 
 const CourseCard: React.FC<{ course: Course, onSelect: () => void }> = ({ course, onSelect }) => (
     <button onClick={onSelect} className="w-full text-left bg-surface rounded-lg overflow-hidden group border border-gray-200 hover:shadow-md transition-shadow duration-300 flex flex-col">
-        <img src={course.imageUrl} alt={course.title} className="w-full h-32 object-cover" />
+        <img src={course.imageUrl || DEFAULT_IMAGE} alt={course.title} onError={handleImageError} className="w-full h-32 object-cover" />
         <div className="p-4 flex flex-col flex-grow">
             <span className={`text-xs font-bold uppercase ${course.cost === 'Gratis' ? 'text-green-600' : 'text-highlight'}`}>{course.category}</span>
             <h3 className="font-semibold text-base text-text-primary mt-1 flex-grow h-12">{course.title}</h3>
         </div>
-    </button>
+    </button >
 );
 
 const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
     <div className="bg-surface p-4 rounded-lg border border-gray-200">
         <div className="flex items-start space-x-3">
-            <img src={post.authorAvatarUrl} alt={post.authorName} className="w-10 h-10 rounded-full flex-shrink-0" />
+            <img src={post.authorAvatarUrl || DEFAULT_IMAGE} alt={post.authorName} onError={handleImageError} className="w-10 h-10 rounded-full flex-shrink-0" />
             <div>
                 <p className="font-semibold text-text-primary text-sm">{post.authorName}</p>
                 <p className="text-sm text-text-secondary italic">"{post.comment}"</p>
             </div>
-        </div>
+        </div >
         <a href={post.postUrl} target="_blank" rel="noopener noreferrer" className="mt-3 group flex items-center justify-between bg-background p-3 rounded-md hover:bg-gray-200 transition-colors">
             <span className="font-semibold text-sm text-primary group-hover:underline pr-2">{post.postTitle}</span>
             <ArrowUpRightIcon className="h-5 w-5 text-primary flex-shrink-0" />
         </a>
-    </div>
+    </div >
 );
 
 const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Sort posts by createdAt (descending) or id if createdAt is missing
     const sortedPosts = [...posts].sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-
-        if (dateA !== dateB) {
-            return dateB - dateA;
-        }
+        // Fallback sort by ID if createdAt is missing, assuming higher ID is newer
         return b.id - a.id;
     }).slice(0, 8);
 
@@ -301,7 +300,6 @@ const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts
                 ))}
             </div>
 
-            {/* Navigation Dots */}
             {totalSlides > 1 && (
                 <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-3 z-10">
                     {slides.map((_, idx) => (
@@ -319,16 +317,16 @@ const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts
 };
 
 const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
-    <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
-        <img src={post.imageUrl} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
-        <div className="p-6 pb-12"> {/* Added padding bottom for dots */}
+    <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+        <img src={post.imageUrl || DEFAULT_IMAGE} alt={post.title} onError={handleImageError} className="w-full h-auto max-h-[500px] object-cover" />
+        <div className="p-6">
             <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4">
                 <div>
                     <h3 className="text-2xl font-bold font-serif text-text-primary">{post.title}</h3>
                     <p className="text-sm text-text-secondary">Foto del {post.dateTaken}</p>
                 </div>
                 <div className="flex items-center space-x-3 flex-shrink-0">
-                    <img src={post.photographerAvatarUrl} alt={post.photographerName} className="w-12 h-12 rounded-full object-cover" />
+                    <img src={post.photographerAvatarUrl || DEFAULT_IMAGE} alt={post.photographerName} onError={handleImageError} className="w-12 h-12 rounded-full object-cover" />
                     <div className="text-right">
                         <p className="font-semibold text-text-primary text-sm">{post.photographerName}</p>
                         <a href={`https://wa.me/${post.whatsappContact}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center justify-end">
@@ -336,70 +334,42 @@ const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) 
                             Contactar
                         </a>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
             <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">{post.caption}</p>
-        </div>
-    </div>
+        </div >
+    </div >
 );
 
-const PhotojournalismCarousel: React.FC<{ posts: PhotojournalismPost[] }> = ({ posts }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    useEffect(() => {
-        if (posts.length <= 1) return;
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % posts.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [posts.length]);
-
-    if (posts.length === 0) return null;
-    const post = posts[currentIndex];
+// --- COMPONENTE PROTEGIDO CONTRA FALLOS DE RATING ---
+const EntrepreneurialJournalistCard: React.FC<{ service: FreelanceService }> = ({ service }) => {
+    // Usamos Optional Chaining (?.) y valores por defecto para que no falle si rating es null
+    const avg = service.rating?.average?.toFixed(1) || '0.0';
+    const count = service.rating?.count || 0;
 
     return (
-        <div className="relative group">
-            <div className="transition-opacity duration-500 ease-in-out">
-                <PhotojournalismCard post={post} />
+        <div className="bg-surface rounded-lg border border-gray-200 flex flex-col hover:shadow-md transition-shadow duration-300 h-full group overflow-hidden">
+            <div className="h-40 overflow-hidden">
+                <img src={service.imageUrl || DEFAULT_IMAGE} alt={service.service} onError={handleImageError} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
-
-            {/* Navigation Dots */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
-                {posts.map((_, idx) => (
-                    <button
-                        key={idx}
-                        onClick={() => setCurrentIndex(idx)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 shadow-sm border border-white/50 ${idx === currentIndex ? 'bg-primary scale-110' : 'bg-gray-300/80 hover:bg-white'}`}
-                        aria-label={`Ver foto ${idx + 1}`}
-                    />
-                ))}
+            <div className="p-4 flex flex-col flex-grow">
+                <span className="text-xs font-bold uppercase text-accent">{service.category}</span>
+                <h4 className="font-semibold text-text-primary leading-tight mt-1">{service.service}</h4>
+                <p className="text-sm text-text-secondary mt-2 flex-grow">{service.description}</p>
+                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <div className="flex items-center space-x-1">
+                        <StarIcon className="h-5 w-5 text-highlight" />
+                        <span className="font-bold text-text-primary">{avg}</span>
+                        <span className="text-xs text-text-secondary">/ 7 ({count})</span>
+                    </div>
+                    <a href={service.portfolioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm shadow-primary/20">
+                        Portafolio
+                    </a>
+                </div>
             </div>
         </div>
     );
 };
-
-const EntrepreneurialJournalistCard: React.FC<{ service: FreelanceService }> = ({ service }) => (
-    <div className="bg-surface rounded-lg border border-gray-200 flex flex-col hover:shadow-md transition-shadow duration-300 h-full group overflow-hidden">
-        <div className="h-40 overflow-hidden">
-            <img src={service.imageUrl} alt={service.service} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
-        <div className="p-4 flex flex-col flex-grow">
-            <span className="text-xs font-bold uppercase text-accent">{service.category}</span>
-            <h4 className="font-semibold text-text-primary leading-tight mt-1">{service.service}</h4>
-            <p className="text-sm text-text-secondary mt-2 flex-grow">{service.description}</p>
-            <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
-                <div className="flex items-center space-x-1">
-                    <StarIcon className="h-5 w-5 text-highlight" />
-                    <span className="font-bold text-text-primary">{service.rating.average.toFixed(1)}</span>
-                    <span className="text-xs text-text-secondary">/ 7 ({service.rating.count})</span>
-                </div>
-                <a href={service.portfolioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm shadow-primary/20">
-                    Portafolio
-                </a>
-            </div>
-        </div>
-    </div>
-);
 
 const CommunityAdCard: React.FC<{ ad: CommunityAd }> = ({ ad }) => {
     const categoryColors: { [key in CommunityAd['category']]: string } = {
@@ -412,18 +382,18 @@ const CommunityAdCard: React.FC<{ ad: CommunityAd }> = ({ ad }) => {
         <div className="bg-surface p-5 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col h-full">
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                    <img src={ad.authorAvatarUrl} alt={ad.authorName} className="w-10 h-10 rounded-full object-cover" />
+                    <img src={ad.authorAvatarUrl || DEFAULT_IMAGE} alt={ad.authorName} onError={handleImageError} className="w-10 h-10 rounded-full object-cover" />
                     <p className="font-semibold text-text-primary">{ad.authorName}</p>
-                </div>
+                </div >
                 <span className={`text-xs font-bold px-2 py-1 rounded-full ${categoryColors[ad.category]}`}>{ad.category}</span>
-            </div>
+            </div >
             <h3 className="font-bold font-serif text-lg text-text-primary mt-1 flex-grow">{ad.title}</h3>
             <p className="text-sm text-text-secondary my-3">{ad.description}</p>
             <a href={`https://wa.me/${ad.whatsappContact}`} target="_blank" rel="noopener noreferrer" className="w-full mt-auto px-4 py-2 text-sm font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-2">
                 <WhatsAppIcon className="h-5 w-5" />
                 <span>Contactar por WhatsApp</span>
             </a>
-        </div>
+        </div >
     );
 };
 
@@ -431,13 +401,13 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
     return (
         <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col h-full overflow-hidden group">
             <div className="relative h-56">
-                <img src={specialist.imageUrl} alt={specialist.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300" />
+                <img src={specialist.imageUrl || DEFAULT_IMAGE} alt={specialist.name} onError={handleImageError} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-4">
                     <h3 className="text-2xl font-bold font-serif" style={{ color: specialist.textColor }}>{specialist.name}</h3>
                     <p className="text-base font-bold" style={{ color: specialist.textColor, opacity: 0.9 }}>{specialist.title}</p>
                 </div>
-            </div>
+            </div >
             <div className="p-4 flex flex-col flex-grow">
                 <p className="text-sm text-text-secondary flex-grow">{specialist.specialtyDescription}</p>
                 <a
@@ -449,17 +419,17 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
                     <WhatsAppIcon className="h-5 w-5" />
                     <span>Contactar</span>
                 </a>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
 const ShareablePhotoCard: React.FC<{ photo: ShareablePhoto }> = ({ photo }) => (
     <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col h-full overflow-hidden group">
         <div className="relative">
-            <img src={photo.imageUrl} alt={photo.caption} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+            <img src={photo.imageUrl || DEFAULT_IMAGE} alt={photo.caption} onError={handleImageError} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="absolute top-2 left-2 flex items-center bg-black/50 p-2 rounded-lg text-base font-bold">
-                <img src={photo.photographerAvatarUrl} alt={photo.photographerName} className="w-6 h-6 rounded-full mr-2 border-2 border-white" />
+                <img src={photo.photographerAvatarUrl || DEFAULT_IMAGE} alt={photo.photographerName} onError={handleImageError} className="w-6 h-6 rounded-full mr-2 border-2 border-white" />
                 <span style={{ color: photo.textColor }}>{photo.photographerName}</span>
             </div>
         </div>
@@ -473,23 +443,32 @@ const ShareablePhotoCard: React.FC<{ photo: ShareablePhoto }> = ({ photo }) => (
                 </a>
             </div>
         </div>
-    </div>
+    </div >
 );
 
-const EventCard: React.FC<{ event: Event }> = ({ event }) => (
-    <div className="bg-surface p-4 rounded-lg flex items-center space-x-4 border border-gray-200 hover:shadow-md transition-shadow duration-300">
-        <div className="flex-shrink-0 text-center bg-background rounded-md p-3 w-20">
-            <p className="text-3xl font-bold font-serif text-primary">{event.date.split(' ')[0]}</p>
-            <p className="text-sm font-semibold text-text-secondary -mt-1">{event.date.split(' ')[1]}</p>
+// --- COMPONENTE CORREGIDO Y BLINDADO (EventCard) ---
+const EventCard: React.FC<{ event: Event }> = ({ event }) => {
+    // Si la fecha viene nula o vacía de la DB, usamos un placeholder seguro
+    const safeDate = event.date || "Fecha por definir";
+    const dateParts = safeDate.split(' ');
+    const mainDate = dateParts[0] || "--";
+    const subDate = dateParts[1] || "";
+
+    return (
+        <div className="bg-surface p-4 rounded-lg flex items-center space-x-4 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+            <div className="flex-shrink-0 text-center bg-background rounded-md p-3 w-20">
+                <p className="text-3xl font-bold font-serif text-primary">{mainDate}</p>
+                <p className="text-sm font-semibold text-text-secondary -mt-1">{subDate}</p>
+            </div>
+            <div className="flex-grow">
+                <span className="text-xs font-bold uppercase text-accent">{event.type || 'Evento'}</span>
+                <h3 className="font-semibold text-text-primary leading-tight mt-1">{event.title}</h3>
+                <p className="text-sm text-text-secondary">{event.location || 'Online'}</p>
+            </div>
+            <a href={event.link || '#'} className="text-xs font-bold text-primary whitespace-nowrap hover:underline self-center">Ver más</a>
         </div>
-        <div className="flex-grow">
-            <span className="text-xs font-bold uppercase text-accent">{event.type}</span>
-            <h3 className="font-semibold text-text-primary leading-tight mt-1">{event.title}</h3>
-            <p className="text-sm text-text-secondary">{event.location}</p>
-        </div>
-        <a href={event.link} className="text-xs font-bold text-primary whitespace-nowrap hover:underline self-center">Ver más</a>
-    </div>
-);
+    );
+};
 
 const ResourceCard: React.FC<{ resource: Resource }> = ({ resource }) => (
     <a href={resource.link} className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 group flex flex-col">
@@ -532,9 +511,9 @@ const LegalModulePreview: React.FC<{ ad: SpecialAd, onNavigate: (page: Page) => 
                 >
                     {ad.ctaText}
                 </button>
-            </div>
-        </div>
-    </div>
+            </div >
+        </div >
+    </div >
 );
 
 const EntrepreneurshipAdCard: React.FC<{ ad: SpecialAd }> = ({ ad }) => (
@@ -551,21 +530,21 @@ const EntrepreneurshipAdCard: React.FC<{ ad: SpecialAd }> = ({ ad }) => (
                 >
                     {ad.ctaText}
                 </button>
-            </div>
-        </div>
-    </div>
+            </div >
+        </div >
+    </div >
 );
 
 const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = ({ collaboration }) => {
     return (
         <div className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 w-full text-left group">
             <div className="flex items-center space-x-3 mb-3">
-                <img src={collaboration.authorAvatarUrl} alt={collaboration.author} className="w-10 h-10 rounded-full object-cover" />
+                <img src={collaboration.authorAvatarUrl || DEFAULT_IMAGE} alt={collaboration.author} onError={handleImageError} className="w-10 h-10 rounded-full object-cover" />
                 <div>
                     <p className="font-semibold text-sm text-text-primary">{collaboration.author}</p>
                     <p className="text-xs text-text-secondary">Busca Colaborador</p>
                 </div>
-            </div>
+            </div >
             <h3 className="font-semibold text-text-primary group-hover:text-primary transition-colors leading-tight">{collaboration.title}</h3>
             <div className="flex justify-between items-center text-xs text-text-secondary mt-3 pt-3 border-t border-gray-100">
                 <div>
@@ -581,7 +560,7 @@ const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = 
                 <WhatsAppIcon className="h-5 w-5" />
                 <span>Contactar</span>
             </a>
-        </div>
+        </div >
     )
 };
 
@@ -592,8 +571,9 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
         <div className="bg-surface p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center space-x-4">
                 <img
-                    src={specialist.imageUrl}
+                    src={specialist.imageUrl || DEFAULT_IMAGE}
                     alt={specialist.name}
+                    onError={handleImageError}
                     className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
                 />
                 <div>
@@ -601,10 +581,22 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
                     <p className="text-xs text-primary font-semibold">{specialist.title}</p>
                 </div>
             </div>
-            <p className="text-xs text-text-secondary mt-3">{specialist.specialtyDescription}</p>
-        </div>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs text-text-secondary text-center mb-2">"{specialist.specialtyDescription}"</p>
+                <a
+                    href={`https://wa.me/${specialist.whatsappContact}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full mt-2 px-4 py-2 text-xs font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-1"
+                >
+                    <WhatsAppIcon className="h-4 w-4" />
+                    <span>Contactar</span>
+                </a>
+            </div >
+        </div >
     );
 };
+
 
 
 const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
@@ -613,39 +605,12 @@ const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const HomePage: React.FC<HomePageProps> = (props) => {
     const {
-        onNavigate,
-        onSelectEntrepreneur,
-        onSelectSponsor,
-        onSelectNewsArticle,
-        onSelectJob,
-        onSelectPressRelease,
-        onSelectCourse,
-        isAdminMode,
-        courses,
-        jobs,
-        entrepreneurs,
-        newsArticles,
-        pressReleases,
-        ngoSpotlight,
-        freelanceServices,
-        communityAds,
-        premiumSponsors,
-        promoVideos,
-        communityPosts,
-        photojournalismPosts,
-        specialists,
-        shareablePhotos,
-        resources,
-        fundingOpportunities,
-        events,
-        heroHeading,
-        shortCollaborations,
-        entrepreneurshipTips,
-        sponsoredAds,
-        specialAds,
-        stats,
-        onAddPressRelease,
-        currentUser,
+        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
+        pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
+        freelanceServices, photojournalismPosts, events,
+        resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
+        sponsoredAds, communityAds, specialAds, stats,
+        currentUser, onAddPressRelease
     } = props;
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
@@ -656,8 +621,30 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
 
+    // Carousel Logic for Tips
+    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+    const sortedTips = [...entrepreneurshipTips].sort((a, b) => b.id - a.id);
+    const currentTip = sortedTips[currentVideoIndex];
+
+    const nextVideoSlide = () => {
+        if (currentVideoIndex + 1 < sortedTips.length) {
+            setCurrentVideoIndex(prev => prev + 1);
+        }
+    };
+
+    const prevVideoSlide = () => {
+        if (currentVideoIndex > 0) {
+            setCurrentVideoIndex(prev => prev - 1);
+        }
+    };
+
+    // Handling uploads safely with login check
     const handleUploadClick = () => {
-        setIsPressReleaseModalOpen(true);
+        if (currentUser) {
+            onNavigate('upload-press-release');
+        } else {
+            setIsPressReleaseModalOpen(true);
+        }
     };
 
     const handlePressReleaseSubmit = (pr: Omit<PressRelease, 'id'>) => {
@@ -667,14 +654,64 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         setIsPressReleaseModalOpen(false);
     };
 
+    const iconMap: { [key in SiteStat['id']]: React.ReactNode } = {
+        subscribers: <UserGroupIcon className="h-12 w-12 text-highlight" />,
+        visits: <ChartBarIcon className="h-12 w-12 text-highlight" />,
+        regions: <LatinAmericaMapIcon className="h-12 w-12 text-highlight" />,
+    };
+
     const statsWithIcons = stats.map(stat => ({
         ...stat,
-        icon: stat.id === 'subscribers'
-            ? <UserGroupIcon className="h-10 w-10 text-orange-100" />
-            : stat.id === 'visits'
-                ? <ChartBarIcon className="h-10 w-10 text-orange-100" />
-                : <LatinAmericaMapIcon className="h-10 w-10 text-orange-100" />,
+        icon: iconMap[stat.id]
     }));
+
+    const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-pr">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
+                {currentUser ? (
+                    <>
+                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
+                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
+                        <div className="mt-6 text-left">
+                            <PressReleaseForm pressRelease={null} onSave={handlePressReleaseSubmit} onClose={onClose} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                        <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
+                                Registrarme
+                            </button>
+                            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                                Ingresar
+                            </a>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+
+    const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
+                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <p className="mt-4 text-text-secondary">Para publicar una fuente experta en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
+                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
+                        Registrarme
+                    </button>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                        Ingresar
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
 
     const EntrepreneurPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-entrepreneur">
@@ -686,7 +723,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -704,7 +741,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -722,7 +759,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -740,7 +777,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -758,67 +795,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
                         Registrarme
                     </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-                        Ingresar
-                    </a>
-                </div>
-            </div>
-        </div>
-    );
-
-    const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-press">
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                {currentUser ? (
-                    <>
-                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
-                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
-                        <div className="mt-6 text-left">
-                            <PressReleaseForm onSave={handlePressReleaseSubmit} onClose={onClose} />
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
-                        <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
-                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                            <button
-                                onClick={() => {
-                                    onClose();
-                                    onNavigate('register');
-                                }}
-                                className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors"
-                            >
-                                Registrarme
-                            </button>
-                            <button
-                                onClick={() => {
-                                    onClose();
-                                    onNavigate('login');
-                                }}
-                                className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-                            >
-                                Ingresar
-                            </button>
-                        </div>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-
-    const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
-                <p className="mt-4 text-text-secondary">Para publicar tu perfil como especialista, necesitas una suscripción gratuita activa en CiPress.</p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
-                        Registrarme
-                    </button>
-                    <a href="#" className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
                         Ingresar
                     </a>
                 </div>
@@ -828,7 +805,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
     const SponsoredAdCard: React.FC<{ ad: SponsoredAd }> = ({ ad }) => (
         <a href={ad.ctaLink} target="_blank" rel="noopener noreferrer" className="block relative bg-surface rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 group overflow-hidden h-64 text-left">
-            <img src={ad.imageUrl} alt={ad.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <img src={ad.imageUrl || DEFAULT_IMAGE} alt={ad.title} onError={handleImageError} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-4 w-full">
                 <p className="text-sm font-bold text-white uppercase tracking-wider opacity-80">{ad.advertiser}</p>
@@ -848,7 +825,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             <div className="flex-grow overflow-hidden">
                 <h4 className="font-semibold text-sm text-text-primary group-hover:text-primary transition-colors truncate">{ad.title}</h4>
                 <div className="flex items-center space-x-2 mt-1">
-                    <img src={ad.authorAvatarUrl} alt={ad.authorName} className="w-5 h-5 rounded-full object-cover" />
+                    <img src={ad.authorAvatarUrl || DEFAULT_IMAGE} alt={ad.authorName} onError={handleImageError} className="w-5 h-5 rounded-full object-cover" />
                     <p className="text-xs text-text-secondary truncate">{ad.authorName}</p>
                 </div>
             </div>
@@ -864,11 +841,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </div>
     );
 
-    // Sort news articles by ID (newest first - higher IDs are more recent)
+    // Sorting logic for News
     const sortedNewsArticles = [...newsArticles].sort((a, b) => b.id - a.id);
     const mainNewsArticle = sortedNewsArticles[0];
     const otherNewsArticles = sortedNewsArticles.slice(1, 3);
-    const entrepreneurshipTip = [...entrepreneurshipTips].sort((a, b) => b.id - a.id)[0];
+
     const legalAd = specialAds.find(ad => ad.id === 'legal');
     const entrepreneurshipAd = specialAds.find(ad => ad.id === 'entrepreneurship');
 
@@ -927,7 +904,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <button onClick={() => onSelectNewsArticle(mainNewsArticle)} className="bg-surface rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left">
                                         <div className="overflow-hidden rounded-t-lg">
-                                            <img src={mainNewsArticle.imageUrl} alt={mainNewsArticle.title} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
+                                            <img src={mainNewsArticle.imageUrl || DEFAULT_IMAGE} alt={mainNewsArticle.title} onError={handleImageError} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
                                         </div>
                                         <div className="p-5">
                                             <span className="text-xs font-bold uppercase text-primary">{mainNewsArticle.category}</span>
@@ -977,23 +954,51 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             </div>
                         </section>
 
+                        {/* Courses Section */}
+                        <section>
+                            <div className="flex justify-between items-center border-b-2 border-primary pb-2 mb-6">
+                                <h2 className="text-3xl font-bold font-serif text-text-primary">Capacitación</h2>
+                                <button onClick={() => onNavigate('courses')} className="font-semibold text-primary hover:underline">Ver todo &rarr;</button>
+                                {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {courses.slice(0, 4).map(course => <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />)}
+                            </div>
+                        </section>
+
                         {/* Emprender es Mundial Section */}
-                        {entrepreneurshipTip && (
+                        {currentTip && (
                             <section>
                                 <div className="flex justify-between items-center border-b-2 border-highlight pb-2 mb-6">
                                     <h2 className="text-3xl font-bold font-serif text-text-primary">Emprender es Mundial</h2>
-                                    {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={prevVideoSlide}
+                                            className={`p-1 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors ${currentVideoIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            disabled={currentVideoIndex === 0}
+                                        >
+                                            <ChevronLeftIcon className="h-6 w-6 text-gray-600" />
+                                        </button>
+                                        <button
+                                            onClick={nextVideoSlide}
+                                            className={`p-1 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors ${currentVideoIndex + 1 >= sortedTips.length ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            disabled={currentVideoIndex + 1 >= sortedTips.length}
+                                        >
+                                            <ChevronRightIcon className="h-6 w-6 text-gray-600" />
+                                        </button>
+                                        {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
+                                    </div>
                                 </div>
-                                <a href={entrepreneurshipTip.videoUrl} target="_blank" rel="noopener noreferrer" className="relative block w-full h-80 rounded-lg overflow-hidden group shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                                    <img src={entrepreneurshipTip.thumbnailUrl} alt={entrepreneurshipTip.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <a href={currentTip.videoUrl} target="_blank" rel="noopener noreferrer" className="relative block w-full h-80 rounded-lg overflow-hidden group shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                                    <img src={currentTip.thumbnailUrl || DEFAULT_IMAGE} alt={currentTip.title} onError={handleImageError} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <PlayIcon className="h-20 w-20 text-white/70 group-hover:text-white transition-all duration-300 transform group-hover:scale-110" />
                                     </div>
                                     <div className="relative p-8 h-full flex flex-col justify-end text-white">
-                                        <h3 className="text-3xl font-bold font-serif">{entrepreneurshipTip.title}</h3>
-                                        <p className="mt-2 max-w-2xl text-lg">{entrepreneurshipTip.description}</p>
-                                        <p className="mt-4 font-semibold text-highlight">{entrepreneurshipTip.expertName}, <span className="font-normal text-white">{entrepreneurshipTip.expertTitle}</span></p>
+                                        <h3 className="text-3xl font-bold font-serif">{currentTip.title}</h3>
+                                        <p className="mt-2 text-lg">{currentTip.description}</p>
+                                        <p className="mt-4 font-semibold text-highlight">{currentTip.expertName}, <span className="font-normal text-white">{currentTip.expertTitle}</span></p>
                                     </div>
                                 </a>
                             </section>
@@ -1053,7 +1058,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <button onClick={() => onNavigate('photojournalism')} className="font-semibold text-primary hover:underline">Ver repositorio &rarr;</button>
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin')} />}
                             </div>
-                            {photojournalismPosts.length > 0 && <PhotojournalismCarousel posts={photojournalismPosts.slice(0, 3)} />}
+                            {photojournalismPosts.length > 0 && <PhotojournalismCard post={photojournalismPosts[0]} />}
 
                             <div className="bg-primary/5 p-4 rounded-lg mt-8 border border-primary/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4">
                                 <div>
@@ -1072,12 +1077,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 >
                                     Sube tu foto
                                 </button>
-                        </div>
-                    </section>
+                            </div>
+                        </section>
 
                     </div>
 
-                    <aside className="space-y-8">
+                    {/* Right Sidebar */}
+                    <aside className="lg:col-span-1 space-y-8">
                         {/* Opportunities Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-4">
@@ -1240,6 +1246,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         </button>
                     </div>
                 </section>
+
                 {/* New Opportunities Banner */}
                 <section>
                     <div className="bg-gradient-to-r from-secondary to-blue-900 text-white rounded-lg p-8 md:p-12">
@@ -1284,6 +1291,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     <StatsCounter stats={statsWithIcons} />
                 </section>
             </div>
+
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
             {isEntrepreneurModalOpen && <EntrepreneurPublicationModal onClose={() => setIsEntrepreneurModalOpen(false)} />}
@@ -1291,7 +1299,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
-            </div>
+        </div>
     );
 };
 
