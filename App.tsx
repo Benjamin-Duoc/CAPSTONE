@@ -32,7 +32,7 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService } from './types';
-import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, getPhotoPosts, getCommunityPosts, insertCommunityPost, deleteCommunityPost } from './utils/db';
+import { initDatabase, getAllNews, addNews, updateNews, deleteNews, getAllPressReleases, addPressRelease, updatePressRelease, deletePressRelease, getPhotoPosts, getCommunityPosts, insertCommunityPost, deleteCommunityPost, updateCommunityPost } from './utils/db';
 
 import * as data from './data/mockData';
 
@@ -132,6 +132,18 @@ const App: React.FC = () => {
     if (dbPosts && dbPosts.length > 0) {
       setCommunityPosts(dbPosts);
     }
+  };
+
+  const isCommunityPostOwner = (post: CommunityPost) => {
+    if (isAdminMode || currentPage === 'admin') return true;
+    if (!currentUser) return false;
+
+    if (post.createdBy) {
+      return post.createdBy === currentUser.email;
+    }
+
+    const fullName = `${currentUser.firstName} ${currentUser.lastName}`.trim();
+    return post.authorName === fullName;
   };
 
   const handleNavigate = (page: Page, subPage?: string) => {
@@ -379,10 +391,29 @@ const App: React.FC = () => {
   const handleAddCommunityPostAdmin = (newPost: Omit<CommunityPost, 'id'>) => {
     setCommunityPosts(prev => [{ ...newPost, id: Date.now() }, ...prev]);
   };
-  const handleUpdateCommunityPost = (updatedPost: CommunityPost) => {
-    setCommunityPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
+  const handleUpdateCommunityPost = async (updatedPost: CommunityPost) => {
+    if (!isCommunityPostOwner(updatedPost)) {
+      alert('Solo puedes editar tus propias publicaciones.');
+      return;
+    }
+
+    const result = await updateCommunityPost(updatedPost);
+    if (!result.success) {
+      alert(result.message || 'Error al actualizar la publicación.');
+      return;
+    }
+
+    await refreshCommunityPosts();
   };
   const handleDeleteCommunityPost = async (postId: number) => {
+    const post = communityPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    if (!isCommunityPostOwner(post)) {
+      alert('Solo puedes eliminar tus propias publicaciones.');
+      return;
+    }
+
     if (window.confirm('¿Estás seguro de que quieres eliminar esta publicación?')) {
       const result = await deleteCommunityPost(postId);
       if (!result.success) {
@@ -661,6 +692,8 @@ const App: React.FC = () => {
         return <CommunityPostPage
           posts={communityPosts}
           onAddPost={handleAddCommunityPost}
+          onUpdatePost={handleUpdateCommunityPost}
+          onDeletePost={handleDeleteCommunityPost}
           onNavigate={handleNavigate}
           currentUser={currentUser}
         />;

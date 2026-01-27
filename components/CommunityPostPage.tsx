@@ -1,19 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Page, CommunityPost, User } from '../types';
 import { ArrowUpRightIcon } from './icons';
 
 interface CommunityPostPageProps {
     posts: CommunityPost[];
-    onAddPost: (post: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => void;
+    onAddPost: (post: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl' | 'createdBy'>) => void;
+    onUpdatePost: (post: CommunityPost) => void | Promise<void>;
+    onDeletePost: (postId: number) => void | Promise<void>;
     onNavigate: (page: Page) => void;
     currentUser: User | null;
 }
 
-const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
-    <div className="bg-surface p-4 rounded-lg border border-gray-200">
+const CommunityPostCard: React.FC<{
+    post: CommunityPost;
+    isOwner: boolean;
+    onEdit: (post: CommunityPost) => void;
+    onDelete: (postId: number) => void;
+}> = ({ post, isOwner, onEdit, onDelete }) => (
+    <div className="bg-surface p-4 rounded-lg border border-gray-200 relative overflow-hidden">
+        {isOwner && (
+            <div className="absolute top-2 right-2 z-10 flex space-x-2">
+                <button
+                    onClick={() => onEdit(post)}
+                    className="bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-primary hover:text-orange-600 transition-colors"
+                    title="Editar publicación"
+                    aria-label="Editar publicación"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                </button>
+                <button
+                    onClick={() => onDelete(post.id)}
+                    className="bg-white/90 p-2 rounded-full shadow-md hover:bg-white text-red-600 hover:text-red-800 transition-colors"
+                    title="Eliminar publicación"
+                    aria-label="Eliminar publicación"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        )}
         <div className="flex items-start space-x-3">
             <img src={post.authorAvatarUrl} alt={post.authorName} className="w-10 h-10 rounded-full flex-shrink-0" />
-            <div>
+            <div className="flex-1">
                 <p className="font-semibold text-text-primary text-sm">{post.authorName}</p>
                 <p className="text-sm text-text-secondary italic">"{post.comment}"</p>
             </div>
@@ -25,14 +56,29 @@ const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
     </div>
 );
 
-const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost, onNavigate, currentUser }) => {
+const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost, onUpdatePost, onDeletePost, onNavigate, currentUser }) => {
     const [postTitle, setPostTitle] = useState('');
     const [postUrl, setPostUrl] = useState('');
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [editingPost, setEditingPost] = useState<CommunityPost | null>(null);
+    const [editPostTitle, setEditPostTitle] = useState('');
+    const [editPostUrl, setEditPostUrl] = useState('');
+    const [editComment, setEditComment] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
 
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 12;
+
+    const isPostOwner = (post: CommunityPost) => {
+        if (!currentUser) return false;
+        if (post.createdBy) {
+            return post.createdBy === currentUser.email;
+        }
+
+        const fullName = `${currentUser.firstName} ${currentUser.lastName}`.trim();
+        return post.authorName === fullName;
+    };
 
     // Sort posts by createdAt (descending) or id if createdAt is missing
     const sortedPosts = [...posts].sort((a, b) => {
@@ -52,8 +98,15 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
     const indexOfFirstPost = indexOfLastPost - ITEMS_PER_PAGE;
     const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(Math.max(totalPages, 1));
+        }
+    }, [currentPage, totalPages]);
+
     // Change page
     const paginate = (pageNumber: number) => {
+        if (pageNumber < 1 || pageNumber > totalPages) return;
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -66,11 +119,57 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
         }
 
         setIsSubmitting(true);
-        await onAddPost({ postTitle, postUrl, comment });
-        setPostTitle('');
-        setPostUrl('');
-        setComment('');
-        setIsSubmitting(false);
+        try {
+            await onAddPost({ postTitle, postUrl, comment });
+            setPostTitle('');
+            setPostUrl('');
+            setComment('');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleStartEdit = (post: CommunityPost) => {
+        setEditingPost(post);
+        setEditPostTitle(post.postTitle);
+        setEditPostUrl(post.postUrl);
+        setEditComment(post.comment);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingPost(null);
+        setEditPostTitle('');
+        setEditPostUrl('');
+        setEditComment('');
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingPost) return;
+        if (!editPostTitle.trim() || !editPostUrl.trim() || !editComment.trim()) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
+
+        setIsUpdating(true);
+        try {
+            await onUpdatePost({
+                ...editingPost,
+                postTitle: editPostTitle,
+                postUrl: editPostUrl,
+                comment: editComment,
+            });
+            handleCancelEdit();
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleDeletePost = async (postId: number) => {
+        if (editingPost?.id === postId) {
+            handleCancelEdit();
+        }
+        await onDeletePost(postId);
     };
 
     return (
@@ -155,10 +254,78 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
                         </form>
                     )}
                 </div>
+
+                {editingPost && (
+                    <div className="max-w-3xl mx-auto bg-surface p-6 rounded-lg shadow-md border border-gray-200 mb-12">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-text-primary">Editando publicación</h3>
+                            <button onClick={handleCancelEdit} className="text-sm text-text-secondary hover:underline">Cancelar</button>
+                        </div>
+                        <form onSubmit={handleUpdate} className="space-y-4">
+                            <div>
+                                <label htmlFor="editPostTitle" className="block text-sm font-medium text-gray-700">Título del Artículo</label>
+                                <input
+                                    id="editPostTitle"
+                                    type="text"
+                                    value={editPostTitle}
+                                    onChange={(e) => setEditPostTitle(e.target.value)}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                    disabled={isUpdating}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="editPostUrl" className="block text-sm font-medium text-gray-700">Enlace (URL)</label>
+                                <input
+                                    id="editPostUrl"
+                                    type="text"
+                                    value={editPostUrl}
+                                    onChange={(e) => setEditPostUrl(e.target.value)}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                    disabled={isUpdating}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="editComment" className="block text-sm font-medium text-gray-700">Tu Comentario o Resumen</label>
+                                <textarea
+                                    id="editComment"
+                                    rows={3}
+                                    value={editComment}
+                                    onChange={(e) => setEditComment(e.target.value)}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                    disabled={isUpdating}
+                                />
+                            </div>
+                            <div className="text-right space-x-3">
+                                <button
+                                    type="button"
+                                    onClick={handleCancelEdit}
+                                    className="px-4 py-2 text-sm font-semibold text-text-secondary bg-gray-100 rounded-md hover:bg-gray-200 border border-gray-300"
+                                    disabled={isUpdating}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 text-base font-bold text-white bg-secondary rounded-md hover:bg-blue-900 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isUpdating}
+                                >
+                                    {isUpdating ? 'Guardando...' : 'Guardar cambios'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
+
                 <h2 className="text-3xl font-bold font-serif text-text-primary mb-6 border-b-2 border-accent pb-2">Últimas publicaciones</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {currentPosts.map(post => (
-                        <CommunityPostCard key={post.id} post={post} />
+                        <CommunityPostCard
+                            key={post.id}
+                            post={post}
+                            isOwner={isPostOwner(post)}
+                            onEdit={handleStartEdit}
+                            onDelete={handleDeletePost}
+                        />
                     ))}
                 </div>
 

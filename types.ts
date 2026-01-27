@@ -153,6 +153,7 @@ export interface CommunityPost {
     postTitle: string;
     postUrl: string;
     comment: string;
+    createdBy?: string;
     createdAt?: string;
 }
 
