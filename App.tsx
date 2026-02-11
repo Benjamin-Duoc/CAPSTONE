@@ -388,6 +388,7 @@ const App: React.FC = () => {
         return <HomePage
           currentUser={currentUser}
           onAddPressRelease={handleAddPressRelease}
+          onAddSpecialist={handleAddSpecialist}
           onNavigate={handleNavigate}
           onSelectEntrepreneur={handleSelectEntrepreneur}
           onSelectSponsor={handleSelectSponsor}

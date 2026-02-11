@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
+import UserSpecialistForm from './UserSpecialistForm';
 
 interface HomePageProps {
     onNavigate: (page: Page, subPage?: string) => void;
@@ -37,6 +38,7 @@ interface HomePageProps {
     specialAds: SpecialAd[];
     stats: SiteStat[];
     onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
+    onAddSpecialist?: (specialist: Omit<Specialist, 'id' | 'dateAdded'>) => void;
 }
 
 const DEFAULT_IMAGE = "data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3e%3crect fill='%23e2e8f0' width='300' height='200'/%3e%3ctext fill='%2364748b' font-family='sans-serif' font-size='16' dy='6' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3eImagen no disponible%3c/text%3e%3c/svg%3e";
@@ -610,11 +612,12 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         freelanceServices, photojournalismPosts, events,
         resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
         sponsoredAds, communityAds, specialAds, stats,
-        currentUser, onAddPressRelease
+        currentUser, onAddPressRelease, onAddSpecialist
     } = props;
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
     const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
+    const [isSourceFormOpen, setIsSourceFormOpen] = useState(false);
     const [isEntrepreneurModalOpen, setIsEntrepreneurModalOpen] = useState(false);
     const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
     const [isCommunityAdModalOpen, setIsCommunityAdModalOpen] = useState(false);
@@ -647,11 +650,28 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         }
     };
 
+    // Handler for "Sube tu fuente" button
+    const handleSourceUploadClick = () => {
+        if (currentUser) {
+            setIsSourceFormOpen(true);
+        } else {
+            setIsSourceModalOpen(true);
+        }
+    };
+
     const handlePressReleaseSubmit = (pr: Omit<PressRelease, 'id'>) => {
         if (onAddPressRelease) {
             onAddPressRelease(pr);
         }
         setIsPressReleaseModalOpen(false);
+    };
+
+    const handleSpecialistSubmit = (specialist: Omit<Specialist, 'id' | 'dateAdded'>) => {
+        if (onAddSpecialist) {
+            onAddSpecialist(specialist);
+            alert('¡Fuente especializada agregada exitosamente!');
+        }
+        setIsSourceFormOpen(false);
     };
 
     const iconMap: { [key in SiteStat['id']]: React.ReactNode } = {
@@ -1132,7 +1152,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <h4 className="font-bold text-secondary">¿Conoces a un experto?</h4>
                                 <p className="mt-1 text-xs text-blue-800">Promueve tus fuentes confiables en la comunidad periodística. Es un beneficio gratuito para suscriptores.</p>
                                 <button
-                                    onClick={() => setIsSourceModalOpen(true)}
+                                    onClick={handleSourceUploadClick}
                                     className="mt-3 inline-block px-4 py-2 text-sm font-bold text-white bg-secondary rounded-md hover:bg-blue-900 transition-colors duration-200"
                                 >
                                     Sube tu fuente
@@ -1294,6 +1314,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
+            {isSourceFormOpen && <UserSpecialistForm onSave={handleSpecialistSubmit} onClose={() => setIsSourceFormOpen(false)} />}
             {isEntrepreneurModalOpen && <EntrepreneurPublicationModal onClose={() => setIsEntrepreneurModalOpen(false)} />}
             {isPhotoModalOpen && <PhotoPublicationModal onClose={() => setIsPhotoModalOpen(false)} />}
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
