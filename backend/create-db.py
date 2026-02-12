@@ -46,17 +46,17 @@ def create_db():
             {"first_name": "Ana", "last_name": "Sanz", "email": "ana@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
             {"first_name": "Anais", "last_name": "Ruiz", "email": "anais@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
             
-            # Colaboradores gratuitos
-            {"first_name": "Gema", "last_name": "Soto", "email": "gema@gratis.cl", "role": "Colaborador gratuito", "region": "Biobío"},
-            {"first_name": "Gaby", "last_name": "Lara", "email": "gaby@gratis.cl", "role": "Colaborador gratuito", "region": "Valparaíso"},
+            # Colaboradores
+            {"first_name": "Gema", "last_name": "Soto", "email": "gema@gratis.cl", "role": "Colaborador", "region": "Biobío"},
+            {"first_name": "Gaby", "last_name": "Lara", "email": "gaby@gratis.cl", "role": "Colaborador", "region": "Valparaíso"},
 
-            # Colaboradores premium
-            {"first_name": "Pía", "last_name": "Maza", "email": "pia@premium.cl", "role": "Colaborador premium", "region": "Metropolitana de Santiago"},
-            {"first_name": "Paulina", "last_name": "Ríos", "email": "paulina@premium.cl", "role": "Colaborador premium", "region": "Araucanía"},
+            # Clientes
+            {"first_name": "Pía", "last_name": "Maza", "email": "pia@premium.cl", "role": "Cliente", "region": "Metropolitana de Santiago"},
+            {"first_name": "Paulina", "last_name": "Ríos", "email": "paulina@premium.cl", "role": "Cliente", "region": "Araucanía"},
 
-            # Cliente / Empresa
-            {"first_name": "Ely", "last_name": "Pino", "email": "ely@empresa.cl", "role": "Cliente / Empresa", "region": "Metropolitana de Santiago"},
-            {"first_name": "Emy", "last_name": "Mora", "email": "emy@empresa.cl", "role": "Cliente / Empresa", "region": "Antofagasta"},
+            # Empresas
+            {"first_name": "Ely", "last_name": "Pino", "email": "ely@empresa.cl", "role": "Empresa", "region": "Metropolitana de Santiago"},
+            {"first_name": "Emy", "last_name": "Mora", "email": "emy@empresa.cl", "role": "Empresa", "region": "Antofagasta"},
         ]
 
         for u_data in users_to_create:

@@ -4,6 +4,7 @@ from app.models.all_models import *
 class UserSchema(ma.SQLAlchemyAutoSchema):
     firstName = ma.String(attribute='first_name')
     lastName = ma.String(attribute='last_name')
+    role = ma.String() # Explicitly include role to ensure it's in the dump
     
     class Meta:
         model = User
