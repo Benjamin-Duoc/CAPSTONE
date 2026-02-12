@@ -25,7 +25,7 @@ const Logo: React.FC<LogoProps> = ({ onNavigate, className }) => {
       {/* Imagen del logo desde /public/images */}
       <div className="h-30 w-30 flex-shrink-0">
         <img
-          src="https://www.triskeledu.cl/images/LOGO-CIPRESS-2.png"
+          src="https://www.cipress.cl/images/LOGO-CIPRESS-2.png"
           alt="Logo Cipress"
           style={logoStyle}
         />

@@ -1,0 +1,463 @@
+import json
+from datetime import datetime, date
+from app import create_app
+from app.extensions import db
+from werkzeug.security import generate_password_hash
+from app.models.all_models import (
+    AppConfig, User, Role, HeroHeading, NewsArticle, PressRelease, 
+    PhotojournalismPost, CommunityPost, CommunityAd, ShortCollaboration, 
+    Event, Course, Entrepreneurship, EntrepreneurshipTip, FundingOpportunity, 
+    Job, FreelanceService, LegalTopic, LegalFAQ, PromoVideo, NgoSpotlight, 
+    ShareablePhoto, PartnerLogo, SponsoredAd, PremiumSponsor, TalentProfile, 
+    Specialist, SpecialAd, Resource, SiteStat
+)
+
+def create_db():
+    app = create_app()
+    with app.app_context():
+        print("⚠️  ATENCIÓN: Se eliminarán todas las tablas y datos existentes.")
+        print("🗑️  Eliminando base de datos actual...")
+        db.drop_all()
+        
+        print("🔨 Creando esquema de base de datos...")
+        db.create_all()
+        
+        print("🌱 Iniciando población de datos de prueba...")
+
+        # --- ROLES ---
+        roles_data = [
+            {"name": "Administrador", "description": "Control total del sitio, portada, secciones editoriales, avisos laborales y moderación."},
+            {"name": "Colaborador", "description": "Puede publicar comunicados, fotos, eventos, actividades comunitarias."},
+            {"name": "Cliente", "description": "Lo mismo que el gratuito + mayor visibilidad y secciones exclusivas."},
+            {"name": "Empresa", "description": "Publica contenidos pagados (noticias auspiciadas, avisos comerciales)."}
+        ]
+        
+        for r_data in roles_data:
+            db.session.add(Role(**r_data))
+        
+        db.session.commit() # Commit roles first to be safe
+
+        # --- USUARIOS ---
+        # Password hash for "123"
+        password_123 = generate_password_hash("123")
+
+        users_to_create = [
+            # Administradores
+            {"first_name": "Ana", "last_name": "Sanz", "email": "ana@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
+            {"first_name": "Anais", "last_name": "Ruiz", "email": "anais@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
+            
+            # Colaboradores gratuitos
+            {"first_name": "Gema", "last_name": "Soto", "email": "gema@gratis.cl", "role": "Colaborador gratuito", "region": "Biobío"},
+            {"first_name": "Gaby", "last_name": "Lara", "email": "gaby@gratis.cl", "role": "Colaborador gratuito", "region": "Valparaíso"},
+
+            # Colaboradores premium
+            {"first_name": "Pía", "last_name": "Maza", "email": "pia@premium.cl", "role": "Colaborador premium", "region": "Metropolitana de Santiago"},
+            {"first_name": "Paulina", "last_name": "Ríos", "email": "paulina@premium.cl", "role": "Colaborador premium", "region": "Araucanía"},
+
+            # Cliente / Empresa
+            {"first_name": "Ely", "last_name": "Pino", "email": "ely@empresa.cl", "role": "Cliente / Empresa", "region": "Metropolitana de Santiago"},
+            {"first_name": "Emy", "last_name": "Mora", "email": "emy@empresa.cl", "role": "Cliente / Empresa", "region": "Antofagasta"},
+        ]
+
+        for u_data in users_to_create:
+            db.session.add(User(
+                first_name=u_data["first_name"],
+                last_name=u_data["last_name"],
+                email=u_data["email"],
+                role=u_data["role"],
+                region=u_data["region"],
+                password_hash=password_123
+            ))
+
+        # --- HERO HEADING ---
+        db.session.add(HeroHeading(
+            main_text="El periodismo chileno está",
+            highlighted_text="emprendiendo",
+            sub_text="Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile",
+            featured_label="Emprendimiento de la Semana",
+            text_color="#FFFFFF"
+        ))
+
+        # --- SITE STATS ---
+        stats = [
+            {"id": "subscribers", "label": "suscritos entre los 18 y 64 años de edad", "end_value": 10000, "prefix": "+ de "},
+            {"id": "visits", "label": "Visitas Diarias", "end_value": 6500, "prefix": ""},
+            {"id": "regions", "label": "Regiones de Chile presentes entre suscritos y usuarios, diariamente", "end_value": 16, "prefix": ""}
+        ]
+        for s in stats:
+            db.session.add(SiteStat(**s))
+
+        # --- COURSES ---
+        courses_data = [
+            {
+                "title": "Periodismo de Datos: De Cero a Experto",
+                "category": "Periodismo de Datos",
+                "level": "Básico",
+                "format": "Video",
+                "cost": "$45.000 CLP",
+                "rating": 4.9,
+                "review_count": 123,
+                "image_url": "https://picsum.photos/seed/course1/1200/800",
+                "description": "Sumérgete en el mundo del periodismo de datos y aprende a encontrar, analizar y visualizar información para contar historias de alto impacto.",
+                "instructor_name": "Isidora Paz",
+                "instructor_title": "Periodista de Datos, La Pública",
+                "instructor_avatar_url": "https://i.pravatar.cc/80?u=isidora",
+                "duration": "6 Semanas",
+                "topics": json.dumps([
+                    "Introducción al Periodismo de Datos y la mentalidad de datos.",
+                    "Técnicas de Web Scraping y uso de APIs.",
+                    "Limpieza y análisis de datos con Hojas de Cálculo y Python.",
+                    "Visualización de datos efectiva con Flourish y Datawrapper.",
+                    "Narrativa y Storytelling con datos.",
+                    "Ética y responsabilidad en el manejo de datos."
+                ]),
+                "enrollment_start_date": "2024-07-01",
+                "enrollment_end_date": "2024-07-31",
+                "course_start_date": "2024-08-05",
+                "course_end_date": "2024-09-13",
+                "access_link": "#"
+            },
+            {
+                "title": "SEO para Medios: Posiciona tus Noticias",
+                "category": "SEO",
+                "level": "Intermedio",
+                "format": "Video",
+                "cost": "$60.000 CLP",
+                "rating": 4.8,
+                "review_count": 98,
+                "image_url": "https://picsum.photos/seed/course2/1200/800",
+                "description": "Domina las técnicas de optimización para motores de búsqueda (SEO) aplicadas específicamente a medios de comunicación.",
+                "instructor_name": "Javier Fuentes",
+                "instructor_title": "Consultor SEO para Medios",
+                "instructor_avatar_url": "https://i.pravatar.cc/80?u=javier",
+                "duration": "8 Semanas",
+                "topics": json.dumps([
+                    "Fundamentos de SEO: Rastreo, Indexación y Ranking.",
+                    "Investigación de Palabras Clave (Keywords) para noticias.",
+                    "SEO On-Page para artículos periodísticos.",
+                    "Optimización Técnica: Velocidad de carga, datos estructurados.",
+                    "Estrategias de Link Building para medios.",
+                    "Google News, Discover y otras plataformas de Google."
+                ]),
+                "enrollment_start_date": "2024-07-15",
+                "enrollment_end_date": "2024-08-15",
+                "course_start_date": "2024-08-19",
+                "course_end_date": "2024-10-11",
+                "access_link": "#"
+            },
+            {
+                "title": "Crea tu Podcast Informativo Desde Cero",
+                "category": "Podcast",
+                "level": "Básico",
+                "format": "Webinar",
+                "cost": "Gratis",
+                "rating": 4.7,
+                "review_count": 250,
+                "image_url": "https://picsum.photos/seed/course3/1200/800",
+                "description": "Descubre el poder del formato audio. Este curso práctico te guiará paso a paso en la creación, producción, y distribución de tu propio podcast informativo.",
+                "instructor_name": "Carolina Soto",
+                "instructor_title": "Productora de Podcast, Relatos del Sur",
+                "instructor_avatar_url": "https://i.pravatar.cc/80?u=carolina",
+                "duration": "4 Webinars en vivo",
+                "topics": json.dumps([
+                    "Definiendo tu nicho y formato de podcast.",
+                    "Equipamiento y software para grabar y editar.",
+                    "Técnicas de guion y entrevista para audio.",
+                    "Edición, mezcla y diseño de sonido.",
+                    "Estrategias de distribución y monetización."
+                ]),
+                "enrollment_start_date": "2024-08-01",
+                "enrollment_end_date": "2024-08-20",
+                "course_start_date": "2024-08-22",
+                "course_end_date": "2024-09-12",
+                "access_link": "#"
+            },
+            # ... Otros cursos omitidos por brevedad pero estructura lista
+        ]
+        for c in courses_data:
+            db.session.add(Course(**c))
+
+        # --- JOBS ---
+        jobs_data = [
+            {"title": "Periodista de Investigación", "company": "CIPER Chile", "location": "Santiago", "type": "Completo", "area": "Prensa", "date": "Hace 2 días", "logo_url": "https://picsum.photos/seed/logo1/100/100", "description": "Buscamos a un periodista riguroso y apasionado por la investigación para unirse a nuestro equipo.", "apply_email": "postulaciones@ciperchile.cl"},
+            {"title": "Productor Periodístico Matinal", "company": "Canal 13", "location": "Santiago", "type": "Completo", "area": "TV", "date": "Hace 5 días", "logo_url": "https://picsum.photos/seed/logo2/100/100", "description": "El matinal 'Tu Día' busca un productor periodístico con capacidad para proponer temas.", "apply_email": "talento@canal13.cl"},
+            {"title": "Redactor de Contenidos Web (Freelance)", "company": "Agencia Digital XYZ", "location": "Remoto", "type": "Freelance", "area": "Digital", "date": "Hace 1 semana", "logo_url": "https://picsum.photos/seed/logo3/100/100", "description": "Necesitamos un redactor freelance con experiencia en SEO.", "apply_email": "contacto@agenciaxyz.com"},
+            {"title": "Periodista Deportivo", "company": "Radio Cooperativa", "location": "Santiago", "type": "Parcial", "area": "Radio", "date": "Hace 1 semana", "logo_url": "https://picsum.photos/seed/logo4/100/100", "description": "Se busca periodista para cobertura de eventos deportivos los fines de semana.", "apply_email": "deportes@cooperativa.cl"},
+            {"title": "Community Manager", "company": "El Diario de Valparaíso", "location": "Valparaíso", "type": "Completo", "area": "Digital", "date": "Hace 10 días", "logo_url": "https://picsum.photos/seed/logo5/100/100", "description": "Responsable de gestionar las redes sociales del diario.", "apply_email": "rrhh@diariovalparaiso.cl"},
+            {"title": "Editor de Contenido Digital", "company": "La Lupa Media", "location": "Remoto", "type": "Completo", "area": "Digital", "date": "Hace 12 días", "logo_url": "https://picsum.photos/seed/logo6/100/100", "description": "Micromedio digital busca editor/a.", "apply_email": "hola@lalupamedia.com"},
+            {"title": "Periodista de Datos (Junior)", "company": "Observatorio Fiscal", "location": "Santiago", "type": "Parcial", "area": "Prensa", "date": "Hace 2 semanas", "logo_url": "https://picsum.photos/seed/logo7/100/100", "description": "Buscamos un periodista recién egresado con interés en datos.", "apply_email": "talento@observatoriofiscal.cl"}
+        ]
+        for j in jobs_data:
+            db.session.add(Job(**j))
+
+        # --- ENTREPRENEURSHIP ---
+        ents = [
+            {
+                "name": "La Pública", "type": "Micromedio", "founder": "Ana González", "location": "Santiago",
+                "specialty": "Investigación", "image_url": "https://picsum.photos/seed/public-square-life/1200/800",
+                "description": "Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.",
+                "report_author": "Catalina Riquelme", "report_date": "18 de Julio, 2024",
+                "report_content": json.dumps([
+                    {"type": "paragraph", "text": "En un ecosistema mediático a menudo saturado..."},
+                    {"type": "quote", "text": "Nuestro compromiso no es con la primicia, sino con la verdad."}
+                ])
+            },
+            {"name": "Contenido Central", "type": "Agencia", "founder": "Carlos Pérez", "location": "Santiago", "specialty": "Cultura", "image_url": "https://picsum.photos/seed/ent2/400/225", "description": "Agencia de comunicaciones que crea contenido estratégico."},
+            {"name": "Relatos del Sur", "type": "Productora", "founder": "María Inés Soto", "location": "Concepción", "specialty": "Local", "image_url": "https://picsum.photos/seed/ent3/400/225", "description": "Productora audiovisual especializada en documentales."},
+            {"name": "Deportes Al Instante", "type": "Micromedio", "founder": "Javier Rojas", "location": "Valparaíso", "specialty": "Deportes", "image_url": "https://picsum.photos/seed/ent4/400/225", "description": "Plataforma digital con cobertura minuto a minuto."}
+        ]
+        for e in ents:
+            db.session.add(Entrepreneurship(**e))
+
+        # --- NEWS ARTICLES ---
+        articles = [
+            {
+                "title": "La IA Generativa y su Impacto en las Salas de Redacción Chilenas",
+                "category": "Tecnología", "author": "Equipo Editorial", "date": "15 de Julio, 2024",
+                "image_url": "https://picsum.photos/seed/news1/400/225",
+                "summary": "Un análisis profundo sobre cómo herramientas como Gemini y ChatGPT están transformando la producción de noticias.",
+                "report_content": json.dumps([
+                    {"type": "paragraph", "text": "La inteligencia artificial generativa ha irrumpido en las salas de redacción..."},
+                    {"type": "quote", "text": "La IA no es una amenaza para el periodismo, sino una oportunidad.", "author": "Directora de Innovación"}
+                ])
+            },
+            {"title": "Nuevos Modelos de Suscripción Ganan Terreno", "category": "Industria", "author": "Isidora Paz", "date": "12 de Julio, 2024", "image_url": "https://picsum.photos/seed/news2/400/225", "summary": "Exploramos casos de éxito de medios chilenos."},
+            {"title": "Avanza Proyecto de Ley sobre Protección a Periodistas", "category": "Legislación", "author": "Tomás Reyes", "date": "10 de Julio, 2024", "image_url": "https://picsum.photos/seed/news3/400/225", "summary": "Las claves del nuevo marco legal."},
+            {"title": "Periodismo de Soluciones: Informando más allá del Problema", "category": "Tendencias", "author": "Valentina Camus", "date": "8 de Julio, 2024", "image_url": "https://picsum.photos/seed/news4/400/225", "summary": "Cómo los enfoques constructivos en la reportería están generando mayor impacto."}
+        ]
+        for a in articles:
+            db.session.add(NewsArticle(**a))
+
+        # --- PRESS RELEASES ---
+        prs = [
+            {
+                "title": "Gobierno Regional Lanza Nueva Plataforma de Transparencia Activa",
+                "institution": "Gobierno Regional Metropolitano", "author": "Comunicaciones GORE", "date": "20 de Julio, 2024",
+                "image_url": "https://picsum.photos/seed/pr1/400/225",
+                "summary": "La nueva herramienta digital busca acercar la gestión pública a la ciudadanía.",
+                "report_author": "Equipo GORE", "report_date": "20 de Julio, 2024",
+                "report_content": json.dumps([
+                    {"type": "paragraph", "text": "El Gobierno Regional Metropolitano ha dado un paso significativo..."},
+                    {"type": "quote", "text": "La confianza de la ciudadanía se construye con hechos.", "author": "Gobernador Regional"}
+                ])
+            },
+            {"title": "Start-Up Chile Abre Convocatoria para su Generación 2024", "institution": "CORFO", "author": "Prensa CORFO", "date": "19 de Julio, 2024", "image_url": "https://picsum.photos/seed/pr2/400/225", "summary": "El programa busca atraer a los mejores emprendimientos tecnológicos."},
+            {"title": "Museo de la Memoria Inaugura Exposición", "institution": "Museo de la Memoria", "author": "Cultura y Prensa MMDH", "date": "18 de Julio, 2024", "image_url": "https://picsum.photos/seed/pr3/400/225", "summary": "La muestra 'La Tinta no se Borra' recorre la historia de los medios."},
+            {"title": "Festival de Innovación Social fiiS 2024", "institution": "Festival fiiS", "author": "Equipo fiiS", "date": "17 de Julio, 2024", "image_url": "https://picsum.photos/seed/pr4/400/225", "summary": "Líderes de opinión se darán cita en el evento."},
+            {"title": "Informe sobre brecha digital en Chile", "institution": "Fundación Datos Protegidos", "author": "Comunicaciones FDP", "date": "16 de Julio, 2024", "image_url": "https://picsum.photos/seed/pr5/400/225", "summary": "El estudio revela que un 30% de los hogares rurales no tiene acceso a internet."}
+        ]
+        for pr in prs:
+            db.session.add(PressRelease(**pr))
+
+        # --- NGO SPOTLIGHT ---
+        ngos = [
+            {"title": "Reportaje sobre Acceso al Agua", "institution": "Fundación Terram", "author": "Difundido por Sofía Muñoz", "date_published": "22 de Julio, 2024", "image_url": "https://picsum.photos/seed/ngo1/400/225", "summary": "La investigación revela el impacto de la agroindustria."},
+            {"title": "Plataforma 'Congreso Abierto'", "institution": "Ciudadanía Inteligente", "author": "Liderado por Javier Fuentes", "date_published": "21 de Julio, 2024", "image_url": "https://picsum.photos/seed/ngo2/400/225", "summary": "Busca aumentar la transparencia del poder legislativo."},
+            {"title": "Talleres de Periodismo", "institution": "Comunica Derechos", "author": "Liderado por Andrea López", "date_published": "20 de Julio, 2024", "image_url": "https://picsum.photos/seed/ngo3/400/225", "summary": "Entrega herramientas de comunicación a dirigentes vecinales."},
+            {"title": "Documental 'Memorias del Mar'", "institution": "Oceana Chile", "author": "Difundido por Ricardo Núñez", "date_published": "19 de Julio, 2024", "image_url": "https://picsum.photos/seed/ngo4/400/225", "summary": "Muestra los desafíos de la pesca sostenible."}
+        ]
+        for n in ngos:
+            db.session.add(NgoSpotlight(**n))
+
+        # --- FREELANCE SERVICES ---
+        services = [
+            {"service": "Redacción de Artículos SEO", "provider": "Camila Rojas", "category": "Redacción", "rate": "$30.000 / artículo", "image_url": "https://picsum.photos/seed/freelance1/400/225", "description": "Contenido optimizado para posicionar tu marca.", "portfolio_url": "https://www.linkedin.com/", "rating_average": 6.5, "rating_count": 22},
+            {"service": "Corrección de Estilo Académico", "provider": "Javier Fuentes", "category": "Corrección", "rate": "$15.000 / 1000 palabras", "image_url": "https://picsum.photos/seed/freelance2/400/225", "description": "Garantizamos claridad y coherencia.", "portfolio_url": "https://www.instagram.com/", "rating_average": 6.8, "rating_count": 15},
+            {"service": "Fotografía de Eventos", "provider": "Andrea López", "category": "Fotografía", "rate": "$80.000 / hora", "image_url": "https://picsum.photos/seed/freelance3/400/225", "description": "Capturamos los momentos clave de tus eventos.", "portfolio_url": "https://www.youtube.com/", "rating_average": 7.0, "rating_count": 31}
+        ]
+        for s in services:
+            db.session.add(FreelanceService(**s))
+
+        # --- PREMIUM SPONSORS ---
+        sponsors = [
+            {
+                "name": "Tech Solutions", "tagline": "Impulsando la transformación digital", "image_url": "https://picsum.photos/seed/premium1/1200/800",
+                "cta_text": "Descubre Nuestras Herramientas", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300",
+                "report_author": "Equipo Tech Solutions", "report_date": "25 de Julio, 2024",
+                "report_content": json.dumps([{"type": "paragraph", "text": "En Tech Solutions creemos que el futuro del periodismo es digital..."}])
+            },
+            {
+                "name": "Banco Futuro", "tagline": "La banca para los que innovan", "image_url": "https://picsum.photos/seed/premium2/500/300",
+                "cta_text": "Conoce nuestros planes", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300",
+                "report_author": "Daniela Vega", "report_date": "24 de Julio, 2024",
+                "report_content": json.dumps([{"type": "paragraph", "text": "Banco Futuro se establece como el aliado financiero..."}])
+            },
+            {"name": "Innovate Latam", "tagline": "Conectando startups con el mundo", "image_url": "https://picsum.photos/seed/premium3/500/300", "cta_text": "Únete al ecosistema", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300"}
+        ]
+        for sp in sponsors:
+            db.session.add(PremiumSponsor(**sp))
+
+        # --- PROMO VIDEOS ---
+        videos = [
+            {"title": "Por qué unirte al Círculo", "description": "Descubre los beneficios.", "thumbnail_url": "https://picsum.photos/seed/video1/400/225"},
+            {"title": "La Voz de la Industria", "description": "Líderes de opinión opinan.", "thumbnail_url": "https://picsum.photos/seed/video2/400/225"}
+        ]
+        for v in videos:
+            db.session.add(PromoVideo(**v))
+
+        # --- COMMUNITY POSTS ---
+        c_posts = [
+            {"author_name": "Javiera Latorre", "author_avatar_url": "https://i.pravatar.cc/40?u=javiera", "post_title": "The Guardian launches new paid-for ‘digital experience’", "comment": "Interesante el nuevo modelo...", "post_url": "#"},
+            {"author_name": "Ricardo Núñez", "author_avatar_url": "https://i.pravatar.cc/40?u=ricardo", "post_title": "How Axios is using AI", "comment": "El uso de IA para potenciar el periodismo...", "post_url": "#"},
+            {"author_name": "Carolina Soto", "author_avatar_url": "https://i.pravatar.cc/40?u=carolina", "post_title": "SembraMedia report on digital media", "comment": "El último reporte de SembraMedia tiene datos muy relevantes.", "post_url": "#"}
+        ]
+        for cp in c_posts:
+            db.session.add(CommunityPost(**cp))
+
+        # --- PHOTOJOURNALISM ---
+        photos = [
+            {
+                "title": "El Espejo Roto de Aculeo",
+                "image_url": "https://picsum.photos/seed/photojournalism1/800/450",
+                "caption": "La sequía avanza implacable en la zona central...",
+                "photographer_name": "Ignacio Paredes",
+                "photographer_avatar_url": "https://i.pravatar.cc/40?u=ignacio",
+                "date_taken": "15 de Julio, 2024",
+                "whatsapp_contact": "56987654321",
+                "date_added": datetime(2024, 7, 26)
+            },
+            {
+                "title": "Murales que Hablan en Valparaíso",
+                "image_url": "https://picsum.photos/seed/photojournalism2/800/450",
+                "caption": "Un muralista da los toques finales a su obra...",
+                "photographer_name": "Javiera Latorre",
+                "photographer_avatar_url": "https://i.pravatar.cc/40?u=javiera",
+                "date_taken": "20 de Julio, 2024",
+                "whatsapp_contact": "56944445555",
+                "date_added": datetime(2024, 7, 25)
+            }
+        ]
+        for p in photos:
+            db.session.add(PhotojournalismPost(**p))
+
+        # --- SPECIALISTS ---
+        specialists = [
+            {"name": "Dra. Carolina Vera", "title": "Climatóloga, U. de Chile", "image_url": "https://picsum.photos/seed/spec1/400/400", "specialty_description": "Experta en cambio climático.", "whatsapp_contact": "56911112222", "date_added": date(2024, 7, 25), "text_color": "#FFFFFF"},
+            {"name": "Marcos Sánchez", "title": "Analista Económico Senior", "image_url": "https://picsum.photos/seed/spec2/400/400", "specialty_description": "Especialista en macroeconomía.", "whatsapp_contact": "56922223333", "date_added": date(2024, 7, 24), "text_color": "#FFFFFF"},
+            {"name": "Ricardo Núñez", "title": "Experto en Ciberseguridad", "image_url": "https://picsum.photos/seed/spec4/400/400", "specialty_description": "Analiza tendencias en ciberataques.", "whatsapp_contact": "56944445555", "date_added": date(2024, 7, 22), "text_color": "#FFFFFF"}
+        ]
+        for sp in specialists:
+            db.session.add(Specialist(**sp))
+
+        # --- SHAREABLE PHOTOS ---
+        shareable = [
+            {"image_url": "https://picsum.photos/seed/gallery1/600/400", "caption": "Protestas ciudadanas en Plaza Italia.", "photographer_name": "Javiera Latorre", "keywords": json.dumps(["protesta", "santiago"]), "date_added": "2024-07-26", "text_color": "#FFFFFF"},
+            {"image_url": "https://picsum.photos/seed/gallery2/600/400", "caption": "Incendio forestal en Valparaíso.", "photographer_name": "Ignacio Paredes", "keywords": json.dumps(["incendio", "valparaiso"]), "date_added": "2024-07-25", "text_color": "#FFFFFF"}
+        ]
+        for sh in shareable:
+            db.session.add(ShareablePhoto(**sh))
+
+        # --- RESOURCES ---
+        resources = [
+            {"name": "Flourish", "category": "Visualización", "description": "Crea visualizaciones de datos sin código.", "link": "#", "type": "Herramienta"},
+            {"name": "Otter.ai", "category": "Transcripción", "description": "Transcribe entrevistas automáticamente.", "link": "#", "type": "Software"},
+            {"name": "Guía de Fact-Checking", "category": "Fact-Checking", "description": "Metodologías de verificación.", "link": "#", "type": "Guía"}
+        ]
+        for r in resources:
+            db.session.add(Resource(**r))
+
+        # --- FUNDING OPPORTUNITIES ---
+        funding = [
+            {"title": "Fondo de Apoyo a Medios Regionales", "organization": "Gobierno de Chile", "deadline": "31 de Agosto, 2024", "type": "Fondo", "link": "#"},
+            {"title": "Beca de Periodismo de Investigación", "organization": "Fundación para la Prensa", "deadline": "15 de Septiembre, 2024", "type": "Beca", "link": "#"},
+        ]
+        for f in funding:
+            db.session.add(FundingOpportunity(**f))
+
+        # --- EVENTS ---
+        events = [
+            {"title": "Webinar: Cómo usar la IA", "date_display": "05 AGO", "full_date": "Lunes 05 de Agosto, 19:00 hrs.", "location": "Online", "type": "Webinar", "link": "#"},
+            {"title": "Taller de Fotoperiodismo", "date_display": "17 AGO", "full_date": "Sábado 17 de Agosto, 10:00 hrs.", "location": "Santiago", "type": "Taller", "link": "#"},
+        ]
+        for ev in events:
+            db.session.add(Event(**ev))
+
+        # --- LEGAL TOPICS ---
+        legal_topics = [
+            {"title": "Protección de Fuentes", "description": "Entiende el marco legal que ampara el secreto profesional."},
+            {"title": "Derecho a la Imagen", "description": "Conoce los límites y permisos necesarios."},
+            {"title": "Calumnias e Injurias", "description": "Diferencias clave y cómo evitar riesgos legales."}
+        ]
+        for lt in legal_topics:
+            db.session.add(LegalTopic(**lt))
+
+        # --- LEGAL FAQS ---
+        legal_faqs = [
+            {"question": "¿Estoy obligado a revelar mis fuentes?", "answer": "En general, no puedes ser obligado a revelar tus fuentes bajo la ley chilena."},
+            {"question": "¿Puedo tomar una foto a cualquier persona?", "answer": "En lugares públicos, generalmente sí, si es contexto noticioso."},
+        ]
+        for lf in legal_faqs:
+            db.session.add(LegalFAQ(**lf))
+
+        # --- SHORT COLLABORATIONS ---
+        collabs = [
+            {"title": "Periodista para cubrir evento", "deadline": "Postular antes del 30/07", "budget": "$150.000 CLP", "author": "Agencia Comms", "whatsapp_contact": "56911223344"},
+            {"title": "Redactor para 5 notas", "deadline": "Entrega en 1 semana", "budget": "$200.000 CLP", "author": "ONG Verde Chile", "whatsapp_contact": "56922334455"}
+        ]
+        for col in collabs:
+            db.session.add(ShortCollaboration(**col))
+
+        # --- ENTREPRENEURSHIP TIPS ---
+        tips = [
+            {"title": "Cómo Construir tu Marca Personal", "description": "Descubre las claves para posicionarte.", "expert_name": "Ana González", "thumbnail_url": "https://picsum.photos/seed/emprender-mundial-2/1200/600", "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"},
+            {"title": "Los 3 Pilares para Monetizar", "description": "Aprende a construir un modelo de negocio.", "expert_name": "Javier Consuegra", "thumbnail_url": "https://picsum.photos/seed/emprender-mundial/1200/600", "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+        ]
+        for t in tips:
+            db.session.add(EntrepreneurshipTip(**t))
+
+        # --- SPONSORED ADS ---
+        sponsored = [
+            {"image_url": "https://picsum.photos/seed/ad1/300/200", "title": "Transcripciones automáticas", "advertiser": "Verbo.AI", "cta_text": "Prueba Gratis", "cta_link": "#"},
+            {"image_url": "https://picsum.photos/seed/ad2/300/200", "title": "Hosting rápido", "advertiser": "NubeVeloz", "cta_text": "Ver Planes", "cta_link": "#"}
+        ]
+        for sa in sponsored:
+            db.session.add(SponsoredAd(**sa))
+
+        # --- SPECIAL ADS ---
+        special = [
+            {"id": "legal", "title": "Asesoría Legal y Ética", "description": "Recurso gratuito para suscriptores.", "cta_text": "Consultar Beneficio"},
+            {"id": "entrepreneurship", "title": "¿Quieres emprender?", "description": "Te asesoramos con iniciación de actividades.", "cta_text": "Saber Más"}
+        ]
+        for spa in special:
+            db.session.add(SpecialAd(**spa))
+
+        # --- PARTNER LOGOS ---
+        partners = [
+            {"name": "Colegio de Periodistas", "logo_url": "https://images.weserv.nl/?url=www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png&w=200&fit=contain", "website_url": "https://www.colegiodeperiodistas.cl/"},
+            {"name": "INMA", "logo_url": "https://images.weserv.nl/?url=www.inma.org/files/images/inma-logo-hp-new.svg&w=200&fit=contain", "website_url": "https://www.inma.org/"}
+        ]
+        for pl in partners:
+            db.session.add(PartnerLogo(**pl))
+
+        # --- TALENT PROFILES ---
+        talents = [
+            {"name": "Javiera Latorre", "title": "Periodista de datos", "skills": json.dumps(["Análisis de Datos", "Investigación"]), "availability": "Remoto", "region": "Metropolitana", "expected_salary": "$1.500.000 CLP", "experience_years": 5},
+            {"name": "Ricardo Núñez", "title": "Productor audiovisual", "skills": json.dumps(["Premiere Pro", "Cámara"]), "availability": "Híbrido", "region": "Valparaíso", "expected_salary": "$1.800.000 CLP", "experience_years": 8}
+        ]
+        for tp in talents:
+            db.session.add(TalentProfile(**tp))
+
+        # --- COMMUNITY ADS ---
+        ads = [
+            {"title": "Vendo cámara Sony A7 III", "description": "Poco uso...", "category": "Venta", "author_name": "Ignacio Paredes", "whatsapp_contact": "56987654321"},
+            {"title": "Busco fuente experta", "description": "Para reportaje de crisis hídrica...", "category": "Búsqueda", "author_name": "Catalina Riquelme", "whatsapp_contact": "56912345678"}
+        ]
+        for ca in ads:
+            db.session.add(CommunityAd(**ca))
+
+        # --- APP CONFIG ---
+        if not AppConfig.query.filter_by(key="rotationInterval").first():
+            db.session.add(AppConfig(key="rotationInterval", value="1", description="Intervalo de rotación en horas"))
+        
+        # Mark legacy seed as done just in case
+        seed_key = AppConfig.query.filter_by(key="INITIAL_SEED_DONE").first()
+        if not seed_key:
+            db.session.add(AppConfig(key="INITIAL_SEED_DONE", value="true", description="Sembrado inicial completado"))
+        else:
+            seed_key.value = "true"
+
+        db.session.commit()
+        print("✨ Proceso finalizado. La base de datos ha sido reiniciada y poblada.")
+
+if __name__ == "__main__":
+    create_db()

@@ -7,8 +7,12 @@ import type {
   ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat,
   PartnerLogo, TalentProfile
 } from '../types';
+import { ENV } from '../src/config/env';
 
-const API_BASE = '/api'; // Use Vite proxy (configured in vite.config.ts)
+// Use environment-specific API URL
+// In development, Vite proxy will forward /api requests to localhost:5000
+// In production, use the full API URL from environment variables
+const API_BASE = ENV.isDevelopment ? '/api' : ENV.apiUrl;
 
 // --- Case Conversion Helpers ---
 

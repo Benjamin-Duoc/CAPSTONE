@@ -1,30 +1,49 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv(mode, process.cwd(), '')
 
-  server: {
-    port: 3000,
-    host: '0.0.0.0',
+  return {
+    plugins: [react()],
 
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
+    server: {
+      port: 3000,
+      host: '0.0.0.0',
+
+      // Proxy only in development mode
+      proxy: mode === 'development' ? {
+        '/api': {
+          target: env.VITE_API_URL || 'http://localhost:5000',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, '/backendcipress/api'),
+        },
+        '/backendcipress/media': {
+          target: env.VITE_MEDIA_URL || 'http://localhost:5000',
+          changeOrigin: true,
+          secure: false,
+        }
+      } : {}
+    },
+
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './'),
       }
-    }
-  },
+    },
 
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './'),
-    }
-  },
+    optimizeDeps: {
+      include: ['react', 'react-dom']
+    },
 
-  optimizeDeps: {
-    include: ['react', 'react-dom']
+    // Define env variables that should be available in the client
+    define: {
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL),
+      'import.meta.env.VITE_MEDIA_URL': JSON.stringify(env.VITE_MEDIA_URL),
+    }
   }
 })
