@@ -20,7 +20,6 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://localhost:5000',
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, '/backendcipress/api'),
         },
         '/backendcipress/media': {
           target: env.VITE_MEDIA_URL || 'http://localhost:5000',

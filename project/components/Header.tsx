@@ -30,17 +30,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                             <Logo onNavigate={onNavigate} />
                         </div>
                         <nav className="hidden md:flex md:space-x-8">
-                            {isAdminMode && (
-                                <a
-                                    href="#"
-                                    onClick={(e) => { e.preventDefault(); onNavigate('admin'); }}
-                                    className={`text-base font-bold transition-colors duration-200 relative ${currentPage === 'admin' ? 'text-accent' : 'text-text-secondary hover:text-accent'
-                                        }`}
-                                >
-                                    Panel de Administración
-                                    {currentPage === 'admin' && <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-accent"></span>}
-                                </a>
-                            )}
+
                             {mainNavItems.map((item) => (
                                 <a
                                     key={item.page}
@@ -82,6 +72,17 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                                 <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
                                                 <p className="text-xs text-text-secondary truncate">{currentUser.email}</p>
                                             </div>
+                                            {(isAdminMode || currentUser?.role === 'Administrador' || currentUser?.role === 'Administrator') && (
+                                                <button
+                                                    onClick={() => {
+                                                        setShowUserMenu(false);
+                                                        onNavigate('admin');
+                                                    }}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                                                >
+                                                    Administrar
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => {
                                                     setShowUserMenu(false);
