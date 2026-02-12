@@ -54,7 +54,7 @@ const useCountUp = (end: number, duration: number, start: boolean) => {
     const totalFrames = Math.round(duration / frameRate);
 
     useEffect(() => {
-        if (!start) return;
+        if (!start || end === undefined || end === null) return;
 
         let frame = 0;
         const counter = setInterval(() => {
@@ -81,7 +81,9 @@ const StatItem: React.FC<{ icon: React.ReactNode; endValue: number; label: strin
     return (
         <div className="flex flex-col items-center text-center">
             {icon}
-            <p className="text-4xl lg:text-5xl font-bold font-serif mt-4">{prefix}{count.toLocaleString('es-CL')}</p>
+            <p className="text-4xl lg:text-5xl font-bold font-serif mt-4">
+                {prefix}{(count ?? 0).toLocaleString('es-CL')}
+            </p>
             <p className="text-lg text-orange-100 mt-2 max-w-xs">{label}</p>
         </div>
     );
@@ -346,8 +348,8 @@ const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) 
 // --- COMPONENTE PROTEGIDO CONTRA FALLOS DE RATING ---
 const EntrepreneurialJournalistCard: React.FC<{ service: FreelanceService }> = ({ service }) => {
     // Usamos Optional Chaining (?.) y valores por defecto para que no falle si rating es null
-    const avg = service.rating?.average?.toFixed(1) || '0.0';
-    const count = service.rating?.count || 0;
+    const avg = Number(service.rating?.average || 0).toFixed(1);
+    const count = Number(service.rating?.count || 0);
 
     return (
         <div className="bg-surface rounded-lg border border-gray-200 flex flex-col hover:shadow-md transition-shadow duration-300 h-full group overflow-hidden">

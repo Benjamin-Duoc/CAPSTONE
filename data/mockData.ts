@@ -583,19 +583,19 @@ export const partnerLogos: PartnerLogo[] = [
   {
     id: 1,
     name: 'Colegio de Periodistas de Chile',
-    logoUrl: 'https://www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png',
+    logoUrl: 'https://images.weserv.nl/?url=www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png&w=200&fit=contain',
     websiteUrl: 'https://www.colegiodeperiodistas.cl/',
   },
   {
     id: 2,
     name: 'International News Media Association (INMA)',
-    logoUrl: 'https://www.inma.org/files/images/inma-logo-hp-new.svg',
+    logoUrl: 'https://images.weserv.nl/?url=www.inma.org/files/images/inma-logo-hp-new.svg&w=200&fit=contain',
     websiteUrl: 'https://www.inma.org/',
   },
   {
     id: 3,
     name: 'Global Forum for Media Development (GFMD)',
-    logoUrl: 'https://gfmd.info/wp-content/uploads/2020/09/GFMD-Logo-Long-Colour-Transparent.png',
+    logoUrl: 'https://images.weserv.nl/?url=gfmd.info/wp-content/uploads/2020/09/GFMD-Logo-Long-Colour-Transparent.png&w=200&fit=contain',
     websiteUrl: 'https://gfmd.info/',
   },
 ];

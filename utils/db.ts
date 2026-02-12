@@ -8,8 +8,32 @@ import type {
   PartnerLogo, TalentProfile
 } from '../types';
 
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = '/api'; // Use Vite proxy (configured in vite.config.ts)
 
+// --- Case Conversion Helpers ---
+
+const toCamel = (s: string) => {
+  return s.replace(/([-_][a-z])/ig, ($1) => {
+    return $1.toUpperCase()
+      .replace('-', '')
+      .replace('_', '');
+  });
+};
+
+const keysToCamel = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => keysToCamel(v));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [toCamel(key)]: keysToCamel(obj[key]),
+      }),
+      {},
+    );
+  }
+  return obj;
+};
 
 // --- Generic Fetch Helpers ---
 
@@ -31,7 +55,8 @@ const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> 
   try {
     const res = await fetch(`${API_BASE}${endpoint}`);
     if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
-    return await res.json();
+    const data = await res.json();
+    return keysToCamel(data);
   } catch (err) {
     console.error(`Error fetching ${endpoint}:`, err);
     return fallback;
@@ -43,7 +68,8 @@ const fetchOne = async <T>(endpoint: string, fallback: T | null = null): Promise
   try {
     const res = await fetch(`${API_BASE}${endpoint}`);
     if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
-    return await res.json();
+    const data = await res.json();
+    return keysToCamel(data);
   } catch (err) {
     console.error(`Error fetching ${endpoint}:`, err);
     return fallback;
@@ -57,7 +83,8 @@ const createItem = async <T>(endpoint: string, item: any): Promise<T> => {
     body: JSON.stringify(item)
   });
   if (!res.ok) throw new Error(`Failed to create item in ${endpoint}`);
-  return await res.json();
+  const data = await res.json();
+  return keysToCamel(data);
 };
 
 const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
@@ -68,7 +95,8 @@ const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
     body: JSON.stringify(item)
   });
   if (!res.ok) throw new Error(`Failed to update item in ${endpoint}`);
-  return await res.json();
+  const data = await res.json();
+  return keysToCamel(data);
 };
 
 const deleteItem = async (endpoint: string, id: number | string): Promise<void> => {
@@ -194,8 +222,8 @@ const transformFreelanceService = (item: any): FreelanceService => {
   return {
     ...item,
     rating: {
-      average: item.ratingAverage || 0,
-      count: item.ratingCount || 0
+      average: Number(item.ratingAverage || 0),
+      count: Number(item.ratingCount || 0)
     }
   };
 };
@@ -327,11 +355,11 @@ export const getLegalFAQs = async () => fetchList<LegalFAQ>('/legal-faqs', []);
 
 // --- Hero Heading ---
 export const getHeroHeading = async () => {
-  const res = await fetchOne<HeroHeading>('/hero-heading', initialData.heroHeading);
+  const res = await fetchOne<HeroHeading>('/hero-headings', initialData.heroHeading);
   return res || initialData.heroHeading;
 };
 export const saveHeroHeading = async (data: HeroHeading) => {
-  const res = await fetch(`${API_BASE}/hero-heading`, {
+  const res = await fetch(`${API_BASE}/hero-headings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
@@ -397,7 +425,7 @@ export const saveTalentProfiles = async (data: TalentProfile[]) => { console.war
 // --- Rotation Interval (Config) ---
 export const getRotationInterval = async (): Promise<number> => {
   try {
-    const configs = await fetchList<{ key: string, value: string }>('/app-config', []);
+    const configs = await fetchList<{ key: string, value: string }>('/app-configs', []);
     const rotation = configs.find(c => c.key === 'rotationInterval');
     return rotation ? parseFloat(rotation.value) : initialData.rotationInterval;
   } catch (e) {
@@ -407,14 +435,14 @@ export const getRotationInterval = async (): Promise<number> => {
 
 export const saveRotationInterval = async (data: number) => {
   try {
-    const configs = await fetchList<{ key: string, value: string }>('/app-config', []);
+    const configs = await fetchList<{ key: string, value: string }>('/app-configs', []);
     const existing = configs.find(c => c.key === 'rotationInterval');
 
     const payload = existing
       ? { ...existing, value: data.toString() }
       : { key: 'rotationInterval', value: data.toString() };
 
-    await fetch(`${API_BASE}/app-config`, {
+    await fetch(`${API_BASE}/app-configs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -429,113 +457,6 @@ export const saveRotationInterval = async (data: number) => {
 // ==========================================
 
 export const initDatabase = async () => {
-  console.log('🚀 Verificando estado de la base de datos...');
-
-  // --- BLOQUE DE SEGURIDAD (ROBUSTO) ---
-  // 1. Verificamos si existe la bandera 'INITIAL_SEED_DONE' en AppConfig.
-  // 2. Si hay error de conexión, ABORTAMOS por seguridad (Fail-Safe).
-  try {
-    const res = await fetch(`${API_BASE}/app-config`);
-    if (!res.ok) throw new Error(`Backend no respondió verificar config: ${res.status}`);
-
-    const configs: any[] = await res.json();
-    const seedFlag = configs.find(c => c.key === 'INITIAL_SEED_DONE');
-
-    if (seedFlag && seedFlag.value === 'true') {
-      console.log('✅ INITIAL_SEED_DONE detectado: La base de datos ya está lista. No se hará seeding.');
-      return;
-    }
-  } catch (error) {
-    console.error('🛑 ERROR CRÍTICO: No se pudo verificar el estado de la base de datos.');
-    console.error('   Motivo:', error);
-    console.error('   ACCION: Seeding cancelado preventivamente para evitar duplicados.');
-    return;
-  }
-
-  console.log('⚡ Base de datos vacía. Iniciando inyección de datos del MockData al Backend...');
-
-  // Función auxiliar para insertar listas ignorando errores individuales
-  const seedList = async (listName: string, data: any[], createFunction: (item: any) => Promise<any>) => {
-    console.log(`📦 Procesando ${listName} (${data.length} elementos)...`);
-    let successCount = 0;
-
-    for (const item of data) {
-      // Quitamos el ID para que PostgreSQL genere uno nuevo y único
-      const { id, ...itemWithoutId } = item;
-
-      try {
-        await createFunction(itemWithoutId);
-        successCount++;
-      } catch (error) {
-        console.error(`❌ Error insertando en ${listName}:`, error);
-      }
-    }
-    console.log(`✨ ${listName}: ${successCount}/${data.length} insertados correctamente.`);
-  };
-
-  try {
-    // --- CONTENIDO PRINCIPAL ---
-    await seedList('Cursos', initialData.courses, createCourse);
-    await seedList('Trabajos', initialData.jobs, createJob);
-    await seedList('Emprendimientos', initialData.entrepreneurs, createEntrepreneur);
-    await seedList('Noticias', initialData.newsArticles, createNews);
-    await seedList('Comunicados', initialData.pressReleases, createPressRelease);
-
-    // --- MÓDULOS Y SERVICIOS ---
-    await seedList('NGO Spotlight', initialData.ngoSpotlight, createNgoSpotlight);
-    await seedList('Servicios Freelance', initialData.freelanceServices, createFreelanceService);
-    await seedList('Avisos Comunidad', initialData.communityAds, createCommunityAd);
-    await seedList('Sponsors Premium', initialData.premiumSponsors, createPremiumSponsor);
-    await seedList('Videos Promo', initialData.promoVideos, createPromoVideo);
-    await seedList('Posts Comunidad', initialData.communityPosts, createCommunityPost);
-
-    // --- GALERÍAS Y RECURSOS ---
-    await seedList('Fotoperiodismo', initialData.photojournalismPosts, createPhotojournalismPost);
-    await seedList('Especialistas', initialData.specialists, createSpecialist);
-    await seedList('Fotos Compartibles', initialData.shareablePhotos, createShareablePhoto);
-    await seedList('Recursos', initialData.resources, createResource);
-    await seedList('Fondos', initialData.fundingOpportunities, createFundingOpportunity);
-    await seedList('Eventos', initialData.events, createEvent);
-
-    // --- LEGAL Y OTROS ---
-    await seedList('Temas Legales', initialData.legalTopics, createLegalTopic);
-    await seedList('Colaboraciones Cortas', initialData.shortCollaborations, createShortCollaboration);
-    await seedList('Tips Emprendimiento', initialData.entrepreneurshipTips, createEntrepreneurshipTip);
-    await seedList('Anuncios Patrocinados', initialData.sponsoredAds, createSponsoredAd);
-    await seedList('Logos Partners', initialData.partnerLogos, createPartnerLogo);
-    await seedList('Perfiles Talento', initialData.talentProfiles, createTalentProfile);
-
-    // --- CONFIGURACIONES ÚNICAS ---
-    console.log('⚙️ Guardando configuraciones globales...');
-    try { await saveHeroHeading(initialData.heroHeading); } catch (e) { console.error('Error HeroHeading', e); }
-    try { await saveStats(initialData.siteStats); } catch (e) { console.error('Error Stats', e); }
-    try { await saveRotationInterval(initialData.rotationInterval); } catch (e) { console.error('Error Rotation', e); }
-
-    // Marcar seeding como completado
-    try {
-      await fetch(`${API_BASE}/app-config`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'INITIAL_SEED_DONE', value: 'true' })
-      });
-      console.log('🏁 Bandera INITIAL_SEED_DONE guardada exitosamente.');
-    } catch (e) {
-      console.error('⚠️ Error guardando bandera de finalización', e);
-    }
-
-    // --- ADS ESPECIALES ---
-    for (const ad of initialData.specialAds) {
-      try { await updateSpecialAd(ad); } catch (e) { console.error('Error SpecialAd', e); }
-    }
-
-    console.log('🏆 =========================================');
-    console.log('🏆 PROCESO DE SEEDING FINALIZADO');
-    console.log('🏆 =========================================');
-
-    // Alerta visual SOLO la primera vez
-    alert('¡Base de datos inicializada correctamente!');
-
-  } catch (error) {
-    console.error('🔥 Error fatal durante el seeding:', error);
-  }
+  console.log('✅ Base de datos manejada por el backend.');
+  // Seeding moved to Python backend for better consistency and performance.
 };

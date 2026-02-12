@@ -7,8 +7,8 @@ interface LogoProps {
 }
 
 const logoStyle = {
-  width: '200px',
-  paddingTop: '30px'
+  width: '180px',
+  height: 'auto'
 };
 
 const Logo: React.FC<LogoProps> = ({ onNavigate, className }) => {
