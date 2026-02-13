@@ -10,11 +10,13 @@ interface NewsDetailPageProps {
 const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
 
     const renderContent = () => {
-        if (!article.reportContent) {
+        const content = Array.isArray(article.reportContent) ? article.reportContent : [];
+
+        if (!content.length) {
             return <p className="text-lg text-text-secondary">No hay más detalles disponibles para este artículo.</p>;
         }
 
-        return article.reportContent.map((item, index) => {
+        return content.map((item, index) => {
             switch (item.type) {
                 case 'paragraph':
                     return <p key={index} className="text-lg text-text-secondary mb-6 leading-relaxed">{item.text}</p>;

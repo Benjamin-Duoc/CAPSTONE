@@ -86,11 +86,16 @@ const App: React.FC = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
+  const isAdminUser = (user: User | null) => {
+    if (!user) return false;
+    return user.role === 'Administrador' || user.role === 'Administrator';
+  };
+
   const handleLogin = (user: User) => {
     setCurrentUser(user);
+    setIsAdminMode(isAdminUser(user));
     // Role-based navigation
-    if (user.role === 'Administrador') {
-      setIsAdminMode(true);
+    if (isAdminUser(user)) {
       handleNavigate('admin');
     } else if (user.role === 'Colaborador') {
       handleNavigate('free-collaborator');
@@ -105,6 +110,7 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setIsAdminMode(false);
     handleNavigate('home');
   };
 
@@ -275,7 +281,7 @@ const App: React.FC = () => {
   const handleDeleteFundingOpportunity = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteFundingOpportunity(id); setFundingOpportunities(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting funding"); } } };
 
   // Specialists
-  const handleAddSpecialist = async (item: Omit<Specialist, 'id' | 'dateAdded'>) => { try { const res = await createSpecialist({ ...item, dateAdded: new Date().toISOString() }); setSpecialists(prev => [res, ...prev]); } catch (e) { alert("Error creating specialist"); } };
+  const handleAddSpecialist = async (item: Omit<Specialist, 'id' | 'dateAdded'>) => { try { const res = await createSpecialist({ ...item, dateAdded: new Date().toISOString().split('T')[0] }); setSpecialists(prev => [res, ...prev]); } catch (e) { alert("Error creating specialist"); } };
   const handleUpdateSpecialist = async (item: Specialist) => { try { const res = await updateSpecialist(item); setSpecialists(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating specialist"); } };
   const handleDeleteSpecialist = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteSpecialist(id); setSpecialists(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting specialist"); } } };
 
@@ -408,6 +414,9 @@ const App: React.FC = () => {
 
     switch (currentPage) {
       case 'admin':
+        if (!isAdminUser(currentUser) || !isAdminMode) {
+          return <LoginPage onNavigate={handleNavigate} returnTo="home" onLoginSuccess={handleLogin} />;
+        }
         return <AdminPanel
           initialSection={initialTab}
           courses={courses} onAddCourse={handleAddCourse} onUpdateCourse={handleUpdateCourse} onDeleteCourse={handleDeleteCourse}

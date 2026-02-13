@@ -1,8 +1,40 @@
 from .. import db
+from datetime import datetime, date
+from sqlalchemy import Date, DateTime
 
 class GenericService:
     def __init__(self, model):
         self.model = model
+
+    def _normalize_dates(self, data_dict):
+        normalized = dict(data_dict or {})
+
+        for column in self.model.__table__.columns:
+            key = column.name
+            if key not in normalized:
+                continue
+
+            value = normalized[key]
+            if value in (None, ''):
+                continue
+
+            if isinstance(column.type, Date) and not isinstance(value, date):
+                if isinstance(value, str):
+                    try:
+                        normalized[key] = datetime.fromisoformat(value.replace('Z', '+00:00')).date()
+                    except ValueError:
+                        try:
+                            normalized[key] = datetime.strptime(value[:10], '%Y-%m-%d').date()
+                        except ValueError:
+                            pass
+
+            if isinstance(column.type, DateTime) and isinstance(value, str):
+                try:
+                    normalized[key] = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                except ValueError:
+                    pass
+
+        return normalized
 
     def get_all(self):
         return self.model.query.all()
@@ -11,6 +43,7 @@ class GenericService:
         return self.model.query.get(id)
 
     def save(self, data_dict):
+        data_dict = self._normalize_dates(data_dict)
         # Handling the case where ID might be provided (update) or not (create)
         item_id = data_dict.get('id')
         if item_id:

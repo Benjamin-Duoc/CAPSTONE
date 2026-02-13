@@ -107,7 +107,7 @@ const createItem = async <T>(endpoint: string, item: any): Promise<T> => {
   });
   if (!res.ok) throw new Error(`Failed to create item in ${endpoint}`);
   const data = await res.json();
-  return keysToCamel(data);
+  return deserializeReportContent(keysToCamel(data));
 };
 
 const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
@@ -119,7 +119,7 @@ const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
   });
   if (!res.ok) throw new Error(`Failed to update item in ${endpoint}`);
   const data = await res.json();
-  return keysToCamel(data);
+  return deserializeReportContent(keysToCamel(data));
 };
 
 const deleteItem = async (endpoint: string, id: number | string): Promise<void> => {

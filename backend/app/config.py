@@ -26,7 +26,7 @@ class Config:
     
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), '../cipress.db')
+    'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), '../instance/cipress.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # API Keys
@@ -89,3 +89,4 @@ config = {
 
 # Get current config
 current_config = config.get(FLASK_ENV, config['default'])
+

@@ -43,3 +43,8 @@ instance/
 .vscode/
 .idea/
 .DS_Store
+
+# Env files
+.env*
+project/.env*
+backend/.env*
