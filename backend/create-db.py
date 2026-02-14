@@ -423,8 +423,8 @@ def create_db():
 
         # --- PARTNER LOGOS ---
         partners = [
-            {"name": "Colegio de Periodistas", "logo_url": "https://images.weserv.nl/?url=www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png&w=200&fit=contain", "website_url": "https://www.colegiodeperiodistas.cl/"},
-            {"name": "INMA", "logo_url": "https://images.weserv.nl/?url=www.inma.org/files/images/inma-logo-hp-new.svg&w=200&fit=contain", "website_url": "https://www.inma.org/"}
+            {"name": "Colegio de Periodistas", "logo_url": "/assets/images/logo_colegio_periodistas_2021_web.png", "website_url": "https://www.colegiodeperiodistas.cl/"},
+            {"name": "INMA", "logo_url": "/assets/images/inma-logo-test-01.svg", "website_url": "https://www.inma.org/"}
         ]
         for pl in partners:
             db.session.add(PartnerLogo(**pl))

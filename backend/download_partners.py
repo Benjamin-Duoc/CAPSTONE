@@ -35,9 +35,9 @@ def download_image(url, filepath):
 
 # Partner Logos
 partner_images = [
-    ("partner-logos", "colegio-periodistas.png", "https://www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png"),
-    ("partner-logos", "inma.svg", "https://www.inma.org/files/images/inma-logo-hp-new.svg"),
-    ("partner-logos", "gfmd.png", "https://gfmd.info/wp-content/uploads/2020/09/GFMD-Logo-Long-Colour-Transparent.png"),
+    ("partner-logos", "colegio-periodistas.png", "/assets/images/logo_colegio_periodistas_2021_web.png"),
+    ("partner-logos", "inma.svg", "/assets/images/inma-logo-hp-new.svg"),
+    ("partner-logos", "gfmd.png", "/assets/images/GFMD-Logo-Long-Colour-Transparent.png"),
 ]
 
 def main():

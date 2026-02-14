@@ -25,7 +25,7 @@ def download_image(url, filepath):
 
 # Static Images
 static_images = [
-    ("https://www.cipress.cl/images/LOGO-CIPRESS-2.png", os.path.join(PUBLIC_IMAGES_DIR, "LOGO-CIPRESS-2.png")),
+    ("/assets/images/LOGO-CIPRESS-2.png", os.path.join(PUBLIC_IMAGES_DIR, "LOGO-CIPRESS-2.png")),
     ("https://www.cipress.cl/images/LOGO-CIPRESS.png", os.path.join(PUBLIC_IMAGES_DIR, "LOGO-CIPRESS.png")), # Just in case
 ]
 
@@ -141,9 +141,9 @@ variable_images = [
     ("sponsored-ads", "ad3.jpg", "https://picsum.photos/seed/ad3/300/200"),
 
     # Partner Logos
-    ("partner-logos", "colegio-periodistas.png", "https://images.weserv.nl/?url=www.colegiodeperiodistas.cl/wp-content/uploads/2021/05/logo_colegio_periodistas_2021_web.png&w=200&fit=contain"),
-    ("partner-logos", "inma.svg", "https://images.weserv.nl/?url=www.inma.org/files/images/inma-logo-hp-new.svg&w=200&fit=contain"),
-    ("partner-logos", "gfmd.png", "https://images.weserv.nl/?url=gfmd.info/wp-content/uploads/2020/09/GFMD-Logo-Long-Colour-Transparent.png&w=200&fit=contain"),
+    ("partner-logos", "colegio-periodistas.png", "/assets/images/logo_colegio_periodistas_2021_web.png"),
+    ("partner-logos", "inma.svg", "/assets/images/inma-logo-hp-new.svg"),
+    ("partner-logos", "gfmd.png", "/assets/images/GFMD-Logo-Long-Colour-Transparent.png"),
 
     # Users / Avatars
     ("users", "isidora.jpg", "https://i.pravatar.cc/150?u=isidora"),
