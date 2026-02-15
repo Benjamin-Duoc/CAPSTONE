@@ -56,7 +56,7 @@ const EntrepreneurshipTipForm: React.FC<EntrepreneurshipTipFormProps> = ({ tip, 
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg max-h-full overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4">{tip ? 'Editar Video' : 'Añadir Nuevo Video'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

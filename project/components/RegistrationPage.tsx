@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Page, User } from '../types';
-import { insertUser } from '../utils/db';
+import { registerUser } from '../utils/db';
 import Logo from './Logo';
 
 interface RegistrationPageProps {
@@ -36,7 +36,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
 
         // Lógica asíncrona de HEAD para conectar con la API real
         try {
-            const result = await insertUser({
+            const result = await registerUser({
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 region: formData.region,

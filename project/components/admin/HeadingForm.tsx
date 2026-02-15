@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { HeroHeading } from '../../types';
+import { uploadImage } from '../../utils/db';
 
 interface HeadingFormProps {
     currentHeading: HeroHeading;
@@ -9,64 +10,175 @@ interface HeadingFormProps {
 
 const HeadingForm: React.FC<HeadingFormProps> = ({ currentHeading, onSave, onClose }) => {
     const [formData, setFormData] = useState<HeroHeading>(currentHeading);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         setFormData(currentHeading);
     }, [currentHeading]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setIsUploading(true);
+            try {
+                const res = await uploadImage(file, 'images/hero');
+                if (res.success && res.url) {
+                    setFormData(prev => ({ ...prev, imageUrl: res.url }));
+                } else {
+                    alert(res.message || 'Error al subir la imagen');
+                }
+            } catch (err) {
+                console.error("Upload failed", err);
+                alert("Error al conectar con el servidor de subida");
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData);
+
+        // Ensure we only send valid fields matching the backend model
+        const dataToSave: HeroHeading = {
+            id: formData.id || 1,
+            mainText: formData.mainText,
+            highlightedText: formData.highlightedText,
+            featuredTitle: formData.featuredTitle,
+            featuredDescription: formData.featuredDescription,
+            featuredLabel: formData.featuredLabel || 'DESTACADO',
+            textColor: formData.textColor,
+            imageUrl: formData.imageUrl
+        };
+
+        onSave(dataToSave);
+        onClose();
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg">
-                <h2 className="text-2xl font-bold mb-4">Editar Título Principal</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 font-sans text-text-primary">
+            <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-6 text-text-primary">Editar Título Principal</h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
+
+                    {/* Texto Principal */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Texto Principal</label>
-                        <input type="text" name="mainText" value={formData.mainText} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" required />
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Texto Principal</label>
+                        <input
+                            type="text"
+                            name="mainText"
+                            value={formData.mainText || ''}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            placeholder="Ej: Periodistas que"
+                            required
+                        />
                     </div>
+
+                    {/* Texto Destacado */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Texto Destacado</label>
-                        <input type="text" name="highlightedText" value={formData.highlightedText} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" required />
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Texto Destacado</label>
+                        <input
+                            type="text"
+                            name="highlightedText"
+                            value={formData.highlightedText || ''}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            placeholder="Ej: emprenden"
+                            required
+                        />
                     </div>
+
+                    {/* Subtítulo (Opcional) -> featuredTitle */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Subtítulo (opcional)</label>
-                        <input type="text" name="subText" value={formData.subText || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Subtítulo (opcional)</label>
+                        <input
+                            type="text"
+                            name="featuredTitle"
+                            value={formData.featuredTitle || ''}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            placeholder="Ej: La Pública"
+                        />
                     </div>
+
+                    {/* Etiqueta del Emprendimiento Destacado -> featuredDescription */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Etiqueta del Emprendimiento Destacado</label>
-                        <input type="text" name="featuredLabel" value={formData.featuredLabel} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" required />
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Etiqueta del Emprendimiento Destacado</label>
+                        <input
+                            type="text"
+                            name="featuredDescription"
+                            value={formData.featuredDescription || ''}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            placeholder="Ej: Medio digital enfocado en investigación..."
+                            required
+                        />
                     </div>
-                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Color del Texto Sobre la Foto</label>
-                        <div className="flex items-center space-x-2 mt-1">
-                            <input 
-                                type="color" 
-                                name="textColor" 
-                                value={formData.textColor} 
-                                onChange={handleChange} 
-                                className="p-1 h-10 w-14 block bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer" 
+
+                    {/* Imagen Hero */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Imagen de Fondo (Hero)</label>
+                        <div className="flex space-x-2">
+                            <input
+                                type="text"
+                                name="imageUrl"
+                                value={formData.imageUrl || ''}
+                                onChange={handleChange}
+                                className="flex-1 border border-gray-300 rounded-lg p-3 text-xs focus:ring-2 focus:ring-primary outline-none"
+                                placeholder="URL de la imagen..."
                             />
+                            <label className={`cursor-pointer px-4 py-2 rounded-lg font-bold text-white transition-all flex items-center justify-center whitespace-nowrap ${isUploading ? 'bg-gray-400' : 'bg-secondary hover:bg-blue-700'}`}>
+                                {isUploading ? '...' : 'Subir imagen'}
+                                <input type="file" className="hidden" accept="image/*" onChange={handleFileSelect} disabled={isUploading} />
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Color del Texto */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Color del Texto Sobre la Foto</label>
+                        <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 rounded border border-gray-300 overflow-hidden relative">
+                                <input
+                                    type="color"
+                                    name="textColor"
+                                    value={formData.textColor || '#FFFFFF'}
+                                    onChange={handleChange}
+                                    className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
+                                />
+                            </div>
                             <input
                                 type="text"
                                 name="textColor"
-                                value={formData.textColor}
+                                value={formData.textColor || '#FFFFFF'}
                                 onChange={handleChange}
-                                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                                placeholder="#FFFFFF"
+                                className="flex-1 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none"
                             />
                         </div>
                     </div>
-                    <div className="flex justify-end space-x-4 pt-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-red-700">Guardar Cambios</button>
+
+                    {/* Botones */}
+                    <div className="flex justify-end space-x-3 pt-6 border-t border-gray-100">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-6 py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-orange-600 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                        >
+                            Guardar Cambios
+                        </button>
                     </div>
                 </form>
             </div>

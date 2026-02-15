@@ -1280,9 +1280,9 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 );
             case 'users':
                 const filteredUsers = props.users.filter(u =>
-                    u.email.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
-                    u.firstName.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
-                    u.lastName.toLowerCase().includes(userSearchTerm.toLowerCase())
+                    (u.email || '').toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                    (u.firstName || '').toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                    (u.lastName || '').toLowerCase().includes(userSearchTerm.toLowerCase())
                 );
                 return (
                     <div>
@@ -1368,54 +1368,64 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                             <h3 className="text-lg font-bold mb-4 border-b pb-2">Secciones</h3>
                             <nav className="space-y-6">
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">General</h4>
+                                    <h4 className="bg-black text-white text-md font-black uppercase tracking-wider mb-3 px-4 py-2 rounded" style={{ fontFamily: 'Arial, sans-serif' }}>
+                                        ADMINISTRACIÓN GENERAL
+                                    </h4>
                                     <div className="space-y-1">
                                         <NavButton section="settings" label="Configuración General" />
                                         <NavButton section="users" label="Usuarios" />
                                         <NavButton section="stats" label="Estadísticas" />
-                                        <NavButton section="headings" label="Títulos Principales" />
-                                        <NavButton section="partnerLogos" label="Logos de Socios" />
-                                        <NavButton section="sponsors" label="Sponsors" />
+                                        <NavButton section="headings" label="Títulos principales (hero)" />
+                                        <NavButton section="partnerLogos" label="Logos socios (apoyan periodismo emprendedor)" />
+                                        <NavButton section="sponsors" label="Sponsors (confían en CiPress)" />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Noticias y Contenido (Innovación)</h4>
+                                    <h4 className="bg-black text-white text-md font-black uppercase tracking-wider mb-3 px-4 py-2 rounded" style={{ fontFamily: 'Arial, sans-serif' }}>
+                                        NOTICIAS Y CONTENIDOS
+                                    </h4>
                                     <div className="space-y-1">
-                                        <NavButton section="news" label="Innovación para el Periodismo" />
-                                        <NavButton section="pressReleases" label="Periodistas en Acción" />
-                                        <NavButton section="photojournalism" label="Fotoperiodismo" />
-                                        <NavButton section="shareablePhotos" label="Galería Fotográfica" />
-                                        <NavButton section="entrepreneurshipTips" label="Videos 'Emprender'" />
+                                        <NavButton section="news" label="Innovación para el periodismo" />
+                                        <NavButton section="pressReleases" label="Periodistas en acción" />
+                                        <NavButton section="photojournalism" label="Foto-Periodismo" />
+                                        <NavButton section="shareablePhotos" label="Galería fotográfica" />
+                                        <NavButton section="entrepreneurshipTips" label="Videos (emprender es mundial)" />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Oportunidades y Servicios</h4>
+                                    <h4 className="bg-black text-white text-md font-black uppercase tracking-wider mb-3 px-4 py-2 rounded" style={{ fontFamily: 'Arial, sans-serif' }}>
+                                        OPORTUNIDADES Y SERVICIOS
+                                    </h4>
                                     <div className="space-y-1">
-                                        <NavButton section="jobs" label="Oportunidades Laborales" />
-                                        <NavButton section="courses" label="Capacitaciones (Cursos)" />
-                                        <NavButton section="funding" label="Fondos y Concursos" />
-                                        <NavButton section="collaborations" label="Colaboraciones Urgentes" />
-                                        <NavButton section="talentProfiles" label="Base de Talentos" />
+                                        <NavButton section="jobs" label="Oportunidades laborales" />
+                                        <NavButton section="courses" label="Capacitaciones (cursos)" />
+                                        <NavButton section="funding" label="Fondos y concursos" />
+                                        <NavButton section="collaborations" label="Colaboraciones urgentes" />
+                                        <NavButton section="talentProfiles" label="Base de talentos" />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Comunidad</h4>
+                                    <h4 className="bg-black text-white text-md font-black uppercase tracking-wider mb-3 px-4 py-2 rounded" style={{ fontFamily: 'Arial, sans-serif' }}>
+                                        COMUNIDAD
+                                    </h4>
                                     <div className="space-y-1">
-                                        <NavButton section="entrepreneurs" label="Emprendimientos Periodísticos" />
-                                        <NavButton section="specialists" label="Fuentes Especializadas" />
-                                        <NavButton section="communityPosts" label="Actividad Comunidad" />
-                                        <NavButton section="events" label="Eventos" />
+                                        <NavButton section="entrepreneurs" label="Emprendimientos periodísticos" />
+                                        <NavButton section="specialists" label="Fuentes destacadas (directorio expertos)" />
+                                        <NavButton section="communityPosts" label="Actividad comunidad (muro opiniones)" />
+                                        <NavButton section="events" label="Eventos (calendario)" />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-4">Publicidad</h4>
+                                    <h4 className="bg-black text-white text-md font-black uppercase tracking-wider mb-3 px-4 py-2 rounded" style={{ fontFamily: 'Arial, sans-serif' }}>
+                                        PUBLICIDAD
+                                    </h4>
                                     <div className="space-y-1">
-                                        <NavButton section="sponsoredAds" label="Anuncios Laterales" />
-                                        <NavButton section="specialAds" label="Anuncios Especiales" />
+                                        <NavButton section="sponsoredAds" label="Anuncios laterales" />
+                                        <NavButton section="specialAds" label="Anuncios especiales" />
                                     </div>
                                 </div>
                             </nav>

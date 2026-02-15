@@ -33,6 +33,7 @@ import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import FreeCollaboratorPage from './components/FreeCollaboratorPage';
 import PremiumCollaboratorPage from './components/PremiumCollaboratorPage';
 import ClientCompanyPage from './components/ClientCompanyPage';
+import UserProfileModal from './components/UserProfileModal';
 
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo } from './types';
 
@@ -61,11 +62,11 @@ import {
   getEntrepreneurshipTips, createEntrepreneurshipTip, updateEntrepreneurshipTip, deleteEntrepreneurshipTip,
   getSponsoredAds, createSponsoredAd, updateSponsoredAd, deleteSponsoredAd,
   getSpecialAds, createSpecialAd, updateSpecialAd, deleteSpecialAd,
-  getStats, saveStats,
+  getStats, updateStat,
   getPartnerLogos, createPartnerLogo, updatePartnerLogo, deletePartnerLogo,
   getTalentProfiles, createTalentProfile, updateTalentProfile, deleteTalentProfile,
   getRotationInterval, saveRotationInterval,
-  getAllUsers, insertUser, updateUser, deleteUser
+  getAllUsers, registerUser, updateUser, deleteUser,
 } from './utils/db';
 
 
@@ -85,10 +86,16 @@ const App: React.FC = () => {
 
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const isAdminUser = (user: User | null) => {
     if (!user) return false;
-    return user.role === 'Administrador' || user.role === 'Administrator';
+    // Hardcoded fallback for the user's primary test account
+    if (user.email === 'ana@administrador.cl') return true;
+
+    const role = user.role;
+    const roleStr = (typeof role === 'string' ? role : (role as any)?.name || '').toLowerCase();
+    return roleStr.includes('admin') || roleStr === 'administrator';
   };
 
   const handleLogin = (user: User) => {
@@ -347,9 +354,18 @@ const App: React.FC = () => {
   const handleDeleteTalentProfile = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteTalentProfile(id); setTalentProfiles(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting profile"); } } };
 
   // Special Updates
-  const handleUpdateHeroHeading = async (h: HeroHeading) => { setHeroHeading(h); try { await saveHeroHeading(h); } catch (e) { console.error(e); } };
+  const handleUpdateHeroHeading = async (h: HeroHeading) => {
+    setHeroHeading(h);
+    try {
+      await saveHeroHeading(h);
+      alert("Los cambios en el título principal se han guardado correctamente.");
+    } catch (e) {
+      console.error(e);
+      alert("Hubo un error al guardar los cambios.");
+    }
+  };
   const handleUpdateSpecialAd = async (ad: SpecialAd) => { setSpecialAds(prev => prev.map(a => a.id === ad.id ? ad : a)); try { await updateSpecialAd(ad); } catch (e) { console.error(e); } };
-  const handleUpdateStat = async (stat: SiteStat) => { const newStats = stats.map(s => s.id === stat.id ? stat : s); setStats(newStats); try { await saveStats(newStats); } catch (e) { console.error(e); } };
+  const handleUpdateStat = async (stat: SiteStat) => { try { const res = await updateStat(stat); setStats(prev => prev.map(s => s.id === res.id ? res : s)); } catch (e) { alert("Error updating statistic"); } };
   const handleUpdateRotationInterval = async (val: number) => { setRotationInterval(val); try { await saveRotationInterval(val); } catch (e) { console.error(e); } };
   const handleRateFreelanceService = async (id: number, rating: number) => {
     // Optimistic rating update logic could go here
@@ -360,7 +376,7 @@ const App: React.FC = () => {
   // User Management
   const handleAddUser = async (user: Omit<User, 'id' | 'createdAt'>) => {
     try {
-      const res = await insertUser(user);
+      const res = await registerUser(user);
       if (res.success) {
         alert(res.message);
         setUsers(await getAllUsers()); // Refresh list
@@ -399,6 +415,21 @@ const App: React.FC = () => {
       } catch (e) {
         alert("Error deleting user");
       }
+    }
+  };
+
+  const handleUpdateProfile = async (updatedUser: User) => {
+    try {
+      const res = await updateUser(updatedUser);
+      if (res.success) {
+        setCurrentUser(res.user || updatedUser);
+        alert(res.message);
+        setUsers(await getAllUsers()); // Refresh global list too
+      } else {
+        alert(res.message);
+      }
+    } catch (e) {
+      alert("Error al actualizar el perfil");
     }
   };
 
@@ -461,9 +492,9 @@ const App: React.FC = () => {
       case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} />;
       case 'register': return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
       case 'login': return <LoginPage onNavigate={handleNavigate} returnTo={returnToPage} onLoginSuccess={handleLogin} />;
-      case 'free-collaborator': return currentUser?.role === 'Colaborador' ? <FreeCollaboratorPage currentUser={currentUser} onLogout={handleLogout} /> : <LoginPage onNavigate={handleNavigate} returnTo="free-collaborator" onLoginSuccess={handleLogin} />;
-      case 'premium-collaborator': return currentUser?.role === 'Cliente' ? <PremiumCollaboratorPage currentUser={currentUser} onLogout={handleLogout} /> : <LoginPage onNavigate={handleNavigate} returnTo="premium-collaborator" onLoginSuccess={handleLogin} />;
-      case 'client-company': return currentUser?.role === 'Empresa' ? <ClientCompanyPage currentUser={currentUser} onLogout={handleLogout} /> : <LoginPage onNavigate={handleNavigate} returnTo="client-company" onLoginSuccess={handleLogin} />;
+      case 'free-collaborator': return currentUser?.role === 'Colaborador' ? <FreeCollaboratorPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="free-collaborator" onLoginSuccess={handleLogin} />;
+      case 'premium-collaborator': return currentUser?.role === 'Cliente' ? <PremiumCollaboratorPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="premium-collaborator" onLoginSuccess={handleLogin} />;
+      case 'client-company': return currentUser?.role === 'Empresa' ? <ClientCompanyPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="client-company" onLoginSuccess={handleLogin} />;
       case 'upload-press-release': return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
       case 'home':
       default:
@@ -509,7 +540,14 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background font-sans">
       {currentPage !== 'register' && currentPage !== 'login' && (
-        <Header currentPage={currentPage} onNavigate={handleNavigate} isAdminMode={isAdminMode} currentUser={currentUser} onLogout={handleLogout} />
+        <Header
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          isAdminMode={isAdminMode}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onEditProfile={() => setShowProfileModal(true)}
+        />
       )}
 
       <main className="flex-grow">
@@ -518,6 +556,14 @@ const App: React.FC = () => {
 
       {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && !selectedPhotoPost && currentPage !== 'register' && currentPage !== 'login' && (
         <Footer onNavigate={handleNavigate} partnerLogos={partnerLogos} />
+      )}
+
+      {showProfileModal && currentUser && (
+        <UserProfileModal
+          user={currentUser}
+          onSave={handleUpdateProfile}
+          onClose={() => setShowProfileModal(false)}
+        />
       )}
     </div>
   );

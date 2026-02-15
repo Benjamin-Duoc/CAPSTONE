@@ -7,9 +7,10 @@ interface HeaderProps {
     isAdminMode: boolean;
     currentUser?: User | null;
     onLogout?: () => void;
+    onEditProfile?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout, onEditProfile }) => {
     const [showUserMenu, setShowUserMenu] = useState(false); // Estado para el menú desplegable (Del Main)
 
     // Usamos la lista del MAIN porque incluye "Fotoperiodismo"
@@ -24,9 +25,9 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
     return (
         <>
             <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-24">
-                        <div className="flex-shrink-0">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2">
+                    <div className="flex items-center justify-between h-20">
+                        <div className="flex items-center">
                             <Logo onNavigate={onNavigate} />
                         </div>
                         <nav className="hidden md:flex md:space-x-8">
@@ -51,16 +52,15 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowUserMenu(!showUserMenu)}
-                                        className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        className="flex items-center space-x-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     >
+                                        <div className="w-8 h-8 rounded-full bg-white border-2 border-highlight flex items-center justify-center text-primary font-black text-xs">
+                                            {(currentUser.firstName?.[0] || 'U') + (currentUser.lastName?.[0] || '')}
+                                        </div>
                                         <div className="text-left hidden sm:block">
-                                            <p className="text-sm font-bold text-text-primary leading-tight">{currentUser.firstName} {currentUser.lastName}</p>
-                                            <p className="text-xs text-text-secondary truncate w-24">{currentUser.email}</p>
+                                            <p className="text-sm font-bold text-text-primary leading-tight text-[15px]">Hola {currentUser.firstName || 'Usuario'}</p>
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                            {currentUser.firstName.charAt(0)}
-                                        </div>
-                                        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showUserMenu ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${showUserMenu ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
@@ -68,21 +68,36 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                     {/* Dropdown Menu */}
                                     {showUserMenu && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50 animate-fade-in">
-                                            <div className="px-4 py-2 border-b border-gray-100 sm:hidden">
-                                                <p className="text-sm font-bold text-text-primary">{currentUser.firstName} {currentUser.lastName}</p>
-                                                <p className="text-xs text-text-secondary truncate">{currentUser.email}</p>
-                                            </div>
-                                            {(isAdminMode || currentUser?.role === 'Administrador' || currentUser?.role === 'Administrator') && (
-                                                <button
-                                                    onClick={() => {
-                                                        setShowUserMenu(false);
-                                                        onNavigate('admin');
-                                                    }}
-                                                    className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
-                                                >
-                                                    Administrar
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => {
+                                                    setShowUserMenu(false);
+                                                    if (onEditProfile) onEditProfile();
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                                            >
+                                                Editar mi perfil
+                                            </button>
+
+                                            {(() => {
+                                                const roleStr = (typeof currentUser.role === 'string' ? currentUser.role : (currentUser.role as any)?.name || '').toLowerCase();
+                                                const isActualAdmin = isAdminMode || roleStr.includes('admin') || currentUser.email === 'ana@administrador.cl';
+
+                                                return isActualAdmin && (
+                                                    <>
+                                                        <div className="border-t border-gray-100 my-1"></div>
+                                                        <button
+                                                            onClick={() => {
+                                                                setShowUserMenu(false);
+                                                                onNavigate('admin');
+                                                            }}
+                                                            className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                                                        >
+                                                            Administrar
+                                                        </button>
+                                                    </>
+                                                );
+                                            })()}
+                                            <div className="border-t border-gray-100 my-1"></div>
                                             <button
                                                 onClick={() => {
                                                     setShowUserMenu(false);

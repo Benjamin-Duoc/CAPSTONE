@@ -5,12 +5,13 @@ import UserHeader from './UserHeader';
 interface ClientCompanyPageProps {
     currentUser: User;
     onLogout: () => void;
+    onEditProfile?: () => void;
 }
 
-const ClientCompanyPage: React.FC<ClientCompanyPageProps> = ({ currentUser, onLogout }) => {
+const ClientCompanyPage: React.FC<ClientCompanyPageProps> = ({ currentUser, onLogout, onEditProfile }) => {
     return (
         <div className="min-h-screen bg-gray-50">
-            <UserHeader user={currentUser} userTypeLabel="Empresa" onLogout={onLogout} />
+            <UserHeader user={currentUser} userTypeLabel="Empresa" onLogout={onLogout} onEditProfile={onEditProfile} />
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     <div className="border-4 border-dashed border-indigo-200 bg-indigo-50 rounded-lg h-96 flex flex-col items-center justify-center">

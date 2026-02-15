@@ -143,14 +143,22 @@ const NgoSpotlightCard: React.FC<{ item: NgoSpotlight }> = ({ item }) => (
     </div >
 );
 
-const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onClick: () => void; label: string; textColor: string; }> = ({ entrepreneur, onClick, label, textColor }) => (
+const FeaturedEntrepreneurCard: React.FC<{
+    entrepreneur: Entrepreneurship;
+    onClick: () => void;
+    label: string;
+    textColor: string;
+    heroImageUrl?: string;
+    customTitle?: string;
+    customDescription?: string;
+}> = ({ entrepreneur, onClick, label, textColor, heroImageUrl, customTitle, customDescription }) => (
     <button
         onClick={onClick}
         className="relative w-full text-left rounded-lg overflow-hidden group col-span-1 md:col-span-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-96 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50"
     >
         <img
-            src={entrepreneur.imageUrl || DEFAULT_IMAGE}
-            alt={entrepreneur.name}
+            src={heroImageUrl || entrepreneur.imageUrl || DEFAULT_IMAGE}
+            alt={customTitle || entrepreneur.name}
             onError={handleImageError}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -166,13 +174,13 @@ const FeaturedEntrepreneurCard: React.FC<{ entrepreneur: Entrepreneurship; onCli
                 style={{ color: textColor }}
                 className="text-5xl font-bold font-serif mt-2"
             >
-                {entrepreneur.name}
+                {customTitle || entrepreneur.name}
             </h3>
             <p
                 style={{ color: textColor }}
                 className="mt-2 max-w-lg font-bold"
             >
-                {entrepreneur.description}
+                {customDescription || entrepreneur.description}
             </p>
         </div >
     </button >
@@ -604,7 +612,7 @@ const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }
 
 
 const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-    <button onClick={onClick} className="ml-4 text-xs font-mono px-2 py-1 bg-highlight text-gray-900 rounded hover:bg-yellow-400 transition-colors">[ Administrar ]</button>
+    <button onClick={onClick} className="ml-4 text-[13px] font-bold px-2 py-1 bg-highlight text-gray-900 rounded-md hover:bg-yellow-400 transition-all shadow-sm border border-black/10">Administrar</button>
 );
 
 const HomePage: React.FC<HomePageProps> = (props) => {
@@ -688,7 +696,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     }));
 
     const PressReleasePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-pr">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-pr">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 {currentUser ? (
@@ -718,7 +726,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const SourcePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -736,7 +744,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const EntrepreneurPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-entrepreneur">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-entrepreneur">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-entrepreneur" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -754,7 +762,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const PhotoPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photo">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photo">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-photo" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -772,7 +780,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const PhotojournalismPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photojournalism">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photojournalism">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-photojournalism" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -790,7 +798,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const CommunityAdPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-ad">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-ad">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-ad" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -808,7 +816,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     );
 
     const CollaborationPublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-collab">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-collab">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-collab" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
@@ -882,7 +890,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <h1 className="font-serif text-3xl md:text-4xl font-bold text-text-primary">
                                 {heroHeading?.mainText || 'Periodistas que'} <span className="text-primary">{heroHeading?.highlightedText || 'emprenden'}</span>.
                             </h1>
-                            {heroHeading?.subText && <p className="mt-2 text-xl text-text-secondary">{heroHeading.subText}</p>}
                         </div>
                         {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'headings')} />}
                     </div>
@@ -890,8 +897,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         <FeaturedEntrepreneurCard
                             entrepreneur={entrepreneurs[0]}
                             onClick={() => onSelectEntrepreneur(entrepreneurs[0])}
-                            label={heroHeading?.featuredLabel || 'Destacado'}
+                            label={heroHeading?.featuredLabel || 'DESTACADO'}
                             textColor={heroHeading?.textColor || '#ffffff'}
+                            heroImageUrl={heroHeading?.imageUrl ? (heroHeading.imageUrl.startsWith('http') || heroHeading.imageUrl.startsWith('/backendcipress/media') ? heroHeading.imageUrl : `/backendcipress/media/images/hero/${heroHeading.imageUrl}`) : undefined}
+                            customTitle={heroHeading?.featuredTitle}
+                            customDescription={heroHeading?.featuredDescription}
                         />
                     }
                 </section>

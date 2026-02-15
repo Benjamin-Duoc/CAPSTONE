@@ -245,7 +245,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
     };
 
     const ServicePublicationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-service">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-service">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 <h3 id="modal-title-service" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>

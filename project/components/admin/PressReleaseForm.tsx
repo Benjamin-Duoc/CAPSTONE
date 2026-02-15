@@ -155,7 +155,7 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
     if (!isModal) return formContent;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
             {formContent}
         </div>
     );

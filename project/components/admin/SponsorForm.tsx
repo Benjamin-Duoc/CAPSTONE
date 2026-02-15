@@ -26,7 +26,7 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
 
     useEffect(() => {
         if (sponsor) {
-             setFormData({
+            setFormData({
                 ...initialSponsorState,
                 ...sponsor,
                 reportContent: sponsor.reportContent || [],
@@ -67,7 +67,7 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
         newContent[index] = updatedItem as ReportContentItem;
         setFormData(prev => ({ ...prev, reportContent: newContent }));
     };
-    
+
     const handleImageUpload = (index: number) => {
         const input = document.createElement('input');
         input.type = 'file';
@@ -113,10 +113,10 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
         }
         setFormData(prev => ({ ...prev, reportContent: newContent }));
     };
-    
+
     const handleAddBulkParagraphs = () => {
         if (!bulkText.trim()) return;
-        
+
         const paragraphs = bulkText.split(/\n+/).filter(p => p.trim() !== '');
         const newItems: ReportContentItem[] = paragraphs.map(p => ({ type: 'paragraph', text: p }));
 
@@ -132,10 +132,10 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
         onSave(formData as PremiumSponsor | Omit<PremiumSponsor, 'id'>);
     };
 
-     const renderReportItem = (item: ReportContentItem, index: number) => {
+    const renderReportItem = (item: ReportContentItem, index: number) => {
         const commonControls = (
             <div className="flex items-center space-x-2 mt-2">
-                 <button type="button" onClick={() => handleMoveItem(index, 'up')} disabled={index === 0} className="text-xs px-2 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">↑ Subir</button>
+                <button type="button" onClick={() => handleMoveItem(index, 'up')} disabled={index === 0} className="text-xs px-2 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">↑ Subir</button>
                 <button type="button" onClick={() => handleMoveItem(index, 'down')} disabled={index === (formData.reportContent?.length ?? 0) - 1} className="text-xs px-2 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">↓ Bajar</button>
                 <button type="button" onClick={() => handleDeleteItem(index)} className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200">Eliminar</button>
             </div>
@@ -155,12 +155,12 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
                     <div key={index} className="p-3 border rounded-md bg-gray-50">
                         <label className="block text-xs font-medium text-gray-500">Imagen</label>
                         <img src={item.src} alt={item.alt} className="my-2 rounded max-h-40 object-contain bg-gray-200" />
-                         <div className="space-y-2">
-                             <div>
+                        <div className="space-y-2">
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700">URL de la imagen</label>
                                 <input type="text" placeholder="Pegar URL de la imagen" value={item.src} onChange={(e) => handleReportContentChange(index, 'src', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                             </div>
-                             <div className="flex items-center space-x-2">
+                            </div>
+                            <div className="flex items-center space-x-2">
                                 <hr className="flex-grow border-gray-300" />
                                 <span className="text-sm text-gray-500">o</span>
                                 <hr className="flex-grow border-gray-300" />
@@ -177,7 +177,7 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
                     </div>
                 );
             case 'quote':
-                 return (
+                return (
                     <div key={index} className="p-3 border rounded-md bg-gray-50">
                         <label className="block text-xs font-medium text-gray-500">Cita</label>
                         <textarea value={item.text} onChange={(e) => handleReportContentChange(index, 'text', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" rows={3} placeholder="Texto de la cita" />
@@ -191,11 +191,11 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4">{sponsor ? 'Editar Sponsor' : 'Añadir Nuevo Sponsor'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                     <div className="p-4 border rounded-lg">
+                    <div className="p-4 border rounded-lg">
                         <h3 className="text-lg font-semibold mb-2 text-gray-700">Información Básica</h3>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Nombre</label>
@@ -218,13 +218,13 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
                             {formData.imageUrl && <img src={formData.imageUrl} alt="Previsualización de la imagen principal" className="my-2 rounded max-h-40 object-contain bg-gray-200 border" />}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">URL de la imagen</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="imageUrl"
-                                    placeholder="Pegar URL de la imagen" 
-                                    value={formData.imageUrl} 
-                                    onChange={handleChange} 
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" 
+                                    placeholder="Pegar URL de la imagen"
+                                    value={formData.imageUrl}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
                                 />
                             </div>
                             <div className="flex items-center space-x-2">
@@ -232,9 +232,9 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
                                 <span className="text-sm text-gray-500">o</span>
                                 <hr className="flex-grow border-gray-300" />
                             </div>
-                            <button 
-                                type="button" 
-                                onClick={handleMainImageUpload} 
+                            <button
+                                type="button"
+                                onClick={handleMainImageUpload}
                                 className="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                             >
                                 Buscar archivo en el equipo...
@@ -258,17 +258,17 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
 
                     <div className="p-4 border rounded-lg">
                         <h3 className="text-lg font-semibold mb-2 text-gray-700">Contenido del Reportaje</h3>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Autor del Reportaje</label>
                                 <input type="text" name="reportAuthor" value={formData.reportAuthor || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
                             </div>
-                             <div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700">Fecha del Reportaje</label>
                                 <input type="text" name="reportDate" value={formData.reportDate || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
                             </div>
                         </div>
-                        
+
                         <div className="p-3 border rounded-md bg-blue-50 my-4">
                             <label htmlFor="bulkText" className="block text-sm font-medium text-blue-800">Caja de texto masivo</label>
                             <p className="text-xs text-blue-600 mb-2">Pega el texto completo aquí. El sistema lo dividirá en párrafos por cada salto de línea.</p>
@@ -281,7 +281,7 @@ const SponsorForm: React.FC<SponsorFormProps> = ({ sponsor, onSave, onClose }) =
                         <div className="space-y-4">
                             {formData.reportContent?.map(renderReportItem)}
                         </div>
-                        
+
                         <div className="flex items-center space-x-2 mt-4 pt-4 border-t">
                             <span className="text-sm font-medium text-gray-700">Añadir bloque:</span>
                             <button type="button" onClick={() => handleAddItem('image')} className="text-xs px-3 py-1 bg-green-100 text-green-800 rounded-full hover:bg-green-200">Imagen</button>

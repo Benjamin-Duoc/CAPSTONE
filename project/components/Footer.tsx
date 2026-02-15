@@ -35,7 +35,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, partnerLogos }) => {
                 <img
                   src={logo.logoUrl}
                   alt={logo.name}
-                  className="h-12 w-auto max-w-48 object-contain"
+                  className="h-[3.9rem] w-auto max-w-[150px] object-contain"
                 />
               </a>
             ))}

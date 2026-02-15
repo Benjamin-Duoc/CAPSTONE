@@ -1,5 +1,19 @@
-/* Main CSS File */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap');
+@import "tailwindcss";
+@config "./tailwind.config.js";
+
+@theme {
+  --container-center: true;
+  --container-padding: 1.5rem;
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* Main CSS File */
 
 :root {
   --background: #f8fafc;

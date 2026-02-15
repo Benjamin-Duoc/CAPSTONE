@@ -60,18 +60,23 @@ const keysToSnake = (obj: any): any => {
 
 // --- Generic Fetch Helpers ---
 
-export const uploadImage = async (file: File): Promise<{ success: boolean; url?: string; message?: string }> => {
-  // TODO: Implement actual backend upload. For now, return a fake URL or base64.
-  // In a real app, this would POST to /api/upload
-  console.log('Simulating upload for:', file.name);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        url: URL.createObjectURL(file) // Local preview URL
-      });
-    }, 1000);
-  });
+export const uploadImage = async (file: File, folder: string = 'images'): Promise<{ success: boolean; url?: string; message?: string }> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+
+    const res = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!res.ok) throw new Error('Upload failed');
+    return await res.json();
+  } catch (err) {
+    console.error('Upload error:', err);
+    return { success: false, message: 'Error al subir la imagen' };
+  }
 };
 
 const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> => {
@@ -156,16 +161,17 @@ const transformList = <T>(list: any[]): T[] => {
 
 // --- Users ---
 
-export const insertUser = async (user: Omit<User, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> => {
+export const registerUser = async (data: Partial<User>): Promise<{ success: boolean; message: string; userId?: number }> => {
   try {
     const response = await fetch(`${API_BASE}/users/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(keysToSnake(user)),
+      body: JSON.stringify(keysToSnake(data)),
     });
-    return await response.json();
+    const result = await response.json();
+    return keysToCamel(result);
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('API Error register:', error);
     return { success: false, message: 'Error de conexión con el servidor.' };
   }
 };
@@ -177,7 +183,8 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    return await response.json();
+    const result = await response.json();
+    return keysToCamel(result);
   } catch (error) {
     console.error('API Error login:', error);
     return { success: false, message: 'Error de conexión con el servidor.' };
@@ -188,7 +195,8 @@ export const getAllUsers = async (): Promise<User[]> => {
   try {
     const response = await fetch(`${API_BASE}/users`);
     if (!response.ok) throw new Error('Failed to fetch users');
-    return await response.json();
+    const data = await response.json();
+    return keysToCamel(data);
   } catch (error) {
     console.error('API Error getting users:', error);
     return [];
@@ -202,7 +210,8 @@ export const updateUser = async (user: User): Promise<{ success: boolean; messag
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(keysToSnake(user)),
     });
-    return await response.json();
+    const data = await response.json();
+    return keysToCamel(data);
   } catch (error) {
     console.error('API Error updating user:', error);
     return { success: false, message: 'Error de conexión con el servidor.' };
@@ -404,14 +413,15 @@ export const getLegalFAQs = async () => fetchList<LegalFAQ>('/legal-faqs', []);
 
 // --- Hero Heading ---
 export const getHeroHeading = async () => {
-  const res = await fetchOne<HeroHeading>('/hero-headings', initialData.heroHeading);
-  return res || initialData.heroHeading;
+  const res = await fetchList<HeroHeading>('/hero-headings', [initialData.heroHeading]);
+  return res && res.length > 0 ? res[0] : initialData.heroHeading;
 };
 export const saveHeroHeading = async (data: HeroHeading) => {
+  const payload = { ...data, id: data.id || 1 };
   const res = await fetch(`${API_BASE}/hero-headings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(keysToSnake(payload))
   });
   if (!res.ok) throw new Error('Failed to save HeroHeading');
   return await res.json();
@@ -447,15 +457,8 @@ export const saveSpecialAds = async (data: SpecialAd[]) => { console.warn('depre
 
 // --- Site Stats ---
 export const getStats = async () => fetchList<SiteStat>('/site-stats', initialData.siteStats);
-export const saveStats = async (data: SiteStat[]) => {
-  const res = await fetch(`${API_BASE}/site-stats`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!res.ok) throw new Error('Failed to save SiteStats');
-  return await res.json();
-};
+export const updateStat = async (item: SiteStat) => updateItem<SiteStat>('/site-stats', item);
+export const saveStats = async (data: SiteStat[]) => { console.warn('saveStats is deprecated, use updateStat'); };
 
 // --- Partner Logos ---
 export const getPartnerLogos = async () => fetchList<PartnerLogo>('/partner-logos', initialData.partnerLogos);

@@ -63,7 +63,7 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4">{article ? 'Editar Artículo' : 'Añadir Nuevo Artículo'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

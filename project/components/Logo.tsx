@@ -23,11 +23,11 @@ const Logo: React.FC<LogoProps> = ({ onNavigate, className }) => {
       aria-label="Volver a la página de inicio"
     >
       {/* Imagen del logo desde /public/images */}
-      <div className="h-30 w-30 flex-shrink-0">
+      <div className="flex items-center h-20 py-4">
         <img
-          src="https://www.cipress.cl/images/LOGO-CIPRESS-2.png"
+          src="/assets/images/LOGO-CIPRESS-2.png"
           alt="Logo Cipress"
-          style={logoStyle}
+          className="h-12 w-auto object-contain"
         />
       </div>
 

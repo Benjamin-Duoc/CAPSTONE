@@ -6,9 +6,10 @@ interface UserHeaderProps {
     user: User;
     userTypeLabel: string;
     onLogout: () => void;
+    onEditProfile?: () => void;
 }
 
-const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout }) => {
+const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout, onEditProfile }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -37,6 +38,15 @@ const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout }
                             <p className="text-sm font-medium text-gray-900">{user.email}</p>
                             <p className="text-xs text-gray-500 truncate">{user.role}</p>
                         </div>
+                        <button
+                            onClick={() => {
+                                setIsMenuOpen(false);
+                                if (onEditProfile) onEditProfile();
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                        >
+                            Mi Perfil
+                        </button>
                         <button
                             onClick={onLogout}
                             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"

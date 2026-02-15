@@ -234,11 +234,14 @@ export interface LegalFAQ {
 }
 
 export interface HeroHeading {
+    id?: number;
     mainText: string;
     highlightedText: string;
+    featuredTitle: string;
+    featuredDescription: string;
     featuredLabel: string;
     textColor: string;
-    subText?: string;
+    imageUrl?: string;
 }
 // FIX: Add missing 'ShortCollaboration' type to resolve compilation error.
 export interface ShortCollaboration {
