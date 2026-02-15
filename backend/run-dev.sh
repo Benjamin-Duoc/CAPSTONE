@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to run the backend in development mode
 
-echo "🚀 Starting CIPRESS Backend in DEVELOPMENT mode..."
+echo "Starting CIPRESS Backend in DEVELOPMENT mode..."
 
 # Set environment variable
 export FLASK_ENV=development

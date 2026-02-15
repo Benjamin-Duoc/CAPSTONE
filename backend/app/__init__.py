@@ -71,6 +71,9 @@ def create_app(config_class=None):
     from .routes.user_routes import user_bp
     app.register_blueprint(user_bp)
 
+    from .routes.upload_routes import upload_bp
+    app.register_blueprint(upload_bp)
+
     from .routes.route_factory import create_crud_blueprint
     from .models.all_models import (
         AppConfig, CommunityAd, CommunityPost, Course, Entrepreneurship,
@@ -131,31 +134,31 @@ def create_app(config_class=None):
     # =========================================================================
     
     print("\n" + "="*60)
-    print("🚀 CIPRESS BACKEND INICIADO")
+    print(">>> CIPRESS BACKEND INICIADO")
     print("="*60)
-    print(f"📅 Hora de inicio: {datetime.utcnow().isoformat()}")
-    print(f"🌐 URL: http://localhost:5000")
-    print(f"🔗 Frontend esperado: http://localhost:3000")
-    print("\n📌 ENDPOINTS SINGULARES (para frontend):")
-    print("  • GET  /hero-heading")
-    print("  • GET  /app-config")
-    print("  • GET  /freelance-services")
-    print("  • GET  /ngo-spotlights")
-    print("  • GET  /courses")
-    print("  • GET  /jobs")
-    print("  • GET  /community-ads")
-    print("  • GET  /community-posts")
-    print("  • GET  /events")
-    print("  • GET  /legal-faqs")
-    print("  • GET  /legal-topics")
-    print("  • GET  /news-articles")
-    print("  • GET  /press-releases")
-    print("  • GET  /resources")
-    print("\n📌 ENDPOINTS API (plural con /api/):")
-    print("  • GET  /api/users")
-    print("  • GET  /api/hero-headings")
-    print("  • GET  /api/app-configs")
-    print("  • ... y todos los demás modelos")
+    print(f"Hora de inicio: {datetime.utcnow().isoformat()}")
+    print(f"URL: http://localhost:5000")
+    print(f"Frontend esperado: http://localhost:3000")
+    print("\nENDPOINTS SINGULARES (para frontend):")
+    print("  * GET  /hero-heading")
+    print("  * GET  /app-config")
+    print("  * GET  /freelance-services")
+    print("  * GET  /ngo-spotlights")
+    print("  * GET  /courses")
+    print("  * GET  /jobs")
+    print("  * GET  /community-ads")
+    print("  * GET  /community-posts")
+    print("  * GET  /events")
+    print("  * GET  /legal-faqs")
+    print("  * GET  /legal-topics")
+    print("  * GET  /news-articles")
+    print("  * GET  /press-releases")
+    print("  * GET  /resources")
+    print("\nENDPOINTS API (plural con /api/):")
+    print("  * GET  /api/users")
+    print("  * GET  /api/hero-headings")
+    print("  * GET  /api/app-configs")
+    print("  * ... y todos los demas modelos")
     print("="*60 + "\n")
 
     return app

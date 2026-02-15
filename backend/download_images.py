@@ -32,6 +32,9 @@ static_images = [
 # Variable Images (Directory, Filename, URL)
 # Using seeds from CreateDB and MockData
 variable_images = [
+    # Hero
+    ("hero", "public-square-life.jpg", "https://picsum.photos/seed/public-square-life/1200/800"),
+
     # Courses
     ("courses", "course1.jpg", "https://picsum.photos/seed/course1/1200/800"),
     ("courses", "course2.jpg", "https://picsum.photos/seed/course2/1200/800"),

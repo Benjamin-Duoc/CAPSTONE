@@ -47,11 +47,13 @@ class SiteStat(db.Model):
 class HeroHeading(db.Model):
     __tablename__ = 'hero_heading'
     id = db.Column(db.Integer, primary_key=True)
-    main_text = db.Column(db.String)
-    highlighted_text = db.Column(db.String)
-    sub_text = db.Column(db.String)
-    featured_label = db.Column(db.String)
-    text_color = db.Column(db.String)
+    main_text = db.Column(db.String) # "Texto Principal"
+    highlighted_text = db.Column(db.String) # "Texto Destacado"
+    featured_title = db.Column(db.String) # "Subtítulo (opcional)" -> e.g. "La Pública"
+    featured_description = db.Column(db.String) # "Etiqueta del Emprendimiento Destacado"
+    featured_label = db.Column(db.String) # "DESTACADO"
+    text_color = db.Column(db.String) # "Color del Texto Sobre la Foto"
+    image_url = db.Column(db.String) # "Imagen de Fondo (Hero)"
 
 # -----------------------------------------------------------------------------
 # News & Press

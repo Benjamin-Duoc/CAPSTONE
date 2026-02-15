@@ -15,14 +15,14 @@ from app.models.all_models import (
 def create_db():
     app = create_app()
     with app.app_context():
-        print("⚠️  ATENCIÓN: Se eliminarán todas las tablas y datos existentes.")
-        print("🗑️  Eliminando base de datos actual...")
+        print("WARNING: Se eliminaran todas las tablas y datos existentes.")
+        print(">>> Eliminando base de datos actual...")
         db.drop_all()
         
-        print("🔨 Creando esquema de base de datos...")
+        print(">>> Creando esquema de base de datos...")
         db.create_all()
         
-        print("🌱 Iniciando población de datos de prueba...")
+        print(">>> Iniciando poblacion de datos de prueba...")
 
         # --- ROLES ---
         roles_data = [
@@ -71,11 +71,14 @@ def create_db():
 
         # --- HERO HEADING ---
         db.session.add(HeroHeading(
-            main_text="El periodismo chileno está",
-            highlighted_text="emprendiendo",
-            sub_text="Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile",
-            featured_label="Emprendimiento de la Semana",
-            text_color="#FFFFFF"
+            id=1,
+            main_text="Periodistas que",
+            highlighted_text="emprenden",
+            featured_title="La Pública",
+            featured_description="Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.",
+            featured_label="DESTACADO",
+            text_color="#FFFFFF",
+            image_url="public-square-life.jpg"
         ))
 
         # --- SITE STATS ---
@@ -457,7 +460,7 @@ def create_db():
             seed_key.value = "true"
 
         db.session.commit()
-        print("✨ Proceso finalizado. La base de datos ha sido reiniciada y poblada.")
+        print(">>> Proceso finalizado. La base de datos ha sido reiniciada y poblada.")
 
 if __name__ == "__main__":
     create_db()

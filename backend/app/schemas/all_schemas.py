@@ -2,14 +2,10 @@ from app.extensions import ma
 from app.models.all_models import *
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
-    firstName = ma.String(attribute='first_name')
-    lastName = ma.String(attribute='last_name')
-    role = ma.String() # Explicitly include role to ensure it's in the dump
-    
     class Meta:
         model = User
         load_instance = True
-        exclude = ('password_hash', 'role_rel', 'first_name', 'last_name') # Exclude internal/sensitive and redundant fields
+        exclude = ('password_hash',)
 
 class AppConfigSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -25,6 +21,7 @@ class HeroHeadingSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = HeroHeading
         load_instance = True
+        unknown = 'exclude'
 
 class NewsArticleSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
