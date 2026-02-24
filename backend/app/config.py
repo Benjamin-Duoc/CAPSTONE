@@ -26,7 +26,7 @@ class Config:
     
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-    'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), '../instance/cipress.db')
+    'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'instance', 'cipress.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # API Keys
@@ -59,7 +59,7 @@ class Config:
         
         # Log configuration
         if Config.DEBUG:
-            print(f"\n🔧 Configuration loaded:")
+            print(f"\nConfiguration loaded:")
             print(f"   Environment: {Config.ENV}")
             print(f"   Debug: {Config.DEBUG}")
             print(f"   Host: {Config.HOST}:{Config.PORT}")

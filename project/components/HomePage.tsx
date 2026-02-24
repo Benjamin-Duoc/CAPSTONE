@@ -883,29 +883,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="bg-background">
             <div className="container mx-auto px-4 space-y-16 py-12">
 
-                {/* Hero Section: Featured Entrepreneur */}
-                <section>
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <h1 className="font-serif text-3xl md:text-4xl font-bold text-text-primary">
-                                {heroHeading?.mainText || 'Periodistas que'} <span className="text-primary">{heroHeading?.highlightedText || 'emprenden'}</span>.
-                            </h1>
-                        </div>
-                        {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'headings')} />}
-                    </div>
-                    {entrepreneurs.length > 0 &&
-                        <FeaturedEntrepreneurCard
-                            entrepreneur={entrepreneurs[0]}
-                            onClick={() => onSelectEntrepreneur(entrepreneurs[0])}
-                            label={heroHeading?.featuredLabel || 'DESTACADO'}
-                            textColor={heroHeading?.textColor || '#ffffff'}
-                            heroImageUrl={heroHeading?.imageUrl ? (heroHeading.imageUrl.startsWith('http') || heroHeading.imageUrl.startsWith('/backendcipress/media') ? heroHeading.imageUrl : `/backendcipress/media/images/hero/${heroHeading.imageUrl}`) : undefined}
-                            customTitle={heroHeading?.featuredTitle}
-                            customDescription={heroHeading?.featuredDescription}
-                        />
-                    }
-                </section>
-
                 {/* Premium Sponsors Section */}
                 <section>
                     <div className="flex items-center justify-center mb-4">
@@ -1035,32 +1012,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 </a>
                             </section>
                         )}
-
-                        {/* Entrepreneurial Journalists Section */}
-                        <section>
-                            <div className="flex justify-between items-center border-b-2 border-accent pb-2 mb-6">
-                                <h2 className="text-3xl font-bold font-serif text-text-primary">Emprendimientos Periodísticos</h2>
-                                <button onClick={() => onNavigate('entrepreneurship')} className="font-semibold text-accent hover:underline">Ver todos &rarr;</button>
-                                {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'entrepreneurs')} />}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                {freelanceServices.slice(0, 3).map(service => (
-                                    <EntrepreneurialJournalistCard key={service.id} service={service} />
-                                ))}
-                            </div>
-                            <div className={`bg-accent/5 p-4 rounded-lg mt-8 border border-accent/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3e%3cpath d='M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10' stroke='%2384cc16' stroke-width='1' stroke-opacity='0.2'/%3e%3c/svg%3e")]`}>
-                                <div>
-                                    <h3 className="font-semibold text-base text-green-800">¿Tienes un medio, agencia o empresa establecida?</h3>
-                                    <p className="text-xs text-green-700">Suscríbete gratis a nuestra página y dale visibilidad en nuestra vitrina para captar nuevos clientes.</p>
-                                </div>
-                                <button
-                                    onClick={() => setIsEntrepreneurModalOpen(true)}
-                                    className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-accent rounded-md hover:bg-lime-600 transition-colors duration-200 shadow-sm"
-                                >
-                                    Sube tu empresa
-                                </button>
-                            </div>
-                        </section>
 
                         {/* Community Activity Section */}
                         <section>
@@ -1286,7 +1237,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">Conecta con tu Próxima Oportunidad Laboral</h2>
                             <p className="mt-2 text-lg text-blue-200 max-w-2xl mx-auto">Explora ofertas de trabajo disponibles en el mercado, únete a nuestra base de talentos o promociona tus servicios freelance.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <button onClick={() => onNavigate('opportunities', 'jobs')} className="bg-white/10 p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group">
                                 <div className="inline-block p-4 bg-primary rounded-full mb-4">
                                     <BriefcaseIcon className="h-8 w-8 text-white" />
@@ -1302,14 +1253,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <h3 className="text-xl font-bold font-serif text-white">Banco de Talentos</h3>
                                 <p className="mt-2 text-blue-200">Inscríbete en nuestro directorio de profesionales y deja que las oportunidades te encuentren a ti.</p>
                                 <span className="mt-4 inline-block font-semibold text-highlight group-hover:underline">Inscribirse &rarr;</span>
-                            </button>
-                            <button onClick={() => onNavigate('opportunities', 'classifieds')} className="bg-white/10 p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group">
-                                <div className="inline-block p-4 bg-highlight rounded-full mb-4">
-                                    <PencilAltIcon className="h-8 w-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold font-serif text-white">Ofrecer Servicios</h3>
-                                <p className="mt-2 text-blue-200">¿Eres freelance? Promociona tus servicios de redacción, fotografía, gestión de redes y más.</p>
-                                <span className="mt-4 inline-block font-semibold text-highlight group-hover:underline">Publicar &rarr;</span>
                             </button>
                         </div>
                     </div>
