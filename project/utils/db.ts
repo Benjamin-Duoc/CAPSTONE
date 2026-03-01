@@ -5,7 +5,7 @@ import type {
   CommunityPost, PhotojournalismPost, Specialist, ShareablePhoto, Resource,
   FundingOpportunity, Event, LegalTopic, LegalFAQ, HeroHeading,
   ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat,
-  PartnerLogo, TalentProfile
+  PartnerLogo, TalentProfile, DestacadoArticle
 } from '../types';
 import { ENV } from '../src/config/env';
 
@@ -148,8 +148,9 @@ const deserializeReportContent = (item: any) => {
     try {
       return { ...item, reportContent: JSON.parse(item.reportContent) };
     } catch (e) {
-      console.error("Error parsing reportContent JSON", e);
-      return item;
+      // Fallback silencioso: Si no es JSON válido (ej: noticias antiguas con texto plano),
+      // lo convertimos en un bloque de párrafo por defecto para que no falle el map().
+      return { ...item, reportContent: [{ type: 'paragraph', text: item.reportContent }] };
     }
   }
   return item;
@@ -246,9 +247,9 @@ export const deleteJob = async (id: number) => deleteItem('/jobs', id);
 export const saveJobs = async (data: Job[]) => { console.warn('saveJobs deprecated'); };
 
 // --- Entrepreneurs ---
-export const getAllEntrepreneurs = async () => transformList<Entrepreneurship>(await fetchList<Entrepreneurship>('/entrepreneurships', initialData.entrepreneurs));
-export const createEntrepreneur = async (item: Omit<Entrepreneurship, 'id'>) => createItem<Entrepreneurship>('/entrepreneurships', serializeReportContent(item));
-export const updateEntrepreneur = async (item: Entrepreneurship) => updateItem<Entrepreneurship>('/entrepreneurships', serializeReportContent(item));
+export const getAllEntrepreneurs = async () => fetchList<Entrepreneurship>('/entrepreneurships', initialData.entrepreneurs);
+export const createEntrepreneur = async (item: Omit<Entrepreneurship, 'id'>) => createItem<Entrepreneurship>('/entrepreneurships', item);
+export const updateEntrepreneur = async (item: Entrepreneurship) => updateItem<Entrepreneurship>('/entrepreneurships', item);
 export const deleteEntrepreneur = async (id: number) => deleteItem('/entrepreneurships', id);
 export const saveEntrepreneurs = async (data: Entrepreneurship[]) => { console.warn('saveEntrepreneurs deprecated'); };
 
@@ -276,34 +277,9 @@ export const deleteNgoSpotlight = async (id: number) => deleteItem('/ngo-spotlig
 export const saveNgoSpotlight = async (data: NgoSpotlight[]) => { console.warn('deprecated'); };
 
 // --- Freelance Services ---
-const transformFreelanceService = (item: any): FreelanceService => {
-  return {
-    ...item,
-    rating: {
-      average: Number(item.ratingAverage || 0),
-      count: Number(item.ratingCount || 0)
-    }
-  };
-};
-
-const serializeFreelanceService = (item: any) => {
-  const { rating, ...rest } = item;
-  if (rating) {
-    return {
-      ...rest,
-      ratingAverage: rating.average,
-      ratingCount: rating.count
-    };
-  }
-  return item;
-};
-
-export const getFreelanceServices = async () => {
-  const list = await fetchList<any>('/freelance-services', initialData.freelanceServices);
-  return list.map(transformFreelanceService);
-};
-export const createFreelanceService = async (item: Omit<FreelanceService, 'id'>) => createItem<FreelanceService>('/freelance-services', serializeFreelanceService(item));
-export const updateFreelanceService = async (item: FreelanceService) => updateItem<FreelanceService>('/freelance-services', serializeFreelanceService(item));
+export const getFreelanceServices = async () => fetchList<FreelanceService>('/freelance-services', initialData.freelanceServices);
+export const createFreelanceService = async (item: Omit<FreelanceService, 'id'>) => createItem<FreelanceService>('/freelance-services', item);
+export const updateFreelanceService = async (item: FreelanceService) => updateItem<FreelanceService>('/freelance-services', item);
 export const deleteFreelanceService = async (id: number) => deleteItem('/freelance-services', id);
 export const saveFreelanceServices = async (data: FreelanceService[]) => { console.warn('deprecated'); };
 
@@ -426,6 +402,12 @@ export const saveHeroHeading = async (data: HeroHeading) => {
   if (!res.ok) throw new Error('Failed to save HeroHeading');
   return await res.json();
 };
+
+// --- Destacados ---
+export const getDestacados = async () => transformList<DestacadoArticle>(await fetchList<DestacadoArticle>('/destacados', []));
+export const createDestacado = async (item: Omit<DestacadoArticle, 'id'>) => createItem<DestacadoArticle>('/destacados', serializeReportContent(item));
+export const updateDestacado = async (item: DestacadoArticle) => updateItem<DestacadoArticle>('/destacados', serializeReportContent(item));
+export const deleteDestacado = async (id: number) => deleteItem('/destacados', id);
 
 // --- Short Collaborations ---
 export const getShortCollaborations = async () => fetchList<ShortCollaboration>('/short-collaborations', initialData.shortCollaborations);

@@ -5,9 +5,9 @@ import PressReleaseUploadPage from './components/PressReleaseUploadPage';
 import HomePage from './components/HomePage';
 import CoursesModule from './components/CoursesModule';
 import EntrepreneurshipModule from './components/EntrepreneurshipModule';
+import FreelanceServicesModule from './components/FreelanceServicesModule';
 import OpportunitiesModule from './components/OpportunitiesModule';
 import NewsModule from './components/NewsModule';
-import EntrepreneurshipDetailPage from './components/EntrepreneurshipDetailPage';
 import CommunityAdsModule from './components/CommunityAdsModule';
 import SpecialistsModule from './components/SpecialistsModule';
 import PhotoGalleryModule from './components/PhotoGalleryModule';
@@ -34,8 +34,9 @@ import FreeCollaboratorPage from './components/FreeCollaboratorPage';
 import PremiumCollaboratorPage from './components/PremiumCollaboratorPage';
 import ClientCompanyPage from './components/ClientCompanyPage';
 import UserProfileModal from './components/UserProfileModal';
+import DestacadosModule from './components/DestacadosModule';
 
-import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo } from './types';
+import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo, DestacadoArticle } from './types';
 
 import {
   initDatabase,
@@ -67,6 +68,7 @@ import {
   getTalentProfiles, createTalentProfile, updateTalentProfile, deleteTalentProfile,
   getRotationInterval, saveRotationInterval,
   getAllUsers, registerUser, updateUser, deleteUser,
+  getDestacados, createDestacado, updateDestacado, deleteDestacado
 } from './utils/db';
 
 
@@ -79,6 +81,7 @@ const App: React.FC = () => {
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneurship | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<PremiumSponsor | null>(null);
   const [selectedNewsArticle, setSelectedNewsArticle] = useState<NewsArticle | null>(null);
+  const [selectedDestacado, setSelectedDestacado] = useState<DestacadoArticle | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -141,6 +144,7 @@ const App: React.FC = () => {
   const [fundingOpportunities, setFundingOpportunities] = useState<FundingOpportunity[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [legalTopics, setLegalTopics] = useState<LegalTopic[]>([]);
+  const [destacados, setDestacados] = useState<DestacadoArticle[]>([]);
   const [heroHeading, setHeroHeading] = useState<HeroHeading>({
     mainText: 'Cargando...',
     highlightedText: '',
@@ -182,6 +186,7 @@ const App: React.FC = () => {
         setEvents(await getEvents());
         setLegalTopics(await getLegalTopics());
         setHeroHeading(await getHeroHeading());
+        setDestacados(await getDestacados());
         setShortCollaborations(await getShortCollaborations());
         setEntrepreneurshipTips(await getEntrepreneurshipTips());
         setSponsoredAds(await getSponsoredAds());
@@ -226,6 +231,7 @@ const App: React.FC = () => {
     setSelectedEntrepreneur(null);
     setSelectedSponsor(null);
     setSelectedNewsArticle(null);
+    setSelectedDestacado(null);
     setSelectedJob(null);
     setSelectedPressRelease(null);
     setSelectedCourse(null);
@@ -239,6 +245,7 @@ const App: React.FC = () => {
   const handleSelectEntrepreneur = (e: Entrepreneurship) => { setSelectedEntrepreneur(e); window.scrollTo(0, 0); };
   const handleSelectSponsor = (s: PremiumSponsor) => { setSelectedSponsor(s); window.scrollTo(0, 0); };
   const handleSelectNewsArticle = (a: NewsArticle) => { setSelectedNewsArticle(a); window.scrollTo(0, 0); };
+  const handleSelectDestacado = (d: DestacadoArticle) => { setSelectedDestacado(d); window.scrollTo(0, 0); };
   const handleSelectJob = (j: Job) => { setSelectedJob(j); window.scrollTo(0, 0); };
   const handleSelectPressRelease = (p: PressRelease) => { setSelectedPressRelease(p); window.scrollTo(0, 0); };
   const handleSelectCourse = (c: Course) => { setSelectedCourse(c); window.scrollTo(0, 0); };
@@ -266,6 +273,11 @@ const App: React.FC = () => {
   const handleAddNewsArticle = async (item: Omit<NewsArticle, 'id'>) => { try { const res = await createNews(item); setNewsArticles(prev => [res, ...prev]); } catch (e) { alert("Error creating news"); } };
   const handleUpdateNewsArticle = async (item: NewsArticle) => { try { const res = await updateNews(item); setNewsArticles(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating news"); } };
   const handleDeleteNewsArticle = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteNews(id); setNewsArticles(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting news"); } } };
+
+  // Destacados
+  const handleAddDestacado = async (item: Omit<DestacadoArticle, 'id'>) => { try { const res = await createDestacado(item); setDestacados(prev => [res, ...prev]); } catch (e) { alert("Error creating destacado"); } };
+  const handleUpdateDestacado = async (item: DestacadoArticle) => { try { const res = await updateDestacado(item); setDestacados(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating destacado"); } };
+  const handleDeleteDestacado = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteDestacado(id); setDestacados(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting destacado"); } } };
 
   // Sponsors
   const handleAddSponsor = async (item: Omit<PremiumSponsor, 'id'>) => { try { const res = await createPremiumSponsor(item); setPremiumSponsors(prev => [...prev, res]); } catch (e) { alert("Error creating sponsor"); } };
@@ -436,8 +448,8 @@ const App: React.FC = () => {
 
   const renderPage = () => {
     if (selectedSponsor) return <SponsorDetailPage sponsor={selectedSponsor} onBack={() => setSelectedSponsor(null)} />;
-    if (selectedEntrepreneur) return <EntrepreneurshipDetailPage entrepreneur={selectedEntrepreneur} onBack={() => setSelectedEntrepreneur(null)} />;
     if (selectedNewsArticle) return <NewsDetailPage article={selectedNewsArticle} onBack={() => setSelectedNewsArticle(null)} />;
+    if (selectedDestacado) return <NewsDetailPage article={selectedDestacado as unknown as NewsArticle} onBack={() => setSelectedDestacado(null)} />;
     if (selectedJob) return <JobDetailPage job={selectedJob} onBack={() => setSelectedJob(null)} />;
     if (selectedPressRelease) return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
     if (selectedPhotoPost) return <PhotojournalismDetailPage post={selectedPhotoPost} onBack={() => setSelectedPhotoPost(null)} />;
@@ -454,6 +466,7 @@ const App: React.FC = () => {
           jobs={jobs} onAddJob={handleAddJob} onUpdateJob={handleUpdateJob} onDeleteJob={handleDeleteJob}
           entrepreneurs={entrepreneurs} onAddEntrepreneur={handleAddEntrepreneur} onUpdateEntrepreneur={handleUpdateEntrepreneur} onDeleteEntrepreneur={handleDeleteEntrepreneur}
           newsArticles={newsArticles} onAddNewsArticle={handleAddNewsArticle} onUpdateNewsArticle={handleUpdateNewsArticle} onDeleteNewsArticle={handleDeleteNewsArticle}
+          destacados={destacados} onAddDestacado={handleAddDestacado} onUpdateDestacado={handleUpdateDestacado} onDeleteDestacado={handleDeleteDestacado}
           sponsors={premiumSponsors} onAddSponsor={handleAddSponsor} onUpdateSponsor={handleUpdateSponsor} onDeleteSponsor={handleDeleteSponsor}
           pressReleases={pressReleases} onAddPressRelease={handleAddPressRelease} onUpdatePressRelease={handleUpdatePressRelease} onDeletePressRelease={handleDeletePressRelease}
           heroHeading={heroHeading} onUpdateHeroHeading={handleUpdateHeroHeading}
@@ -474,8 +487,10 @@ const App: React.FC = () => {
           users={users} onAddUser={handleAddUser} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser}
         />;
       case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} />;
-      case 'entrepreneurship': return <EntrepreneurshipModule entrepreneurs={entrepreneurs} />;
-      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} talentProfiles={talentProfiles} onAddTalentProfile={handleAddTalentProfile} rotationInterval={rotationInterval} freelanceServices={freelanceServices} onRateFreelanceService={handleRateFreelanceService} />;
+      case 'entrepreneurship': return <EntrepreneurshipModule entrepreneurships={entrepreneurs} onBack={() => handleNavigate('home')} />;
+      case 'freelanceServices': return <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} />;
+      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} talentProfiles={talentProfiles} onAddTalentProfile={handleAddTalentProfile} rotationInterval={rotationInterval} />;
+      case 'destacados': return <DestacadosModule destacados={destacados} onSelectDestacado={handleSelectDestacado} />;
       case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
       case 'community-ads': return <CommunityAdsModule ads={communityAds} />;
       case 'specialists': return <SpecialistsModule specialists={specialists} />;
@@ -506,6 +521,7 @@ const App: React.FC = () => {
           onSelectEntrepreneur={handleSelectEntrepreneur}
           onSelectSponsor={handleSelectSponsor}
           onSelectNewsArticle={handleSelectNewsArticle}
+          onSelectDestacado={handleSelectDestacado}
           onSelectJob={handleSelectJob}
           onSelectPressRelease={handleSelectPressRelease}
           onSelectCourse={handleSelectCourse}
@@ -528,6 +544,7 @@ const App: React.FC = () => {
           fundingOpportunities={fundingOpportunities}
           events={events}
           heroHeading={heroHeading}
+          destacados={destacados}
           shortCollaborations={shortCollaborations}
           entrepreneurshipTips={entrepreneurshipTips}
           sponsoredAds={sponsoredAds}
@@ -554,7 +571,7 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
 
-      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedJob && !selectedPressRelease && !selectedCourse && !selectedPhotoPost && currentPage !== 'register' && currentPage !== 'login' && (
+      {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedDestacado && !selectedJob && !selectedPressRelease && !selectedCourse && !selectedPhotoPost && currentPage !== 'register' && currentPage !== 'login' && (
         <Footer onNavigate={handleNavigate} partnerLogos={partnerLogos} />
       )}
 

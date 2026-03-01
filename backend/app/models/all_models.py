@@ -59,6 +59,17 @@ class HeroHeading(db.Model):
 # News & Press
 # -----------------------------------------------------------------------------
 
+class DestacadoArticle(db.Model):
+    __tablename__ = 'destacado_article'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
+    category = db.Column(db.String)
+    author = db.Column(db.String)
+    date = db.Column(db.String)
+    image_url = db.Column(db.String)
+    summary = db.Column(db.Text)
+    report_content = db.Column(db.Text)
+
 class NewsArticle(db.Model):
     __tablename__ = 'news_article'
     id = db.Column(db.Integer, primary_key=True)
@@ -185,9 +196,9 @@ class Entrepreneurship(db.Model):
     specialty = db.Column(db.String)
     image_url = db.Column(db.String)
     description = db.Column(db.Text)
-    report_content = db.Column(db.Text)
-    report_author = db.Column(db.String)
-    report_date = db.Column(db.String)
+    portfolio_url = db.Column(db.String)
+    rating = db.Column(db.Float)
+    review_count = db.Column(db.Integer)
 
 class EntrepreneurshipTip(db.Model):
     __tablename__ = 'entrepreneurship_tips'
@@ -234,12 +245,9 @@ class FreelanceService(db.Model):
     service = db.Column(db.String)
     provider = db.Column(db.String)
     category = db.Column(db.String)
-    rate = db.Column(db.String)
     image_url = db.Column(db.String)
     description = db.Column(db.String)
-    portfolio_url = db.Column(db.String)
-    rating_average = db.Column(db.Numeric)
-    rating_count = db.Column(db.Integer)
+    linkedin_url = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 # -----------------------------------------------------------------------------

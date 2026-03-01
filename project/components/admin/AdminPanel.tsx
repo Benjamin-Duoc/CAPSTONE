@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import type { Course, Job, Entrepreneurship, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, FundingOpportunity, Specialist, ShareablePhoto, ShortCollaboration, PressRelease, EntrepreneurshipTip, SponsoredAd, SpecialAd, CommunityPost, Event, SiteStat, PartnerLogo, TalentProfile, User } from '../../types';
+import type { Course, Job, Entrepreneurship, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, FundingOpportunity, Specialist, ShareablePhoto, ShortCollaboration, PressRelease, EntrepreneurshipTip, SponsoredAd, SpecialAd, CommunityPost, Event, SiteStat, PartnerLogo, TalentProfile, User, DestacadoArticle } from '../../types';
 import CourseForm from './CourseForm';
 import JobForm from './JobForm';
 import EntrepreneurForm from './EntrepreneurForm';
 import NewsArticleForm from './NewsArticleForm';
+import DestacadoArticleForm from './DestacadoArticleForm';
 import SponsorForm from './SponsorForm';
 import HeadingForm from './HeadingForm';
 import PhotojournalismForm from './PhotojournalismForm';
@@ -42,6 +43,10 @@ interface AdminPanelProps {
     onAddNewsArticle: (article: Omit<NewsArticle, 'id'>) => void;
     onUpdateNewsArticle: (article: NewsArticle) => void;
     onDeleteNewsArticle: (id: number) => void;
+    destacados: DestacadoArticle[];
+    onAddDestacado: (destacado: Omit<DestacadoArticle, 'id'>) => void;
+    onUpdateDestacado: (destacado: DestacadoArticle) => void;
+    onDeleteDestacado: (id: number) => void;
     sponsors: PremiumSponsor[];
     onAddSponsor: (sponsor: Omit<PremiumSponsor, 'id'>) => void;
     onUpdateSponsor: (sponsor: PremiumSponsor) => void;
@@ -108,7 +113,7 @@ interface AdminPanelProps {
     onDeleteUser: (id: number) => void;
 }
 
-type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | 'users' | null;
+type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'destacados' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | 'users' | null;
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     // Usamos la inicialización mejorada del MAIN
@@ -129,6 +134,9 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
     const [editingNewsArticle, setEditingNewsArticle] = useState<NewsArticle | null>(null);
     const [isNewsArticleFormOpen, setIsNewsArticleFormOpen] = useState(false);
+
+    const [editingDestacado, setEditingDestacado] = useState<DestacadoArticle | null>(null);
+    const [isDestacadoFormOpen, setIsDestacadoFormOpen] = useState(false);
 
     const [editingSponsor, setEditingSponsor] = useState<PremiumSponsor | null>(null);
     const [isSponsorFormOpen, setIsSponsorFormOpen] = useState(false);
@@ -252,6 +260,24 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         }
         setIsNewsArticleFormOpen(false);
     };
+
+    const handleAddNewDestacado = () => {
+        setEditingDestacado(null);
+        setIsDestacadoFormOpen(true);
+    };
+    const handleEditDestacado = (destacado: DestacadoArticle) => {
+        setEditingDestacado(destacado);
+        setIsDestacadoFormOpen(true);
+    };
+    const handleSaveDestacado = (destacado: DestacadoArticle | Omit<DestacadoArticle, 'id'>) => {
+        if ('id' in destacado) {
+            props.onUpdateDestacado(destacado);
+        } else {
+            props.onAddDestacado(destacado);
+        }
+        setIsDestacadoFormOpen(false);
+    };
+
 
     const handleAddNewSponsor = () => {
         setEditingSponsor(null);
@@ -696,6 +722,40 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <button onClick={() => handleEditNewsArticle(item)} className="text-indigo-600 hover:text-indigo-900">Editar</button>
                                                 <button onClick={() => props.onDeleteNewsArticle(item.id)} className="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case 'destacados':
+                return (
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold">Noticias Destacadas</h2>
+                            <button onClick={handleAddNewDestacado} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Destacado</button>
+                        </div>
+                        <div className="overflow-x-auto bg-surface rounded-lg shadow">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-surface divide-y divide-gray-200">
+                                    {props.destacados.map(item => (
+                                        <tr key={item.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.author}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button onClick={() => handleEditDestacado(item)} className="text-indigo-600 hover:text-indigo-900">Editar</button>
+                                                <button onClick={() => props.onDeleteDestacado(item.id)} className="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -1387,6 +1447,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                                     </h4>
                                     <div className="space-y-1">
                                         <NavButton section="news" label="Innovación para el periodismo" />
+                                        <NavButton section="destacados" label="Noticias destacadas" />
                                         <NavButton section="pressReleases" label="Periodistas en acción" />
                                         <NavButton section="photojournalism" label="Foto-Periodismo" />
                                         <NavButton section="shareablePhotos" label="Galería fotográfica" />
@@ -1441,6 +1502,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 {isJobFormOpen && <JobForm job={editingJob} onSave={handleSaveJob} onClose={() => setIsJobFormOpen(false)} />}
                 {isEntrepreneurFormOpen && <EntrepreneurForm entrepreneur={editingEntrepreneur} onSave={handleSaveEntrepreneur} onClose={() => setIsEntrepreneurFormOpen(false)} />}
                 {isNewsArticleFormOpen && <NewsArticleForm article={editingNewsArticle} onSave={handleSaveNewsArticle} onClose={() => setIsNewsArticleFormOpen(false)} />}
+                {isDestacadoFormOpen && <DestacadoArticleForm article={editingDestacado} onSave={handleSaveDestacado} onClose={() => setIsDestacadoFormOpen(false)} />}
                 {isSponsorFormOpen && <SponsorForm sponsor={editingSponsor} onSave={handleSaveSponsor} onClose={() => setIsSponsorFormOpen(false)} />}
                 {isHeadingFormOpen && <HeadingForm currentHeading={props.heroHeading} onSave={props.onUpdateHeroHeading} onClose={() => setIsHeadingFormOpen(false)} />}
                 {isPressReleaseFormOpen && <PressReleaseForm pressRelease={editingPressRelease} onSave={handleSavePressRelease} onClose={() => setIsPressReleaseFormOpen(false)} />}

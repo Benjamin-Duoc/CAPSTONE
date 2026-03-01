@@ -28,6 +28,11 @@ class NewsArticleSchema(ma.SQLAlchemyAutoSchema):
         model = NewsArticle
         load_instance = True
 
+class DestacadoArticleSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = DestacadoArticle
+        load_instance = True
+
 class PressReleaseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = PressRelease

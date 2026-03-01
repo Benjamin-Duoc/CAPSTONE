@@ -1,0 +1,6 @@
+components/admin/EntrepreneurForm.tsx(18,5): error TS2353: Object literal may only specify known properties, and 'reportContent' does not exist in type 'Omit<Entrepreneurship, "id">'.
+data/mockData.ts(198,5): error TS2353: Object literal may only specify known properties, and 'reportAuthor' does not exist in type 'Entrepreneurship'.
+data/mockData.ts(212,3): error TS2739: Type '{ id: number; name: string; type: string; founder: string; location: string; specialty: string; imageUrl: string; description: string; }' is missing the following properties from type 'Entrepreneurship': portfolioUrl, rating, reviewCount
+data/mockData.ts(213,3): error TS2739: Type '{ id: number; name: string; type: string; founder: string; location: string; specialty: string; imageUrl: string; description: string; }' is missing the following properties from type 'Entrepreneurship': portfolioUrl, rating, reviewCount
+data/mockData.ts(214,3): error TS2739: Type '{ id: number; name: string; type: string; founder: string; location: string; specialty: string; imageUrl: string; description: string; }' is missing the following properties from type 'Entrepreneurship': portfolioUrl, rating, reviewCount
+data/mockData.ts(478,3): error TS2353: Object literal may only specify known properties, and 'subText' does not exist in type 'HeroHeading'.

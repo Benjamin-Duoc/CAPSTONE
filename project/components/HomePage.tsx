@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
-import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User } from '../types';
+import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User, DestacadoArticle } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
 import UserSpecialistForm from './UserSpecialistForm';
+import { EntrepreneurshipCard } from './EntrepreneurshipCard';
 
 interface HomePageProps {
     onNavigate: (page: Page, subPage?: string) => void;
     onSelectEntrepreneur: (entrepreneur: Entrepreneurship) => void;
     onSelectSponsor: (sponsor: PremiumSponsor) => void;
     onSelectNewsArticle: (article: NewsArticle) => void;
+    onSelectDestacado: (destacado: DestacadoArticle) => void;
     onSelectJob: (job: Job) => void;
     onSelectPressRelease: (pressRelease: PressRelease) => void;
     onSelectCourse: (course: Course) => void;
@@ -32,6 +34,7 @@ interface HomePageProps {
     fundingOpportunities: FundingOpportunity[];
     events: Event[];
     heroHeading: HeroHeading | null;
+    destacados: DestacadoArticle[];
     shortCollaborations: ShortCollaboration[];
     entrepreneurshipTips: EntrepreneurshipTip[];
     sponsoredAds: SponsoredAd[];
@@ -617,10 +620,10 @@ const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const HomePage: React.FC<HomePageProps> = (props) => {
     const {
-        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
+        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectDestacado, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
         pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
         freelanceServices, photojournalismPosts, events,
-        resources, fundingOpportunities, shareablePhotos, heroHeading, shortCollaborations, entrepreneurshipTips,
+        resources, fundingOpportunities, shareablePhotos, heroHeading, destacados, shortCollaborations, entrepreneurshipTips,
         sponsoredAds, communityAds, specialAds, stats,
         currentUser, onAddPressRelease, onAddSpecialist
     } = props;
@@ -881,7 +884,107 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
     return (
         <div className="bg-background">
+            {/* Hero Section - Floating Card with Inner Gradient - Commented out for now
+            {heroHeading && (
+                <section className="w-full bg-slate-50 py-8 md:py-12 px-3 md:px-6">
+                    <div className="w-full mx-auto max-w-[96%] 2xl:max-w-screen-2xl">
+                        <div className="relative w-full rounded-2xl shadow-2xl shadow-blue-900/20 overflow-hidden flex flex-col items-center justify-center text-center py-20 md:py-28 lg:py-32 px-6 md:px-12 lg:px-20 border border-slate-800 min-h-[50vh] md:min-h-[55vh]">
+                            {/* Editorial Background Image * /}
+                            <img
+                                src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                                alt="Fondo Editorial"
+                                className="absolute inset-0 w-full h-full object-cover opacity-40 object-center mix-blend-luminosity"
+                            />
+
+                            {/* Inner Background Glow / Blur Shapes * /}
+                            <div className="absolute top-[-20%] left-[-10%] w-96 h-96 bg-blue-600/40 rounded-full blur-[120px] pointer-events-none"></div>
+                            <div className="absolute bottom-[-20%] right-[-10%] w-96 h-96 bg-orange-500/30 rounded-full blur-[120px] pointer-events-none"></div>
+
+                            {/* Strong Overlay for Legibility + Elegant Blue Gradient * /}
+                            <div className="absolute inset-0 bg-slate-950/80 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-blue-950/70 to-slate-900/95 pointer-events-none"></div>
+
+                            <div className="relative z-10 flex flex-col items-center w-full max-w-5xl">
+                                <span className="text-orange-400 font-semibold tracking-widest uppercase text-sm md:text-base mb-6 drop-shadow-sm">
+                                    Círculo de Periodistas
+                                </span>
+                                <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold font-serif leading-tight md:leading-tight text-white drop-shadow-2xl break-words">
+                                    {heroHeading.mainText}{' '}
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-amber-500 italic pr-3 pb-3 inline-block">
+                                        {heroHeading.highlightedText}
+                                    </span>
+                                </h1>
+                                {heroHeading.subText && (
+                                    <p className="text-xl md:text-2xl lg:text-3xl mt-8 font-light text-slate-200 max-w-4xl leading-relaxed drop-shadow-md">
+                                        {heroHeading.subText}
+                                    </p>
+                                )}
+                                <div className="mt-12 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                                    <button
+                                        onClick={() => onNavigate('opportunities')}
+                                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-orange-500/50 transition-all duration-300 transform hover:-translate-y-1 text-lg w-full sm:w-auto"
+                                    >
+                                        Explorar Oportunidades
+                                    </button>
+                                    <button
+                                        onClick={() => onNavigate('destacados')}
+                                        className="bg-white/10 hover:bg-white/20 text-white font-semibold py-4 px-10 rounded-full backdrop-blur-sm border border-white/10 transition-all duration-300 text-lg w-full sm:w-auto"
+                                    >
+                                        Leer Destacados
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+            */}
+
             <div className="container mx-auto px-4 space-y-16 py-12">
+
+                {/* Destacados Section */}
+                <section>
+                    <div className="flex justify-between items-center border-b-2 border-primary pb-3 mb-8">
+                        <h2 className="text-3xl md:text-4xl font-bold font-serif text-text-primary">Destacados</h2>
+                        <div className="flex items-center space-x-4">
+                            <button onClick={() => onNavigate('destacados')} className="text-secondary font-medium hover:text-primary transition-colors flex items-center">
+                                Ver todo <span className="ml-1 text-lg">&rarr;</span>
+                            </button>
+                            {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'destacados')} />}
+                        </div>
+                    </div>
+
+                    {destacados && destacados.length > 0 ? (
+                        <div className="space-y-8">
+                            {[destacados[0]].map(destacado => (
+                                <button key={destacado.id} onClick={() => onSelectDestacado(destacado)} className="relative w-full text-left rounded-lg overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-300 block">
+                                    <div className="relative w-full h-[400px] md:h-[500px]">
+                                        <img
+                                            src={destacado.imageUrl || DEFAULT_IMAGE}
+                                            alt={destacado.title}
+                                            onError={handleImageError}
+                                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                    </div>
+                                    <div className="absolute inset-0 p-6 md:p-12 w-full z-10 flex flex-col justify-end pointer-events-none">
+                                        <span className="text-[#F5A623] text-xs md:text-sm font-bold uppercase tracking-widest drop-shadow-md mb-2">
+                                            DESTACADOS:
+                                        </span>
+                                        <h3 className="text-3xl md:text-5xl font-bold font-serif text-[#F5A623] mb-4 drop-shadow-md leading-tight">
+                                            {destacado.title}
+                                        </h3>
+                                        <p className="text-[#F5A623] text-sm md:text-lg max-w-4xl drop-shadow-md font-medium">
+                                            {destacado.summary}
+                                        </p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-text-secondary text-center italic py-8">No hay artículos destacados disponibles en este momento.</p>
+                    )}
+                </section>
 
                 {/* Premium Sponsors Section */}
                 <section>
@@ -1012,6 +1115,45 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 </a>
                             </section>
                         )}
+
+                        {/* Entrepreneurship Section */}
+                        <section>
+                            <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-6">
+                                <h2 className="text-3xl font-bold font-serif text-text-primary">Emprendimientos Periodísticos</h2>
+                                <button onClick={() => onNavigate('entrepreneurship')} className="font-semibold text-secondary hover:underline">Ver repositorio completo &rarr;</button>
+                                {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'entrepreneurs')} />}
+                            </div>
+                            {entrepreneurs && entrepreneurs.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {entrepreneurs.slice(0, 3).map(ent => (
+                                        <EntrepreneurshipCard
+                                            key={ent.id}
+                                            entrepreneurship={ent}
+                                            onPortfolioClick={(url) => window.open(url, '_blank')}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-gray-500 mb-6">Aún no hay emprendimientos en el repositorio.</p>
+                            )}
+
+                            {/* Green Notification Banner */}
+                            <div className="bg-emerald-50 p-5 rounded-lg mt-8 border border-emerald-100 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5">
+                                    <BriefcaseIcon className="w-32 h-32" />
+                                </div>
+                                <div className="z-10">
+                                    <h3 className="font-bold text-lg text-emerald-900 mb-1">¿Tienes un medio, agencia o empresa establecida? Suscríbete gratis.</h3>
+                                    <p className="text-sm text-emerald-700">Conecta con clientes y potencia tu emprendimiento dentro de la comunidad de CiPress.</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsEntrepreneurModalOpen(true)}
+                                    className="z-10 flex-shrink-0 px-6 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors duration-200 shadow-sm"
+                                >
+                                    Sube tu emprendimiento
+                                </button>
+                            </div>
+                        </section>
 
                         {/* Community Activity Section */}
                         <section>
@@ -1237,22 +1379,32 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">Conecta con tu Próxima Oportunidad Laboral</h2>
                             <p className="mt-2 text-lg text-blue-200 max-w-2xl mx-auto">Explora ofertas de trabajo disponibles en el mercado, únete a nuestra base de talentos o promociona tus servicios freelance.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <button onClick={() => onNavigate('opportunities', 'jobs')} className="bg-white/10 p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group">
-                                <div className="inline-block p-4 bg-primary rounded-full mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                            <button onClick={() => onNavigate('opportunities', 'jobs')} className="bg-white/10 p-6 lg:p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group border border-transparent hover:border-white/20 flex flex-col h-full">
+                                <div className="inline-flex justify-center items-center w-16 h-16 bg-[#ff6b35] rounded-full mx-auto mb-6 shadow-lg">
                                     <BriefcaseIcon className="h-8 w-8 text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold font-serif text-white">Revisar Ofertas</h3>
-                                <p className="mt-2 text-blue-200">Encuentra tu próximo desafío profesional en nuestra bolsa de trabajo exclusiva para comunicadores.</p>
-                                <span className="mt-4 inline-block font-semibold text-highlight group-hover:underline">Explorar &rarr;</span>
+                                <h3 className="text-xl font-bold font-serif text-white mb-3 tracking-wide">Revisar Ofertas</h3>
+                                <p className="text-sm lg:text-base text-blue-100/90 leading-relaxed flex-grow">Encuentra tu próximo desafío profesional en nuestra bolsa de trabajo exclusiva para comunicadores.</p>
+                                <span className="mt-6 inline-block font-bold text-[#ffcd38] group-hover:text-yellow-300 transition-colors uppercase text-sm tracking-widest">Explorar &rarr;</span>
                             </button>
-                            <button onClick={() => onNavigate('opportunities', 'talents')} className="bg-white/10 p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group">
-                                <div className="inline-block p-4 bg-accent rounded-full mb-4">
+
+                            <button onClick={() => onNavigate('opportunities', 'talents')} className="bg-white/10 p-6 lg:p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group border border-transparent hover:border-white/20 flex flex-col h-full">
+                                <div className="inline-flex justify-center items-center w-16 h-16 bg-[#8cc63f] rounded-full mx-auto mb-6 shadow-lg">
                                     <UserGroupIcon className="h-8 w-8 text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold font-serif text-white">Banco de Talentos</h3>
-                                <p className="mt-2 text-blue-200">Inscríbete en nuestro directorio de profesionales y deja que las oportunidades te encuentren a ti.</p>
-                                <span className="mt-4 inline-block font-semibold text-highlight group-hover:underline">Inscribirse &rarr;</span>
+                                <h3 className="text-xl font-bold font-serif text-white mb-3 tracking-wide">Banco de Talentos</h3>
+                                <p className="text-sm lg:text-base text-blue-100/90 leading-relaxed flex-grow">Inscríbete en nuestro directorio de profesionales y deja que las oportunidades te encuentren a ti.</p>
+                                <span className="mt-6 inline-block font-bold text-[#ffcd38] group-hover:text-yellow-300 transition-colors uppercase text-sm tracking-widest">Inscribirse &rarr;</span>
+                            </button>
+
+                            <button onClick={() => onNavigate('freelanceServices')} className="bg-white/10 p-6 lg:p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group border border-transparent hover:border-white/20 flex flex-col h-full">
+                                <div className="inline-flex justify-center items-center w-16 h-16 bg-[#ffcd38] rounded-full mx-auto mb-6 shadow-lg">
+                                    <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </div>
+                                <h3 className="text-xl font-bold font-serif text-white mb-3 tracking-wide">Ofrecer Servicios</h3>
+                                <p className="text-sm lg:text-base text-blue-100/90 leading-relaxed flex-grow">¿Eres freelance? Promociona tus servicios de redacción, fotografía, gestión de redes y más.</p>
+                                <span className="mt-6 inline-block font-bold text-[#ffcd38] group-hover:text-yellow-300 transition-colors uppercase text-sm tracking-widest">Publicar &rarr;</span>
                             </button>
                         </div>
                     </div>
@@ -1275,7 +1427,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
-        </div>
+        </div >
     );
 };
 

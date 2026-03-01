@@ -75,24 +75,26 @@ def create_app(config_class=None):
     app.register_blueprint(upload_bp)
 
     from .routes.route_factory import create_crud_blueprint
-    from .models.all_models import (
-        AppConfig, CommunityAd, CommunityPost, Course, Entrepreneurship,
-        EntrepreneurshipTip, Event, FreelanceService, FundingOpportunity,
-        HeroHeading, Job, LegalFAQ, LegalTopic, NewsArticle, NgoSpotlight,
-        PartnerLogo, PhotojournalismPost, PremiumSponsor, PressRelease,
-        PromoVideo, Resource, ShareablePhoto, ShortCollaboration, SiteStat,
-        SpecialAd, Specialist, SponsoredAd, TalentProfile
+    from app.models.all_models import (
+        User, Role, AppConfig, SiteStat, HeroHeading,
+        NewsArticle, PressRelease, PhotojournalismPost, DestacadoArticle,
+        CommunityPost, CommunityAd, ShortCollaboration,
+        Course, Entrepreneurship, EntrepreneurshipTip, Event, FundingOpportunity,
+        Job, FreelanceService,
+        LegalTopic, LegalFAQ, PromoVideo, NgoSpotlight,
+        ShareablePhoto, PartnerLogo, SponsoredAd, PremiumSponsor,
+        TalentProfile, Specialist, SpecialAd, Resource
     )
-    from .schemas.all_schemas import (
-        AppConfigSchema, CommunityAdSchema, CommunityPostSchema, CourseSchema,
-        EntrepreneurshipSchema, EntrepreneurshipTipSchema, EventSchema,
-        FreelanceServiceSchema, FundingOpportunitySchema, HeroHeadingSchema,
-        JobSchema, LegalFAQSchema, LegalTopicSchema, NewsArticleSchema,
-        NgoSpotlightSchema, PartnerLogoSchema, PhotojournalismPostSchema,
-        PremiumSponsorSchema, PressReleaseSchema, PromoVideoSchema,
-        ResourceSchema, ShareablePhotoSchema, ShortCollaborationSchema,
-        SiteStatSchema, SpecialAdSchema, SpecialistSchema, SponsoredAdSchema,
-        TalentProfileSchema
+
+    from app.schemas.all_schemas import (
+        UserSchema, AppConfigSchema, SiteStatSchema, HeroHeadingSchema,
+        NewsArticleSchema, PressReleaseSchema, PhotojournalismPostSchema, DestacadoArticleSchema,
+        CommunityPostSchema, CommunityAdSchema, ShortCollaborationSchema,
+        CourseSchema, EntrepreneurshipSchema, EntrepreneurshipTipSchema, EventSchema, FundingOpportunitySchema,
+        JobSchema, FreelanceServiceSchema,
+        LegalTopicSchema, LegalFAQSchema, PromoVideoSchema, NgoSpotlightSchema,
+        ShareablePhotoSchema, PartnerLogoSchema, SponsoredAdSchema, PremiumSponsorSchema,
+        TalentProfileSchema, SpecialistSchema, SpecialAdSchema, ResourceSchema
     )
 
     modules = [
@@ -109,6 +111,7 @@ def create_app(config_class=None):
         ('jobs', Job, JobSchema, '/api/jobs'),
         ('legal_faqs', LegalFAQ, LegalFAQSchema, '/api/legal-faqs'),
         ('legal_topics', LegalTopic, LegalTopicSchema, '/api/legal-topics'),
+        ('destacados', DestacadoArticle, DestacadoArticleSchema, '/api/destacados'),
         ('news_articles', NewsArticle, NewsArticleSchema, '/api/news-articles'),
         ('ngo_spotlights', NgoSpotlight, NgoSpotlightSchema, '/api/ngo-spotlights'),
         ('partner_logos', PartnerLogo, PartnerLogoSchema, '/api/partner-logos'),

@@ -4,12 +4,14 @@ from app import create_app
 from app.extensions import db
 from werkzeug.security import generate_password_hash
 from app.models.all_models import (
-    AppConfig, User, Role, HeroHeading, NewsArticle, PressRelease, 
-    PhotojournalismPost, CommunityPost, CommunityAd, ShortCollaboration, 
-    Event, Course, Entrepreneurship, EntrepreneurshipTip, FundingOpportunity, 
-    Job, FreelanceService, LegalTopic, LegalFAQ, PromoVideo, NgoSpotlight, 
-    ShareablePhoto, PartnerLogo, SponsoredAd, PremiumSponsor, TalentProfile, 
-    Specialist, SpecialAd, Resource, SiteStat
+    User, Role, AppConfig, SiteStat, HeroHeading,
+    NewsArticle, PressRelease, PhotojournalismPost, DestacadoArticle,
+    CommunityPost, CommunityAd, ShortCollaboration,
+    Course, Entrepreneurship, EntrepreneurshipTip, Event, FundingOpportunity,
+    Job, FreelanceService,
+    LegalTopic, LegalFAQ, PromoVideo, NgoSpotlight,
+    ShareablePhoto, PartnerLogo, SponsoredAd, PremiumSponsor,
+    TalentProfile, Specialist, SpecialAd, Resource
 )
 
 def create_db():
@@ -196,18 +198,23 @@ def create_db():
         # --- ENTREPRENEURSHIP ---
         ents = [
             {
-                "name": "La Pública", "type": "Micromedio", "founder": "Ana González", "location": "Santiago",
-                "specialty": "Investigación", "image_url": "https://picsum.photos/seed/public-square-life/1200/800",
-                "description": "Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.",
-                "report_author": "Catalina Riquelme", "report_date": "18 de Julio, 2024",
-                "report_content": json.dumps([
-                    {"type": "paragraph", "text": "En un ecosistema mediático a menudo saturado..."},
-                    {"type": "quote", "text": "Nuestro compromiso no es con la primicia, sino con la verdad."}
-                ])
+                "name": "Redacción de Artículos SEO", "type": "Agencia", "founder": "Equipo Central", "location": "Santiago",
+                "specialty": "Redacción", "image_url": "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                "description": "Contenido optimizado para posicionar tu marca en buscadores de forma orgánica.",
+                "portfolio_url": "#", "rating": 4.8, "review_count": 22
             },
-            {"name": "Contenido Central", "type": "Agencia", "founder": "Carlos Pérez", "location": "Santiago", "specialty": "Cultura", "image_url": "https://picsum.photos/seed/ent2/400/225", "description": "Agencia de comunicaciones que crea contenido estratégico."},
-            {"name": "Relatos del Sur", "type": "Productora", "founder": "María Inés Soto", "location": "Concepción", "specialty": "Local", "image_url": "https://picsum.photos/seed/ent3/400/225", "description": "Productora audiovisual especializada en documentales."},
-            {"name": "Deportes Al Instante", "type": "Micromedio", "founder": "Javier Rojas", "location": "Valparaíso", "specialty": "Deportes", "image_url": "https://picsum.photos/seed/ent4/400/225", "description": "Plataforma digital con cobertura minuto a minuto."}
+            {
+                "name": "Corrección de Estilo Académico", "type": "Corrección", "founder": "María Inés", "location": "Remoto", 
+                "specialty": "Edición", "image_url": "https://images.unsplash.com/photo-1455390582262-044cdead27d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80", 
+                "description": "Garantizamos claridad y coherencia en tus textos académicos y profesionales.",
+                "portfolio_url": "#", "rating": 4.9, "review_count": 15
+            },
+            {
+                "name": "Fotografía de Eventos Corporativos", "type": "Productora", "founder": "Estudio Luz", "location": "Concepción", 
+                "specialty": "Fotografía", "image_url": "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80", 
+                "description": "Capturamos los momentos clave de tus eventos para destacar la imagen de tu empresa.",
+                "portfolio_url": "#", "rating": 5.0, "review_count": 31
+            }
         ]
         for e in ents:
             db.session.add(Entrepreneurship(**e))
@@ -264,9 +271,9 @@ def create_db():
 
         # --- FREELANCE SERVICES ---
         services = [
-            {"service": "Redacción de Artículos SEO", "provider": "Camila Rojas", "category": "Redacción", "rate": "$30.000 / artículo", "image_url": "https://picsum.photos/seed/freelance1/400/225", "description": "Contenido optimizado para posicionar tu marca.", "portfolio_url": "https://www.linkedin.com/", "rating_average": 6.5, "rating_count": 22},
-            {"service": "Corrección de Estilo Académico", "provider": "Javier Fuentes", "category": "Corrección", "rate": "$15.000 / 1000 palabras", "image_url": "https://picsum.photos/seed/freelance2/400/225", "description": "Garantizamos claridad y coherencia.", "portfolio_url": "https://www.instagram.com/", "rating_average": 6.8, "rating_count": 15},
-            {"service": "Fotografía de Eventos", "provider": "Andrea López", "category": "Fotografía", "rate": "$80.000 / hora", "image_url": "https://picsum.photos/seed/freelance3/400/225", "description": "Capturamos los momentos clave de tus eventos.", "portfolio_url": "https://www.youtube.com/", "rating_average": 7.0, "rating_count": 31}
+            {"service": "Redacción de Artículos SEO", "provider": "Camila Rojas", "category": "Redacción", "image_url": "https://picsum.photos/seed/freelance1/400/225", "description": "Contenido optimizado para posicionar tu marca y mejorar el tráfico orgánico.", "linkedin_url": "https://www.linkedin.com/in/camila-rojas-ejemplo"},
+            {"service": "Corrección de Estilo Académico", "provider": "Javier Fuentes", "category": "Corrección", "image_url": "https://picsum.photos/seed/freelance2/400/225", "description": "Garantizamos claridad, coherencia y adecuación al formato en tesis y ensayos.", "linkedin_url": "https://www.linkedin.com/in/javier-fuentes-ejemplo"},
+            {"service": "Fotografía de Eventos Periodísticos", "provider": "Andrea López", "category": "Fotografía", "image_url": "https://picsum.photos/seed/freelance3/400/225", "description": "Capturamos los momentos clave de tus eventos, conferencias de prensa y entrevistas.", "linkedin_url": "https://www.linkedin.com/in/andrea-lopez-ejemplo"}
         ]
         for s in services:
             db.session.add(FreelanceService(**s))
@@ -439,6 +446,13 @@ def create_db():
         ]
         for tp in talents:
             db.session.add(TalentProfile(**tp))
+
+        # --- DESTACADO ARTICLES ---
+        destacados = [
+            {"title": "Cipress Lanza Nueva Plataforma", "category": "Institucional", "author": "Equipo Cipress", "date": "24 Oct, 2023", "image_url": "https://picsum.photos/seed/destacado1/800/600", "summary": "Una nueva era para el periodismo emprendedor en Chile y Latinoamérica.", "report_content": "Contenido completo de la noticia destacada..."}
+        ]
+        for dest in destacados:
+            db.session.add(DestacadoArticle(**dest))
 
         # --- COMMUNITY ADS ---
         ads = [

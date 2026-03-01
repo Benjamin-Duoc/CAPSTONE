@@ -10,6 +10,11 @@ interface NewsDetailPageProps {
 const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
 
     const renderContent = () => {
+        // Fallback for legacy DB records where reportContent might be a plain string
+        if (typeof article.reportContent === 'string') {
+            return <p className="text-lg text-text-secondary mb-6 leading-relaxed whitespace-pre-wrap">{article.reportContent}</p>;
+        }
+
         const content = Array.isArray(article.reportContent) ? article.reportContent : [];
 
         if (!content.length) {
@@ -54,13 +59,13 @@ const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
 
                 <article>
                     <header className="mb-12">
-                         <div className="w-full h-96 overflow-hidden rounded-lg shadow-2xl mb-8">
-                            <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover"/>
+                        <div className="w-full h-96 overflow-hidden rounded-lg shadow-2xl mb-8">
+                            <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
                         </div>
                         <p className="text-base font-bold uppercase tracking-wider text-accent">{article.category}</p>
                         <h1 className="text-4xl md:text-6xl font-black font-serif text-text-primary mt-2">{article.title}</h1>
                         <p className="text-xl text-text-secondary mt-4 max-w-3xl">{article.summary}</p>
-                        
+
                         <div className="mt-6 flex items-center text-sm text-text-secondary border-t border-b border-gray-200 py-4">
                             <img src={`https://i.pravatar.cc/40?u=${article.author}`} alt={article.author} className="w-10 h-10 rounded-full mr-4" />
                             <div>
@@ -69,12 +74,12 @@ const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
                             </div>
                         </div>
                     </header>
-                    
+
                     <div className="max-w-4xl mx-auto">
                         <div className="prose lg:prose-xl">
-                             {renderContent()}
+                            {renderContent()}
                         </div>
-                       
+
                         <div className="mt-12 pt-8 border-t border-gray-200 text-center">
                             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500">Compartir Artículo</h4>
                             <div className="flex justify-center space-x-4 mt-3">

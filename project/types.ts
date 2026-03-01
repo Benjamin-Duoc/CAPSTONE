@@ -1,4 +1,4 @@
-export type Page = 'home' | 'courses' | 'entrepreneurship' | 'opportunities' | 'analysis' | 'contact' | 'community-ads' | 'specialists' | 'photo-gallery' | 'resources' | 'funding' | 'events' | 'legal' | 'photojournalism' | 'admin' | 'press-releases' | 'about' | 'privacy-policy' | 'terms-of-service' | 'community-post' | 'register' | 'login' | 'upload-press-release' | 'free-collaborator' | 'premium-collaborator' | 'client-company';
+export type Page = 'home' | 'courses' | 'opportunities' | 'analysis' | 'community-ads' | 'specialists' | 'photo-gallery' | 'photojournalism' | 'resources' | 'funding' | 'events' | 'legal' | 'premium-collaborator' | 'free-collaborator' | 'client-company' | 'login' | 'register' | 'about' | 'privacy-policy' | 'terms-of-service' | 'admin' | 'press-releases' | 'upload-press-release' | 'community-post' | 'destacados' | 'entrepreneurship' | 'freelanceServices';
 
 export interface User {
     id: number;
@@ -39,6 +39,17 @@ export interface Course {
     accessLink: string;
 }
 
+export interface DestacadoArticle {
+    id: number;
+    title: string;
+    category: string;
+    author: string;
+    date: string;
+    imageUrl: string;
+    summary: string;
+    reportContent?: ReportContentItem[];
+}
+
 export interface Job {
     id: number;
     title: string;
@@ -55,15 +66,15 @@ export interface Job {
 export interface Entrepreneurship {
     id: number;
     name: string;
-    type: 'Micromedio' | 'Agencia' | 'Productora';
+    type: 'Micromedio' | 'Agencia' | 'Productora' | 'Corrección' | string;
     founder: string;
     location: string;
-    specialty: 'Investigación' | 'Cultura' | 'Deportes' | 'Local';
+    specialty: 'Investigación' | 'Cultura' | 'Deportes' | 'Local' | 'Redacción' | 'Edición' | 'Fotografía' | string;
     imageUrl: string;
     description: string;
-    reportContent?: ReportContentItem[];
-    reportAuthor?: string;
-    reportDate?: string;
+    portfolioUrl: string;
+    rating: number;
+    reviewCount: number;
 }
 
 export interface NewsArticle {
@@ -105,14 +116,9 @@ export interface FreelanceService {
     service: string;
     provider: string;
     category: 'Redacción' | 'Corrección' | 'Fotografía' | 'Community Management' | 'Locución';
-    rate: string;
     imageUrl: string;
     description: string;
-    portfolioUrl: string;
-    rating: {
-        average: number;
-        count: number;
-    };
+    linkedinUrl: string;
 }
 
 export interface CommunityAd {

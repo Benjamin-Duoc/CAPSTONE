@@ -205,7 +205,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ content, onChange }) => {
             </div>
 
             <div className="space-y-2">
-                {content.length === 0 ? (
+                {!Array.isArray(content) || content.length === 0 ? (
                     <p className="text-center text-gray-400 py-8 border-2 border-dashed border-gray-200 rounded-lg">
                         No hay contenido. Añade párrafos, imágenes o citas.
                     </p>
