@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.services.user_service import UserService
 from app.schemas.all_schemas import UserSchema
 
@@ -25,6 +25,9 @@ def login():
     data = request.get_json()
     try:
         user = service.authenticate(data.get('email'), data.get('password'))
+        session['user_id'] = user.id
+        session['user_role'] = getattr(user, 'role', None)
+        session.permanent = True  # Para que la cookie persista si está configurada así
         return jsonify({
             "success": True,
             "message": "Login exitoso",
@@ -61,3 +64,8 @@ def delete(user_id):
 def get_all():
     users = service.get_all_users()
     return jsonify(list_schema.dump(users)), 200
+
+@user_bp.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return jsonify({"success": True, "message": "Logout exitoso"}), 200

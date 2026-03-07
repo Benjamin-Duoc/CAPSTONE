@@ -302,7 +302,7 @@ export const premiumSponsors: PremiumSponsor[] = [
   },
   {
     id: 2,
-    name: 'Banco Futuro',
+    name: 'Cliente Prueba',
     tagline: 'La banca para los que innovan',
     imageUrl: 'https://picsum.photos/seed/premium2/500/300',
     ctaText: 'Conoce nuestros planes',

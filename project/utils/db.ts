@@ -68,7 +68,8 @@ export const uploadImage = async (file: File, folder: string = 'images'): Promis
 
     const res = await fetch(`${API_BASE}/upload`, {
       method: 'POST',
-      body: formData
+      body: formData,
+      credentials: 'include'
     });
 
     if (!res.ok) throw new Error('Upload failed');
@@ -81,7 +82,7 @@ export const uploadImage = async (file: File, folder: string = 'images'): Promis
 
 const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> => {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`);
+    const res = await fetch(`${API_BASE}${endpoint}`, { credentials: 'include' });
     if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
     const data = await res.json();
     return keysToCamel(data);
@@ -94,7 +95,7 @@ const fetchList = async <T>(endpoint: string, fallback: T[] = []): Promise<T[]> 
 
 const fetchOne = async <T>(endpoint: string, fallback: T | null = null): Promise<T | null> => {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`);
+    const res = await fetch(`${API_BASE}${endpoint}`, { credentials: 'include' });
     if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
     const data = await res.json();
     return keysToCamel(data);
@@ -108,7 +109,8 @@ const createItem = async <T>(endpoint: string, item: any): Promise<T> => {
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(keysToSnake(item))
+    body: JSON.stringify(keysToSnake(item)),
+    credentials: 'include'
   });
   if (!res.ok) throw new Error(`Failed to create item in ${endpoint}`);
   const data = await res.json();
@@ -120,7 +122,8 @@ const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: 'POST', // Using POST for save/update as per controller logic
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(keysToSnake(item))
+    body: JSON.stringify(keysToSnake(item)),
+    credentials: 'include'
   });
   if (!res.ok) throw new Error(`Failed to update item in ${endpoint}`);
   const data = await res.json();
@@ -129,7 +132,8 @@ const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
 
 const deleteItem = async (endpoint: string, id: number | string): Promise<void> => {
   const res = await fetch(`${API_BASE}${endpoint}/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    credentials: 'include'
   });
   if (!res.ok) throw new Error(`Failed to delete item in ${endpoint}`);
 };
@@ -168,6 +172,7 @@ export const registerUser = async (data: Partial<User>): Promise<{ success: bool
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(keysToSnake(data)),
+      credentials: 'include'
     });
     const result = await response.json();
     return keysToCamel(result);
@@ -183,6 +188,7 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
+      credentials: 'include'
     });
     const result = await response.json();
     return keysToCamel(result);
@@ -194,7 +200,7 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
-    const response = await fetch(`${API_BASE}/users`);
+    const response = await fetch(`${API_BASE}/users`, { credentials: 'include' });
     if (!response.ok) throw new Error('Failed to fetch users');
     const data = await response.json();
     return keysToCamel(data);
@@ -210,6 +216,7 @@ export const updateUser = async (user: User): Promise<{ success: boolean; messag
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(keysToSnake(user)),
+      credentials: 'include'
     });
     const data = await response.json();
     return keysToCamel(data);
@@ -223,6 +230,7 @@ export const deleteUser = async (id: number): Promise<{ success: boolean; messag
   try {
     const response = await fetch(`${API_BASE}/users/${id}`, {
       method: 'DELETE',
+      credentials: 'include'
     });
     return await response.json();
   } catch (error) {

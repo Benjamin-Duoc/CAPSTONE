@@ -6,10 +6,10 @@ interface UserHeaderProps {
     user: User;
     userTypeLabel: string;
     onLogout: () => void;
-    onEditProfile?: () => void;
+    onNavigate?: (page: string) => void;
 }
 
-const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout, onEditProfile }) => {
+const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout, onNavigate }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -41,15 +41,16 @@ const UserHeader: React.FC<UserHeaderProps> = ({ user, userTypeLabel, onLogout, 
                         <button
                             onClick={() => {
                                 setIsMenuOpen(false);
-                                if (onEditProfile) onEditProfile();
+                                if (onNavigate) onNavigate('dashboard');
                             }}
-                            className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                            className="block w-full text-left px-4 py-2 text-sm font-semibold text-text-primary hover:text-primary hover:bg-gray-50 transition-colors"
                         >
-                            Mi Perfil
+                            Mi Panel
                         </button>
+                        
                         <button
                             onClick={onLogout}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 border-t border-gray-100"
                         >
                             Cerrar sesión
                         </button>

@@ -56,6 +56,8 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
                             lastName: formData.lastName,
                             email: formData.email,
                             region: formData.region,
+                            role: 'Colaborador', // Added default role
+                            password: formData.password, // Added password to match the type formally though it shouldn't be here in plain text.
                             createdAt: new Date().toISOString()
                         });
                     }

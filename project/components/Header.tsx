@@ -71,11 +71,11 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                             <button
                                                 onClick={() => {
                                                     setShowUserMenu(false);
-                                                    if (onEditProfile) onEditProfile();
+                                                    onNavigate('dashboard');
                                                 }}
-                                                className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+                                                className="block w-full text-left px-4 py-2 text-sm font-semibold text-text-primary hover:text-primary hover:bg-gray-50 transition-colors bg-surface border-y border-gray-100"
                                             >
-                                                Editar mi perfil
+                                                Mi Panel
                                             </button>
 
                                             {(() => {

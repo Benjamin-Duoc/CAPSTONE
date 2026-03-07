@@ -84,6 +84,7 @@ class NewsArticle(db.Model):
 class PressRelease(db.Model):
     __tablename__ = 'press_release'
     id = db.Column(db.Integer, primary_key=True)
+    author_user_id = db.Column(db.Integer, nullable=True)
     title = db.Column(db.String)
     institution = db.Column(db.String)
     author = db.Column(db.String)
@@ -326,6 +327,7 @@ class SponsoredAd(db.Model):
 class PremiumSponsor(db.Model):
     __tablename__ = 'premium_sponsor'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True) # Linked User
     name = db.Column(db.String)
     tagline = db.Column(db.String)
     image_url = db.Column(db.String)

@@ -1,4 +1,4 @@
-export type Page = 'home' | 'courses' | 'opportunities' | 'analysis' | 'community-ads' | 'specialists' | 'photo-gallery' | 'photojournalism' | 'resources' | 'funding' | 'events' | 'legal' | 'premium-collaborator' | 'free-collaborator' | 'client-company' | 'login' | 'register' | 'about' | 'privacy-policy' | 'terms-of-service' | 'admin' | 'press-releases' | 'upload-press-release' | 'community-post' | 'destacados' | 'entrepreneurship' | 'freelanceServices';
+export type Page = 'home' | 'courses' | 'opportunities' | 'analysis' | 'community-ads' | 'specialists' | 'photo-gallery' | 'photojournalism' | 'resources' | 'funding' | 'events' | 'legal' | 'premium-collaborator' | 'free-collaborator' | 'client-company' | 'login' | 'register' | 'about' | 'privacy-policy' | 'terms-of-service' | 'admin' | 'press-releases' | 'upload-press-release' | 'community-post' | 'destacados' | 'entrepreneurship' | 'freelanceServices' | 'mi-espacio';
 
 export interface User {
     id: number;
@@ -90,6 +90,7 @@ export interface NewsArticle {
 
 export interface PressRelease {
     id: number;
+    authorUserId?: number;
     title: string;
     institution: string;
     author: string;
@@ -133,6 +134,7 @@ export interface CommunityAd {
 
 export interface PremiumSponsor {
     id: number;
+    userId?: number;
     name: string;
     tagline: string;
     imageUrl: string;

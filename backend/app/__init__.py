@@ -74,6 +74,9 @@ def create_app(config_class=None):
     from .routes.upload_routes import upload_bp
     app.register_blueprint(upload_bp)
 
+    from .routes.sponsor_routes import sponsor_bp
+    app.register_blueprint(sponsor_bp)
+
     from .routes.route_factory import create_crud_blueprint
     from app.models.all_models import (
         User, Role, AppConfig, SiteStat, HeroHeading,
@@ -116,7 +119,6 @@ def create_app(config_class=None):
         ('ngo_spotlights', NgoSpotlight, NgoSpotlightSchema, '/api/ngo-spotlights'),
         ('partner_logos', PartnerLogo, PartnerLogoSchema, '/api/partner-logos'),
         ('photojournalism_posts', PhotojournalismPost, PhotojournalismPostSchema, '/api/photojournalism-posts'),
-        ('premium_sponsors', PremiumSponsor, PremiumSponsorSchema, '/api/premium-sponsors'),
         ('press_releases', PressRelease, PressReleaseSchema, '/api/press-releases'),
         ('promo_videos', PromoVideo, PromoVideoSchema, '/api/promo-videos'),
         ('resources', Resource, ResourceSchema, '/api/resources'),

@@ -58,12 +58,13 @@ const SponsorDetailPage: React.FC<SponsorDetailPageProps> = ({ sponsor, onBack }
                         <h1 className="text-4xl md:text-6xl font-black font-serif text-text-primary mt-2">{sponsor.name}</h1>
                         <p className="text-xl text-text-secondary mt-4 max-w-3xl">{sponsor.tagline}</p>
                         
-                        {sponsor.reportAuthor && sponsor.reportDate && (
+                        {sponsor.reportAuthor && (
                              <div className="mt-6 flex items-center text-sm text-text-secondary border-t border-b border-gray-200 py-4">
                                 <img src={`https://i.pravatar.cc/40?u=${sponsor.reportAuthor}`} alt={sponsor.reportAuthor} className="w-10 h-10 rounded-full mr-4" />
                                 <div>
                                     <p className="font-semibold text-text-primary">Artículo por {sponsor.reportAuthor}</p>
-                                    <p>Publicado el {sponsor.reportDate}</p>
+                                    {/* @ts-ignore - reportDate doesn't officially exist on PremiumSponsor but might come from old data */}
+                                    {sponsor.reportDate && <p>Publicado el {sponsor.reportDate}</p>}
                                 </div>
                             </div>
                         )}

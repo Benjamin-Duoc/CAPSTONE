@@ -241,6 +241,7 @@ def create_db():
         # --- PRESS RELEASES ---
         prs = [
             {
+                "author_user_id": 1,
                 "title": "Gobierno Regional Lanza Nueva Plataforma de Transparencia Activa",
                 "institution": "Gobierno Regional Metropolitano", "author": "Comunicaciones GORE", "date": "20 de Julio, 2024",
                 "image_url": "https://picsum.photos/seed/pr1/400/225",
@@ -287,12 +288,16 @@ def create_db():
                 "report_content": json.dumps([{"type": "paragraph", "text": "En Tech Solutions creemos que el futuro del periodismo es digital..."}])
             },
             {
-                "name": "Banco Futuro", "tagline": "La banca para los que innovan", "image_url": "https://picsum.photos/seed/premium2/500/300",
+                "user_id": 5,
+                "name": "Cliente Prueba", "tagline": "La banca para los que innovan", "image_url": "https://picsum.photos/seed/premium2/500/300",
                 "cta_text": "Conoce nuestros planes", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300",
                 "report_author": "Daniela Vega", "report_date": "24 de Julio, 2024",
                 "report_content": json.dumps([{"type": "paragraph", "text": "Banco Futuro se establece como el aliado financiero..."}])
             },
-            {"name": "Innovate Latam", "tagline": "Conectando startups con el mundo", "image_url": "https://picsum.photos/seed/premium3/500/300", "cta_text": "Únete al ecosistema", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300"}
+            {
+                "user_id": 6,
+                "name": "Innovate Latam", "tagline": "Conectando startups con el mundo", "image_url": "https://picsum.photos/seed/premium3/500/300", "cta_text": "Únete al ecosistema", "cta_link": "#", "name_color": "#FFFFFF", "cta_color": "#FFC300"
+            }
         ]
         for sp in sponsors:
             db.session.add(PremiumSponsor(**sp))

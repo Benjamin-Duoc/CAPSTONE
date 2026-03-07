@@ -5,6 +5,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         load_instance = True
+        include_fk = True
         exclude = ('password_hash',)
 
 class AppConfigSchema(ma.SQLAlchemyAutoSchema):
@@ -132,6 +133,7 @@ class PremiumSponsorSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = PremiumSponsor
         load_instance = True
+        include_fk = True
 
 class TalentProfileSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

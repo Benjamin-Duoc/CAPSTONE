@@ -33,8 +33,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLoginSuccess, retur
             if (onLoginSuccess) {
                 onLoginSuccess(result.user);
             }
-            // Navigate back to the previous page or home immediately
-            onNavigate(returnTo || 'home');
         } else {
             setError(result.message);
         }

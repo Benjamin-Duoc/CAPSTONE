@@ -30,11 +30,7 @@ import CommunityPostPage from './components/CommunityPostPage';
 import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
-import FreeCollaboratorPage from './components/FreeCollaboratorPage';
-import PremiumCollaboratorPage from './components/PremiumCollaboratorPage';
-import ClientCompanyPage from './components/ClientCompanyPage';
-import UserProfileModal from './components/UserProfileModal';
-import DestacadosModule from './components/DestacadosModule';
+import UserDashboard from './components/UserDashboard';
 
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo, DestacadoArticle } from './types';
 
@@ -89,7 +85,7 @@ const App: React.FC = () => {
 
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [showProfileModal, setShowProfileModal] = useState(false);
+
 
   const isAdminUser = (user: User | null) => {
     if (!user) return false;
@@ -107,12 +103,6 @@ const App: React.FC = () => {
     // Role-based navigation
     if (isAdminUser(user)) {
       handleNavigate('admin');
-    } else if (user.role === 'Colaborador') {
-      handleNavigate('free-collaborator');
-    } else if (user.role === 'Cliente') {
-      handleNavigate('premium-collaborator');
-    } else if (user.role === 'Empresa') {
-      handleNavigate('client-company');
     } else {
       handleNavigate(returnToPage || 'home');
     }
@@ -513,10 +503,20 @@ const App: React.FC = () => {
       case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} />;
       case 'register': return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
       case 'login': return <LoginPage onNavigate={handleNavigate} returnTo={returnToPage} onLoginSuccess={handleLogin} />;
-      case 'free-collaborator': return currentUser?.role === 'Colaborador' ? <FreeCollaboratorPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="free-collaborator" onLoginSuccess={handleLogin} />;
-      case 'premium-collaborator': return currentUser?.role === 'Cliente' ? <PremiumCollaboratorPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="premium-collaborator" onLoginSuccess={handleLogin} />;
-      case 'client-company': return currentUser?.role === 'Empresa' ? <ClientCompanyPage currentUser={currentUser} onLogout={handleLogout} onEditProfile={() => setShowProfileModal(true)} /> : <LoginPage onNavigate={handleNavigate} returnTo="client-company" onLoginSuccess={handleLogin} />;
-      case 'upload-press-release': return <PressReleaseUploadPage onNavigate={handleNavigate} onAddPressRelease={handleAddPressRelease} currentUser={currentUser} />;
+      case 'dashboard': 
+        return currentUser ? <UserDashboard 
+          currentUser={currentUser} 
+          onLogout={handleLogout} 
+          onNavigate={handleNavigate} 
+          onUpdateProfile={handleUpdateProfile}
+          premiumSponsors={premiumSponsors}
+          onAddSponsor={handleAddSponsor}
+          onUpdateSponsor={handleUpdateSponsor}
+          pressReleases={pressReleases}
+          onAddPressRelease={handleAddPressRelease}
+          onUpdatePressRelease={handleUpdatePressRelease}
+          onDeletePressRelease={handleDeletePressRelease}
+        /> : <LoginPage onNavigate={handleNavigate} returnTo="dashboard" onLoginSuccess={handleLogin} />;
       case 'home':
       default:
         return <HomePage
@@ -569,7 +569,6 @@ const App: React.FC = () => {
           isAdminMode={isAdminMode}
           currentUser={currentUser}
           onLogout={handleLogout}
-          onEditProfile={() => setShowProfileModal(true)}
         />
       )}
 
@@ -581,13 +580,6 @@ const App: React.FC = () => {
         <Footer onNavigate={handleNavigate} partnerLogos={partnerLogos} />
       )}
 
-      {showProfileModal && currentUser && (
-        <UserProfileModal
-          user={currentUser}
-          onSave={handleUpdateProfile}
-          onClose={() => setShowProfileModal(false)}
-        />
-      )}
     </div>
   );
 };
