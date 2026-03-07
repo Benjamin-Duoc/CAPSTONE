@@ -269,6 +269,11 @@ const App: React.FC = () => {
   const handleUpdateEntrepreneur = async (item: Entrepreneurship) => { try { const res = await updateEntrepreneur(item); setEntrepreneurs(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating entrepreneur"); } };
   const handleDeleteEntrepreneur = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteEntrepreneur(id); setEntrepreneurs(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting entrepreneur"); } } };
 
+  // Freelance Services
+  const handleAddFreelanceService = async (item: Omit<FreelanceService, 'id'>) => { try { const res = await createFreelanceService(item); setFreelanceServices(prev => [...prev, res]); } catch (e) { alert("Error creating freelance service"); } };
+  const handleUpdateFreelanceService = async (item: FreelanceService) => { try { const res = await updateFreelanceService(item); setFreelanceServices(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating freelance service"); } };
+  const handleDeleteFreelanceService = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deleteFreelanceService(id); setFreelanceServices(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting freelance service"); } } };
+
   // News
   const handleAddNewsArticle = async (item: Omit<NewsArticle, 'id'>) => { try { const res = await createNews(item); setNewsArticles(prev => [res, ...prev]); } catch (e) { alert("Error creating news"); } };
   const handleUpdateNewsArticle = async (item: NewsArticle) => { try { const res = await updateNews(item); setNewsArticles(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating news"); } };
@@ -464,6 +469,7 @@ const App: React.FC = () => {
           initialSection={initialTab}
           courses={courses} onAddCourse={handleAddCourse} onUpdateCourse={handleUpdateCourse} onDeleteCourse={handleDeleteCourse}
           jobs={jobs} onAddJob={handleAddJob} onUpdateJob={handleUpdateJob} onDeleteJob={handleDeleteJob}
+          freelanceServices={freelanceServices} onAddFreelanceService={handleAddFreelanceService} onUpdateFreelanceService={handleUpdateFreelanceService} onDeleteFreelanceService={handleDeleteFreelanceService}
           entrepreneurs={entrepreneurs} onAddEntrepreneur={handleAddEntrepreneur} onUpdateEntrepreneur={handleUpdateEntrepreneur} onDeleteEntrepreneur={handleDeleteEntrepreneur}
           newsArticles={newsArticles} onAddNewsArticle={handleAddNewsArticle} onUpdateNewsArticle={handleUpdateNewsArticle} onDeleteNewsArticle={handleDeleteNewsArticle}
           destacados={destacados} onAddDestacado={handleAddDestacado} onUpdateDestacado={handleUpdateDestacado} onDeleteDestacado={handleDeleteDestacado}

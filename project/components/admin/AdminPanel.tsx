@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import type { Course, Job, Entrepreneurship, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, FundingOpportunity, Specialist, ShareablePhoto, ShortCollaboration, PressRelease, EntrepreneurshipTip, SponsoredAd, SpecialAd, CommunityPost, Event, SiteStat, PartnerLogo, TalentProfile, User, DestacadoArticle } from '../../types';
+import type { Course, Job, Entrepreneurship, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, FundingOpportunity, Specialist, ShareablePhoto, ShortCollaboration, PressRelease, EntrepreneurshipTip, SponsoredAd, SpecialAd, CommunityPost, Event, SiteStat, PartnerLogo, TalentProfile, User, DestacadoArticle, FreelanceService } from '../../types';
 import CourseForm from './CourseForm';
 import JobForm from './JobForm';
 import EntrepreneurForm from './EntrepreneurForm';
+import FreelanceServiceForm from './FreelanceServiceForm';
 import NewsArticleForm from './NewsArticleForm';
 import DestacadoArticleForm from './DestacadoArticleForm';
 import SponsorForm from './SponsorForm';
@@ -35,6 +36,10 @@ interface AdminPanelProps {
     onAddJob: (job: Omit<Job, 'id'>) => void;
     onUpdateJob: (job: Job) => void;
     onDeleteJob: (id: number) => void;
+    freelanceServices: FreelanceService[];
+    onAddFreelanceService: (service: Omit<FreelanceService, 'id'>) => void;
+    onUpdateFreelanceService: (service: FreelanceService) => void;
+    onDeleteFreelanceService: (id: number) => void;
     entrepreneurs: Entrepreneurship[];
     onAddEntrepreneur: (entrepreneur: Omit<Entrepreneurship, 'id'>) => void;
     onUpdateEntrepreneur: (entrepreneur: Entrepreneurship) => void;
@@ -113,7 +118,7 @@ interface AdminPanelProps {
     onDeleteUser: (id: number) => void;
 }
 
-type ManagedSection = 'courses' | 'jobs' | 'entrepreneurs' | 'news' | 'destacados' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | 'users' | null;
+type ManagedSection = 'courses' | 'jobs' | 'freelanceServices' | 'entrepreneurs' | 'news' | 'destacados' | 'sponsors' | 'pressReleases' | 'headings' | 'photojournalism' | 'funding' | 'specialists' | 'shareablePhotos' | 'collaborations' | 'entrepreneurshipTips' | 'sponsoredAds' | 'specialAds' | 'communityPosts' | 'events' | 'stats' | 'partnerLogos' | 'talentProfiles' | 'settings' | 'users' | null;
 
 const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     // Usamos la inicialización mejorada del MAIN
@@ -128,6 +133,9 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
     const [editingJob, setEditingJob] = useState<Job | null>(null);
     const [isJobFormOpen, setIsJobFormOpen] = useState(false);
+
+    const [editingFreelanceService, setEditingFreelanceService] = useState<FreelanceService | null>(null);
+    const [isFreelanceServiceFormOpen, setIsFreelanceServiceFormOpen] = useState(false);
 
     const [editingEntrepreneur, setEditingEntrepreneur] = useState<Entrepreneurship | null>(null);
     const [isEntrepreneurFormOpen, setIsEntrepreneurFormOpen] = useState(false);
@@ -225,6 +233,23 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
             props.onAddJob(job);
         }
         setIsJobFormOpen(false);
+    };
+
+    const handleAddNewFreelanceService = () => {
+        setEditingFreelanceService(null);
+        setIsFreelanceServiceFormOpen(true);
+    };
+    const handleEditFreelanceService = (service: FreelanceService) => {
+        setEditingFreelanceService(service);
+        setIsFreelanceServiceFormOpen(true);
+    };
+    const handleSaveFreelanceService = (service: FreelanceService | Omit<FreelanceService, 'id'>) => {
+        if ('id' in service) {
+            props.onUpdateFreelanceService(service as FreelanceService);
+        } else {
+            props.onAddFreelanceService(service);
+        }
+        setIsFreelanceServiceFormOpen(false);
     };
 
     const handleAddNewEntrepreneur = () => {
@@ -654,6 +679,40 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <button onClick={() => handleEditJob(job)} className="text-indigo-600 hover:text-indigo-900">Editar</button>
                                                 <button onClick={() => props.onDeleteJob(job.id)} className="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case 'freelanceServices':
+                return (
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold">Servicios Freelance</h2>
+                            <button onClick={handleAddNewFreelanceService} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Servicio</button>
+                        </div>
+                        <div className="overflow-x-auto bg-surface rounded-lg shadow">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsable</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-surface divide-y divide-gray-200">
+                                    {props.freelanceServices.map(item => (
+                                        <tr key={item.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.service}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.provider}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button onClick={() => handleEditFreelanceService(item)} className="text-indigo-600 hover:text-indigo-900">Editar</button>
+                                                <button onClick={() => props.onDeleteFreelanceService(item.id)} className="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -1461,6 +1520,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                                     </h4>
                                     <div className="space-y-1">
                                         <NavButton section="jobs" label="Oportunidades laborales" />
+                                        <NavButton section="freelanceServices" label="Servicios Freelance" />
                                         <NavButton section="courses" label="Capacitaciones (cursos)" />
                                         <NavButton section="funding" label="Fondos y concursos" />
                                         <NavButton section="collaborations" label="Colaboraciones urgentes" />
@@ -1500,6 +1560,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
                 {isCourseFormOpen && <CourseForm course={editingCourse} onSave={handleSaveCourse} onClose={() => setIsCourseFormOpen(false)} />}
                 {isJobFormOpen && <JobForm job={editingJob} onSave={handleSaveJob} onClose={() => setIsJobFormOpen(false)} />}
+                {isFreelanceServiceFormOpen && <FreelanceServiceForm freelanceService={editingFreelanceService} onSave={handleSaveFreelanceService} onClose={() => setIsFreelanceServiceFormOpen(false)} />}
                 {isEntrepreneurFormOpen && <EntrepreneurForm entrepreneur={editingEntrepreneur} onSave={handleSaveEntrepreneur} onClose={() => setIsEntrepreneurFormOpen(false)} />}
                 {isNewsArticleFormOpen && <NewsArticleForm article={editingNewsArticle} onSave={handleSaveNewsArticle} onClose={() => setIsNewsArticleFormOpen(false)} />}
                 {isDestacadoFormOpen && <DestacadoArticleForm article={editingDestacado} onSave={handleSaveDestacado} onClose={() => setIsDestacadoFormOpen(false)} />}

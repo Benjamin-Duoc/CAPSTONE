@@ -195,23 +195,13 @@ export const entrepreneurs: Entrepreneurship[] = [
     specialty: 'Investigación',
     imageUrl: 'https://picsum.photos/seed/public-square-life/1200/800',
     description: 'Medio digital enfocado en investigación periodística de largo aliento sobre políticas públicas.',
-    reportAuthor: 'Catalina Riquelme',
-    reportDate: '18 de Julio, 2024',
-    reportContent: [
-      { type: 'paragraph', text: 'En un ecosistema mediático a menudo saturado por la inmediatez y la superficialidad, "La Pública" emerge como un faro de periodismo riguroso y profundo. Fundado por la periodista Ana González, este micromedio digital se ha propuesto la ambiciosa tarea de desentrañar las complejidades de las políticas públicas en Chile, con un enfoque que privilegia el reportaje de largo aliento y el análisis basado en datos.' },
-      { type: 'paragraph', text: 'La génesis de "La Pública" responde a una necesidad creciente de la ciudadanía por comprender no solo las decisiones que se toman en las altas esfereras del poder, sino también sus impactos directos en la vida cotidiana. "Sentíamos que había un vacío en la cobertura mediática tradicional", explica González. "Se reportan los titulares, las cuñas políticas, pero rara vez se sigue el rastro del dinero, la implementación de una ley o sus consecuencias a largo plazo. Nosotros queremos llenar ese espacio".' },
-      { type: 'quote', text: 'Nuestro compromiso no es con la primicia, sino con la verdad y la comprensión profunda de los hechos que moldean nuestra sociedad.' },
-      { type: 'image', src: 'https://picsum.photos/seed/reportaje1/800/500', alt: 'El equipo de La Pública en una sesión de trabajo.' },
-      { type: 'paragraph', text: 'El modelo de financiamiento es uno de los pilares de su independencia. A través de un sistema de membresías y el apoyo de fundaciones que promueven la transparencia y el periodismo de calidad, "La Pública" ha logrado mantenerse alejado de las presiones publicitarias y políticas. Esto les permite abordar temas sensibles, como el lobby empresarial en el Congreso o las irregularidades en licitaciones públicas, con una libertad editorial que ya les ha valido reconocimientos y, también, algunas enemistades.' },
-      { type: 'quote', text: 'Creemos en un periodismo que no solo denuncia, sino que también entrega herramientas a los ciudadanos para que puedan ejercer un control social informado.' },
-      { type: 'paragraph', text: 'Su equipo, aunque reducido, es una mezcla de periodistas experimentados y jóvenes talentos especializados en periodismo de datos, visualización de información y fact-checking. Cada reportaje es el resultado de semanas, a veces meses, de investigación, donde el cruce de bases de datos, las solicitudes por Ley de Transparencia y el trabajo de campo son la norma. El resultado son piezas visualmente atractivas, interactivas y, sobre todo, contundentes.' },
-      { type: 'image', src: 'https://picsum.photos/seed/reportaje2/800/500', alt: 'Infografía interactiva publicada en un reportaje de La Pública.' },
-      { type: 'paragraph', text: 'Mirando hacia el futuro, "La Pública" planea expandir su modelo con talleres de periodismo de investigación para estudiantes y la creación de una unidad de datos abierta al público, consolidándose no solo como un medio de comunicación, sino como una verdadera institución al servicio del interés público.' }
-    ]
+    portfolioUrl: '#',
+    rating: 4.9,
+    reviewCount: 120
   },
-  { id: 2, 'name': 'Contenido Central', type: 'Agencia', founder: 'Carlos Pérez', location: 'Santiago', specialty: 'Cultura', imageUrl: 'https://picsum.photos/seed/ent2/400/225', description: 'Agencia de comunicaciones que crea contenido estratégico para marcas con propósito.' },
-  { id: 3, name: 'Relatos del Sur', type: 'Productora', founder: 'María Inés Soto', location: 'Concepción', specialty: 'Local', imageUrl: 'https://picsum.photos/seed/ent3/400/225', description: 'Productora audiovisual especializada en documentales y reportajes sobre la identidad del sur de Chile.' },
-  { id: 4, name: 'Deportes Al Instante', type: 'Micromedio', founder: 'Javier Rojas', location: 'Valparaíso', specialty: 'Deportes', imageUrl: 'https://picsum.photos/seed/ent4/400/225', description: 'Plataforma digital con cobertura minuto a minuto de los equipos de la V Región.' },
+  { id: 2, name: 'Contenido Central', type: 'Agencia', founder: 'Carlos Pérez', location: 'Santiago', specialty: 'Cultura', imageUrl: 'https://picsum.photos/seed/ent2/400/225', description: 'Agencia de comunicaciones que crea contenido estratégico para marcas con propósito.', portfolioUrl: '#', rating: 4.7, reviewCount: 45 },
+  { id: 3, name: 'Relatos del Sur', type: 'Productora', founder: 'María Inés Soto', location: 'Concepción', specialty: 'Local', imageUrl: 'https://picsum.photos/seed/ent3/400/225', description: 'Productora audiovisual especializada en documentales y reportajes sobre la identidad del sur de Chile.', portfolioUrl: '#', rating: 5.0, reviewCount: 88 },
+  { id: 4, name: 'Deportes Al Instante', type: 'Micromedio', founder: 'Javier Rojas', location: 'Valparaíso', specialty: 'Deportes', imageUrl: 'https://picsum.photos/seed/ent4/400/225', description: 'Plataforma digital con cobertura minuto a minuto de los equipos de la V Región.', portfolioUrl: '#', rating: 4.5, reviewCount: 30 },
 ];
 
 export const newsArticles: NewsArticle[] = [
@@ -278,11 +268,9 @@ export const ngoSpotlight: NgoSpotlight[] = [
 ];
 
 export const freelanceServices: FreelanceService[] = [
-  { id: 1, service: 'Redacción de Artículos SEO', provider: 'Camila Rojas', category: 'Redacción', imageUrl: 'https://picsum.photos/seed/freelance1/400/225', description: 'Contenido optimizado para posicionar tu marca y atraer tráfico de calidad.', linkedinUrl: 'https://www.linkedin.com/in/camila-rojas' },
-  { id: 2, service: 'Corrección de Estilo Académico', provider: 'Javier Fuentes', category: 'Corrección', imageUrl: 'https://picsum.photos/seed/freelance2/400/225', description: 'Garantizamos claridad, coherencia y normatividad en textos académicos.', linkedinUrl: 'https://www.linkedin.com/in/javier-fuentes' },
-  { id: 3, service: 'Fotografía de Eventos Corporativos', provider: 'Andrea López', category: 'Fotografía', imageUrl: 'https://picsum.photos/seed/freelance3/400/225', description: 'Capturamos los momentos clave de tus eventos con un enfoque profesional.', linkedinUrl: 'https://www.linkedin.com/in/andrea-lopez' },
-  { id: 4, service: 'Gestión de Redes Sociales para PYMEs', provider: 'Martín Silva', category: 'Community Management', imageUrl: 'https://picsum.photos/seed/freelance4/400/225', description: 'Potenciamos tu negocio con contenido interactivo y gestión experta.', linkedinUrl: 'https://www.linkedin.com/in/martin-silva' },
-  { id: 5, service: 'Locución para Videos y Podcast', provider: 'Valentina Soto', category: 'Locución', imageUrl: 'https://picsum.photos/seed/freelance5/400/225', description: 'Voces profesionales para dar vida a tus proyectos sonoros.', linkedinUrl: 'https://www.linkedin.com/in/valentina-soto' },
+  { id: 1, service: 'Gestión de Redes Sociales para Medios', provider: 'Laura Valdés', category: 'Marketing', imageUrl: 'https://picsum.photos/seed/freelance4/400/225', description: 'Estrategias de crecimiento de comunidad y distribución de contenido en plataformas digitales.', linkedinUrl: 'https://www.linkedin.com/in/laura-valdes-ejemplo' },
+  { id: 2, service: 'Edición de Video en Premiere Pro', provider: 'Carlos Mena', category: 'Audiovisual', imageUrl: 'https://picsum.photos/seed/freelance5/400/225', description: 'Edición rápida de notas informativas, entrevistas y mini-documentales para plataformas sociales.', linkedinUrl: 'https://www.linkedin.com/in/carlos-mena-ejemplo' },
+  { id: 3, service: 'Traducción de Artículos Inglés-Español', provider: 'Sofia Castillo', category: 'Traducción', imageUrl: 'https://picsum.photos/seed/freelance6/400/225', description: 'Traductora periodística bilingüe orientada a coyuntura internacional y reportajes de investigación.', linkedinUrl: 'https://www.linkedin.com/in/sofia-castillo-ejemplo' },
 ];
 
 export const communityAds: CommunityAd[] = [
@@ -475,7 +463,8 @@ export const legalFAQs: LegalFAQ[] = [
 export const heroHeading: HeroHeading = {
   mainText: 'El periodismo chileno está',
   highlightedText: 'emprendiendo',
-  subText: 'Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile',
+  featuredTitle: 'Únete al Círculo',
+  featuredDescription: 'Únete al Círculo de Periodistas Emprendedores e Innovadores de Chile',
   featuredLabel: 'Emprendimiento de la Semana',
   textColor: '#FFFFFF',
 };

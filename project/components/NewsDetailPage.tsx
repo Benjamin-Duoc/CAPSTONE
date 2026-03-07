@@ -83,16 +83,40 @@ const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
                         <div className="mt-12 pt-8 border-t border-gray-200 text-center">
                             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500">Compartir Artículo</h4>
                             <div className="flex justify-center space-x-4 mt-3">
-                                <a href="#" aria-label="Compartir en Twitter" className="text-gray-400 hover:text-gray-800 transition-colors">
+                                <a 
+                                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    aria-label="Compartir en X (Twitter)" 
+                                    className="text-gray-400 hover:text-gray-800 transition-colors"
+                                >
                                     <TwitterIcon className="h-6 w-6" />
                                 </a>
-                                <a href="#" aria-label="Compartir en Facebook" className="text-gray-400 hover:text-blue-600 transition-colors">
+                                <a 
+                                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    aria-label="Compartir en Facebook" 
+                                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                                >
                                     <FacebookIcon className="h-6 w-6" />
                                 </a>
-                                <a href="#" aria-label="Compartir en LinkedIn" className="text-gray-400 hover:text-blue-700 transition-colors">
+                                <a 
+                                    href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(article.title)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    aria-label="Compartir en LinkedIn" 
+                                    className="text-gray-400 hover:text-blue-700 transition-colors"
+                                >
                                     <LinkedInIcon className="h-6 w-6" />
                                 </a>
-                                <a href="#" aria-label="Compartir en Instagram" className="text-gray-400 hover:text-pink-600 transition-colors">
+                                <a 
+                                    href="https://instagram.com/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    aria-label="Ir a Instagram" 
+                                    className="text-gray-400 hover:text-pink-600 transition-colors"
+                                >
                                     <InstagramIcon className="h-6 w-6" />
                                 </a>
                             </div>

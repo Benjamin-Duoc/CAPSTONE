@@ -277,7 +277,7 @@ export const deleteNgoSpotlight = async (id: number) => deleteItem('/ngo-spotlig
 export const saveNgoSpotlight = async (data: NgoSpotlight[]) => { console.warn('deprecated'); };
 
 // --- Freelance Services ---
-export const getFreelanceServices = async () => fetchList<FreelanceService>('/freelance-services', initialData.freelanceServices);
+export const getFreelanceServices = async () => fetchList<FreelanceService>('/freelance-services', []);
 export const createFreelanceService = async (item: Omit<FreelanceService, 'id'>) => createItem<FreelanceService>('/freelance-services', item);
 export const updateFreelanceService = async (item: FreelanceService) => updateItem<FreelanceService>('/freelance-services', item);
 export const deleteFreelanceService = async (id: number) => deleteItem('/freelance-services', id);

@@ -206,9 +206,6 @@ const PremiumBannerCard: React.FC<{ sponsor: PremiumSponsor; onClick: () => void
         <div className="p-4">
             <h3 className="text-xl font-bold font-serif text-text-primary truncate">{sponsor.name}</h3>
             <p className="text-sm text-text-secondary truncate">{sponsor.tagline}</p>
-            <p className="text-base font-bold group-hover:underline mt-2" style={{ color: sponsor.ctaColor }}>
-                {sponsor.ctaText} &rarr;
-            </p>
         </div>
     </button>
 );
@@ -712,7 +709,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                     </>
                 ) : (
                     <>
-                        <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                        <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                         <p className="mt-4 text-text-secondary">Para publicar un comunicado de prensa, necesitas una suscripción gratuita activa en CiPress.</p>
                         <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                             <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -732,7 +729,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar una fuente experta en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -750,7 +747,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-entrepreneur">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-entrepreneur" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-entrepreneur" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar tu emprendimiento en nuestra vitrina, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -768,7 +765,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photo">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-photo" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-photo" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar tu acierto fotográfico en nuestra galería, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -786,7 +783,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-photojournalism">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-photojournalism" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-photojournalism" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar tu acierto fotográfico en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -804,7 +801,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-ad">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-ad" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-ad" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar un aviso clasificado, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -822,7 +819,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-collab">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-collab" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-collab" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar un aviso de colaboración, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
@@ -968,13 +965,10 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                                     </div>
                                     <div className="absolute inset-0 p-6 md:p-12 w-full z-10 flex flex-col justify-end pointer-events-none">
-                                        <span className="text-[#F5A623] text-xs md:text-sm font-bold uppercase tracking-widest drop-shadow-md mb-2">
-                                            DESTACADOS:
-                                        </span>
                                         <h3 className="text-3xl md:text-5xl font-bold font-serif text-[#F5A623] mb-4 drop-shadow-md leading-tight">
                                             {destacado.title}
                                         </h3>
-                                        <p className="text-[#F5A623] text-sm md:text-lg max-w-4xl drop-shadow-md font-medium">
+                                        <p className="text-[#F5A623] text-lg md:text-2xl max-w-4xl drop-shadow-md font-medium">
                                             {destacado.summary}
                                         </p>
                                     </div>
@@ -1041,7 +1035,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'pressReleases')} />}
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {pressReleases.slice(0, 4).map(release => (
+                                {[...pressReleases].sort((a, b) => b.id - a.id).slice(0, 4).map(release => (
                                     <NewsCard
                                         key={release.id}
                                         article={{

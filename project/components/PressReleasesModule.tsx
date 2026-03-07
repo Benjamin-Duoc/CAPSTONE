@@ -24,22 +24,7 @@ const PressReleasesModule: React.FC<PressReleasesModuleProps> = ({ pressReleases
     const ITEMS_PER_PAGE = 12;
 
     const sortedReleases = useMemo(() => {
-        const monthMap: { [key: string]: number } = {
-            'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5,
-            'julio': 6, 'agosto': 7, 'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11
-        };
-        return [...pressReleases].sort((a, b) => {
-            try {
-                const [dayA, , monthA, , yearA] = a.date.split(' ');
-                const [dayB, , monthB, , yearB] = b.date.split(' ');
-                const dateA = new Date(parseInt(yearA), monthMap[monthA.replace(',', '').toLowerCase()], parseInt(dayA));
-                const dateB = new Date(parseInt(yearB), monthMap[monthB.replace(',', '').toLowerCase()], parseInt(dayB));
-                return dateB.getTime() - dateA.getTime();
-            } catch (error) {
-                // Fallback for potentially malformed dates
-                return 0;
-            }
-        });
+        return [...pressReleases].sort((a, b) => b.id - a.id);
     }, [pressReleases]);
 
     const totalPages = Math.ceil(sortedReleases.length / ITEMS_PER_PAGE);

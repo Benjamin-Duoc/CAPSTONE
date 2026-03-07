@@ -52,10 +52,9 @@ const SponsorDetailPage: React.FC<SponsorDetailPageProps> = ({ sponsor, onBack }
 
                 <article>
                     <header className="mb-12">
-                         <div className="w-full h-96 overflow-hidden rounded-lg shadow-2xl mb-8">
+                        <div className="w-full h-96 overflow-hidden rounded-lg shadow-2xl mb-8">
                             <img src={sponsor.imageUrl} alt={sponsor.name} className="w-full h-full object-cover"/>
                         </div>
-                        <p className="text-base font-bold uppercase tracking-wider text-accent">SPONSOR PREMIUM</p>
                         <h1 className="text-4xl md:text-6xl font-black font-serif text-text-primary mt-2">{sponsor.name}</h1>
                         <p className="text-xl text-text-secondary mt-4 max-w-3xl">{sponsor.tagline}</p>
                         

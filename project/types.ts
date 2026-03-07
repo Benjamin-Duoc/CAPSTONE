@@ -80,7 +80,7 @@ export interface Entrepreneurship {
 export interface NewsArticle {
     id: number;
     title: string;
-    category: 'Industria' | 'Tecnología' | 'Legislación' | 'Tendencias';
+    category: 'Industria' | 'Tecnología' | 'Legislación' | 'Tendencias' | 'Emprender' | 'Actualidad' | 'Opinión';
     author: string;
     date: string;
     imageUrl: string;
@@ -115,7 +115,7 @@ export interface FreelanceService {
     id: number;
     service: string;
     provider: string;
-    category: 'Redacción' | 'Corrección' | 'Fotografía' | 'Community Management' | 'Locución';
+    category: 'Redacción' | 'Corrección' | 'Fotografía' | 'Community Management' | 'Locución' | 'Marketing' | 'Audiovisual' | 'Traducción' | string;
     imageUrl: string;
     description: string;
     linkedinUrl: string;

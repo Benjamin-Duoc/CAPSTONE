@@ -271,9 +271,9 @@ def create_db():
 
         # --- FREELANCE SERVICES ---
         services = [
-            {"service": "Redacción de Artículos SEO", "provider": "Camila Rojas", "category": "Redacción", "image_url": "https://picsum.photos/seed/freelance1/400/225", "description": "Contenido optimizado para posicionar tu marca y mejorar el tráfico orgánico.", "linkedin_url": "https://www.linkedin.com/in/camila-rojas-ejemplo"},
-            {"service": "Corrección de Estilo Académico", "provider": "Javier Fuentes", "category": "Corrección", "image_url": "https://picsum.photos/seed/freelance2/400/225", "description": "Garantizamos claridad, coherencia y adecuación al formato en tesis y ensayos.", "linkedin_url": "https://www.linkedin.com/in/javier-fuentes-ejemplo"},
-            {"service": "Fotografía de Eventos Periodísticos", "provider": "Andrea López", "category": "Fotografía", "image_url": "https://picsum.photos/seed/freelance3/400/225", "description": "Capturamos los momentos clave de tus eventos, conferencias de prensa y entrevistas.", "linkedin_url": "https://www.linkedin.com/in/andrea-lopez-ejemplo"}
+            {"service": "Gestión de Redes Sociales para Medios", "provider": "Laura Valdés", "category": "Marketing", "image_url": "https://picsum.photos/seed/freelance4/400/225", "description": "Estrategias de crecimiento de comunidad y distribución de contenido en plataformas digitales.", "linkedin_url": "https://www.linkedin.com/in/laura-valdes-ejemplo"},
+            {"service": "Edición de Video en Premiere Pro", "provider": "Carlos Mena", "category": "Audiovisual", "image_url": "https://picsum.photos/seed/freelance5/400/225", "description": "Edición rápida de notas informativas, entrevistas y mini-documentales para plataformas sociales.", "linkedin_url": "https://www.linkedin.com/in/carlos-mena-ejemplo"},
+            {"service": "Traducción de Artículos Inglés-Español", "provider": "Sofia Castillo", "category": "Traducción", "image_url": "https://picsum.photos/seed/freelance6/400/225", "description": "Traductora periodística bilingüe orientada a coyuntura internacional y reportajes de investigación.", "linkedin_url": "https://www.linkedin.com/in/sofia-castillo-ejemplo"}
         ]
         for s in services:
             db.session.add(FreelanceService(**s))

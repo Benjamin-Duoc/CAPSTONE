@@ -43,14 +43,9 @@ const NewsModule: React.FC<NewsModuleProps> = ({ newsArticles, onSelectNewsArtic
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 7; // 1 noticia en grande + 6 normales
     
-    // Sort articles by date (newest first) - assuming date field exists
+    // Sort articles by ID descending (newest first)
     const sortedArticles = useMemo(() => {
-        return [...newsArticles].sort((a, b) => {
-            // Convert date strings to comparable format
-            const dateA = new Date(a.date).getTime();
-            const dateB = new Date(b.date).getTime();
-            return dateB - dateA; // Newest first
-        });
+        return [...newsArticles].sort((a, b) => b.id - a.id);
     }, [newsArticles]);
     
     // Calculate total pages based on all articles (10 per page)

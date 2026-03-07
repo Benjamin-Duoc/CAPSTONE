@@ -88,6 +88,9 @@ const NewsArticleForm: React.FC<NewsArticleFormProps> = ({ article, onSave, onCl
                                     <option>Tecnología</option>
                                     <option>Legislación</option>
                                     <option>Tendencias</option>
+                                    <option>Emprender</option>
+                                    <option>Actualidad</option>
+                                    <option>Opinión</option>
                                 </select>
                             </div>
                         </div>

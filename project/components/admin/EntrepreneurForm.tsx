@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import type { Entrepreneurship, ReportContentItem } from '../../types';
+import React, { useState, useEffect, useRef } from 'react';
+import type { Entrepreneurship } from '../../types';
+import { ENV } from '../../src/config/env';
 
 interface EntrepreneurFormProps {
     entrepreneur: Entrepreneurship | null;
@@ -9,307 +10,238 @@ interface EntrepreneurFormProps {
 
 const initialEntrepreneurState: Omit<Entrepreneurship, 'id'> = {
     name: '',
-    type: 'Micromedio',
+    type: 'Agencia',
     founder: '',
     location: '',
     specialty: 'Investigación',
-    imageUrl: 'https://picsum.photos/seed/new-ent/400/225',
+    imageUrl: '',
     description: '',
-    reportContent: [],
-    reportAuthor: '',
-    reportDate: '',
+    portfolioUrl: '',
+    rating: 5,
+    reviewCount: 0
 };
 
 const EntrepreneurForm: React.FC<EntrepreneurFormProps> = ({ entrepreneur, onSave, onClose }) => {
     const [formData, setFormData] = useState<Omit<Entrepreneurship, 'id'> | Entrepreneurship>(initialEntrepreneurState);
-    const [bulkText, setBulkText] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (entrepreneur) {
-            setFormData({
-                ...initialEntrepreneurState, // Ensure all fields are present
-                ...entrepreneur,
-                reportContent: entrepreneur.reportContent || [],
-                reportAuthor: entrepreneur.reportAuthor || '',
-                reportDate: entrepreneur.reportDate || '',
-            });
+            setFormData(entrepreneur);
         } else {
             setFormData(initialEntrepreneurState);
         }
     }, [entrepreneur]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type } = e.target;
+
+        let parsedValue: string | number = value;
+        if (type === 'number') {
+            parsedValue = value === '' ? 0 : Number(value);
+        }
+
+        setFormData(prev => ({ ...prev, [name]: parsedValue }));
     };
-    
-    const handleMainImageUpload = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (readerEvent) => {
-                    const base64String = readerEvent.target?.result as string;
-                    setFormData(prev => ({ ...prev, imageUrl: base64String }));
-                };
-                reader.readAsDataURL(file);
+
+    const handleImageUploadAsync = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+        uploadData.append('folder', 'images/entrepreneurships');
+
+        const API_BASE = ENV.isDevelopment ? '/api' : ENV.apiUrl;
+
+        try {
+            const response = await fetch(`${API_BASE}/upload`, {
+                method: 'POST',
+                body: uploadData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
             }
-        };
-        input.click();
-    };
 
-    const handleReportContentChange = (index: number, field: string, value: string) => {
-        const newContent = [...(formData.reportContent || [])];
-        const updatedItem = { ...newContent[index], [field]: value };
-        newContent[index] = updatedItem as ReportContentItem;
-        setFormData(prev => ({ ...prev, reportContent: newContent }));
-    };
-    
-    const handleImageUpload = (index: number) => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (readerEvent) => {
-                    const base64String = readerEvent.target?.result as string;
-                    handleReportContentChange(index, 'src', base64String);
-                };
-                reader.readAsDataURL(file);
+            const data = await response.json();
+            if (data.success && data.url) {
+                // The backend returns a path like '/backendcipress/media/...'.
+                // Both the Vite proxy (dev) and the web server (prod) resolve this correctly.
+                const fullUrl = data.url;
+                setFormData(prev => ({ ...prev, imageUrl: fullUrl }));
+            } else {
+                alert('No se pudo subir la imagen: ' + (data.message || 'Error desconocido'));
             }
-        };
-        input.click();
-    };
-
-    const handleAddItem = (type: 'image' | 'quote') => {
-        let newItem: ReportContentItem;
-        if (type === 'image') {
-            newItem = { type: 'image', src: 'https://picsum.photos/seed/new-image/800/500', alt: '' };
-        } else { // quote
-            newItem = { type: 'quote', text: '', author: '' };
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error al conectar con el servidor para la subida.');
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
-        setFormData(prev => ({ ...prev, reportContent: [...(prev.reportContent || []), newItem] }));
     };
 
-    const handleDeleteItem = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            reportContent: (prev.reportContent || []).filter((_, i) => i !== index),
-        }));
+    const handleMainImageUploadClick = () => {
+        fileInputRef.current?.click();
     };
-
-    const handleMoveItem = (index: number, direction: 'up' | 'down') => {
-        const newContent = [...(formData.reportContent || [])];
-        if (direction === 'up' && index > 0) {
-            [newContent[index - 1], newContent[index]] = [newContent[index], newContent[index - 1]];
-        }
-        if (direction === 'down' && index < newContent.length - 1) {
-            [newContent[index + 1], newContent[index]] = [newContent[index], newContent[index + 1]];
-        }
-        setFormData(prev => ({ ...prev, reportContent: newContent }));
-    };
-    
-    const handleAddBulkParagraphs = () => {
-        if (!bulkText.trim()) return;
-        
-        const paragraphs = bulkText.split(/\n+/).filter(p => p.trim() !== '');
-        const newItems: ReportContentItem[] = paragraphs.map(p => ({ type: 'paragraph', text: p }));
-
-        setFormData(prev => ({
-            ...prev,
-            reportContent: [...(prev.reportContent || []), ...newItems]
-        }));
-        setBulkText('');
-    };
-
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData as Entrepreneurship | Omit<Entrepreneurship, 'id'>);
     };
 
-    const renderReportItem = (item: ReportContentItem, index: number) => {
-        const commonControls = (
-            <div className="flex items-center space-x-2 mt-2">
-                 <button type="button" onClick={() => handleMoveItem(index, 'up')} disabled={index === 0} className="text-xs px-2 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">↑ Subir</button>
-                <button type="button" onClick={() => handleMoveItem(index, 'down')} disabled={index === (formData.reportContent?.length ?? 0) - 1} className="text-xs px-2 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300">↓ Bajar</button>
-                <button type="button" onClick={() => handleDeleteItem(index)} className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200">Eliminar</button>
-            </div>
-        );
-
-        switch (item.type) {
-            case 'paragraph':
-                return (
-                    <div key={index} className="p-3 border rounded-md bg-gray-50">
-                        <label className="block text-xs font-medium text-gray-500">Párrafo #{index + 1}</label>
-                        <p className="mt-1 block w-full border border-gray-200 rounded-md bg-white py-2 px-3 text-sm text-gray-800 whitespace-pre-wrap">{item.text}</p>
-                        {commonControls}
-                    </div>
-                );
-            case 'image':
-                return (
-                    <div key={index} className="p-3 border rounded-md bg-gray-50">
-                        <label className="block text-xs font-medium text-gray-500">Imagen</label>
-                        <img src={item.src} alt={item.alt} className="my-2 rounded max-h-40 object-contain bg-gray-200" />
-                         <div className="space-y-2">
-                             <div>
-                                <label className="block text-sm font-medium text-gray-700">URL de la imagen</label>
-                                <input type="text" placeholder="Pegar URL de la imagen" value={item.src} onChange={(e) => handleReportContentChange(index, 'src', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                             </div>
-                             <div className="flex items-center space-x-2">
-                                <hr className="flex-grow border-gray-300" />
-                                <span className="text-sm text-gray-500">o</span>
-                                <hr className="flex-grow border-gray-300" />
-                            </div>
-                            <button type="button" onClick={() => handleImageUpload(index)} className="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                                Buscar archivo en el equipo...
-                            </button>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mt-2">Texto alternativo (alt)</label>
-                                <input type="text" placeholder="Descripción de la imagen" value={item.alt} onChange={(e) => handleReportContentChange(index, 'alt', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                            </div>
-                        </div>
-                        {commonControls}
-                    </div>
-                );
-            case 'quote':
-                 return (
-                    <div key={index} className="p-3 border rounded-md bg-gray-50">
-                        <label className="block text-xs font-medium text-gray-500">Cita</label>
-                        <textarea value={item.text} onChange={(e) => handleReportContentChange(index, 'text', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" rows={3} placeholder="Texto de la cita" />
-                        <input type="text" placeholder="Autor (opcional)" value={item.author || ''} onChange={(e) => handleReportContentChange(index, 'author', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                        {commonControls}
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
-
     return (
-        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-4">{entrepreneur ? 'Editar Emprendimiento' : 'Añadir Nuevo Emprendimiento'}</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-8">
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">
+                    {entrepreneur ? 'Editar Emprendimiento Periodístico' : 'Añadir Nuevo Emprendimiento'}
+                </h2>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Info */}
-                    <div className="p-4 border rounded-lg">
-                        <h3 className="text-lg font-semibold mb-2 text-gray-700">Información Básica</h3>
+                    <div className="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
+                        <h3 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm mr-2">1</span>
+                            Información Principal
+                        </h3>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                            <input type="text" name="name" value={formData.name} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Emprendimiento</label>
+                            <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required placeholder="Ej: Redacción de Artículos SEO" />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Fundador(a)</label>
-                                <input type="text" name="founder" value={formData.founder} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Fundador(a) / Agencia</label>
+                                <input type="text" name="founder" value={formData.founder} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required placeholder="Ej: Equipo Central" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Ubicación</label>
-                                <input type="text" name="location" value={formData.location} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                                <input type="text" name="location" value={formData.location} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required placeholder="Ej: Santiago o Remoto" />
                             </div>
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Tipo</label>
-                                <select name="type" value={formData.type} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    <option>Micromedio</option>
-                                    <option>Agencia</option>
-                                    <option>Productora</option>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                                <select name="type" value={formData.type} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="Micromedio">Micromedio</option>
+                                    <option value="Agencia">Agencia</option>
+                                    <option value="Productora">Productora</option>
+                                    <option value="Corrección">Corrección</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Especialidad</label>
-                                <select name="specialty" value={formData.specialty} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    <option>Investigación</option>
-                                    <option>Cultura</option>
-                                    <option>Deportes</option>
-                                    <option>Local</option>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Especialidad</label>
+                                <select name="specialty" value={formData.specialty} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="Investigación">Investigación</option>
+                                    <option value="Cultura">Cultura</option>
+                                    <option value="Deportes">Deportes</option>
+                                    <option value="Local">Local</option>
+                                    <option value="Redacción">Redacción</option>
+                                    <option value="Edición">Edición</option>
+                                    <option value="Fotografía">Fotografía</option>
                                 </select>
                             </div>
                         </div>
+
                         <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700">Descripción</label>
-                            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción Breve</label>
+                            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required placeholder="Descripción de los servicios ofrecidos..." />
                         </div>
-                        <div className="mt-4 space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Imagen Principal</label>
-                            {formData.imageUrl && <img src={formData.imageUrl} alt="Previsualización de la imagen principal" className="my-2 rounded max-h-40 object-contain bg-gray-200 border" />}
+                    </div>
+
+                    {/* Metadata & Portfolio */}
+                    <div className="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
+                        <h3 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm mr-2">2</span>
+                            Portafolio y Calificaciones
+                        </h3>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Enlace a Portafolio o Web</label>
+                            <input type="url" name="portfolioUrl" value={formData.portfolioUrl} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" placeholder="https://..." />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">URL de la imagen</label>
-                                <input 
-                                    type="text" 
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Calificación Promedio (1-5)</label>
+                                <input type="number" step="0.1" min="1" max="5" name="rating" value={formData.rating} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad de Reseñas</label>
+                                <input type="number" step="1" min="0" name="reviewCount" value={formData.reviewCount} onChange={handleChange} className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Image */}
+                    <div className="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
+                        <h3 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                            <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm mr-2">3</span>
+                            Medios
+                        </h3>
+                        <div className="space-y-4">
+                            {formData.imageUrl && (
+                                <div className="rounded-md border p-2 bg-white flex justify-center">
+                                    <img src={formData.imageUrl} alt="Previsualización" className="max-h-48 object-contain rounded" />
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">URL de la imagen (Automático o manual)</label>
+                                <input
+                                    type="text"
                                     name="imageUrl"
-                                    placeholder="Pegar URL de la imagen" 
-                                    value={formData.imageUrl} 
-                                    onChange={handleChange} 
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" 
+                                    placeholder="Pegar URL de la imagen si es externa"
+                                    value={formData.imageUrl}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500"
+                                    required
                                 />
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 text-gray-400">
                                 <hr className="flex-grow border-gray-300" />
-                                <span className="text-sm text-gray-500">o</span>
+                                <span className="text-xs uppercase font-medium">o subir archivo</span>
                                 <hr className="flex-grow border-gray-300" />
                             </div>
-                            <button 
-                                type="button" 
-                                onClick={handleMainImageUpload} 
-                                className="w-full px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Buscar archivo en el equipo...
-                            </button>
-                        </div>
-                    </div>
 
-                    {/* Report Content */}
-                    <div className="p-4 border rounded-lg">
-                        <h3 className="text-lg font-semibold mb-2 text-gray-700">Contenido del Reportaje</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Autor del Reportaje</label>
-                                <input type="text" name="reportAuthor" value={formData.reportAuthor || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                            </div>
-                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Fecha del Reportaje</label>
-                                <input type="text" name="reportDate" value={formData.reportDate || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" />
-                            </div>
-                        </div>
-                        
-                        <div className="p-3 border rounded-md bg-blue-50 my-4">
-                            <label htmlFor="bulkText" className="block text-sm font-medium text-blue-800">Caja de texto masivo</label>
-                            <p className="text-xs text-blue-600 mb-2">Pega el texto completo de tu noticia aquí. El sistema lo dividirá en párrafos por cada salto de línea.</p>
-                            <textarea 
-                                id="bulkText"
-                                value={bulkText} 
-                                onChange={(e) => setBulkText(e.target.value)} 
-                                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" 
-                                rows={6}
-                                placeholder="Pega tu texto aquí..."
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={handleImageUploadAsync}
                             />
-                            <button type="button" onClick={handleAddBulkParagraphs} className="mt-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 text-sm">
-                                Generar y Añadir Párrafos
-                            </button>
-                        </div>
 
-                        <div className="space-y-4">
-                            {formData.reportContent?.map(renderReportItem)}
-                        </div>
-                        
-                        <div className="flex items-center space-x-2 mt-4 pt-4 border-t">
-                            <span className="text-sm font-medium text-gray-700">Añadir bloque:</span>
-                            <button type="button" onClick={() => handleAddItem('image')} className="text-xs px-3 py-1 bg-green-100 text-green-800 rounded-full hover:bg-green-200">Imagen</button>
-                            <button type="button" onClick={() => handleAddItem('quote')} className="text-xs px-3 py-1 bg-purple-100 text-purple-800 rounded-full hover:bg-purple-200">Cita</button>
+                            <button
+                                type="button"
+                                onClick={handleMainImageUploadClick}
+                                disabled={isUploading}
+                                className={`w-full flex justify-center items-center px-4 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {isUploading ? (
+                                    <span className="flex items-center"><svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Subiendo...</span>
+                                ) : (
+                                    <span className="flex items-center"><svg className="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Seleccionar archivo desde el equipo...</span>
+                                )}
+                            </button>
                         </div>
                     </div>
 
-
-                    <div className="flex justify-end space-x-4 pt-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-red-700">Guardar Cambios</button>
+                    <div className="flex justify-end space-x-3 pt-6 mt-6 border-t font-sans">
+                        <button type="button" onClick={onClose} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 shadow-sm transition-colors">Cancelar</button>
+                        <button type="submit" disabled={isUploading} className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50">Guardar Emprendimiento</button>
                     </div>
                 </form>
             </div>

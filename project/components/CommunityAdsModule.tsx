@@ -62,7 +62,7 @@ const CommunityAdsModule: React.FC<CommunityAdsModuleProps> = ({ ads }) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-ad">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-ad" className="text-2xl font-bold font-serif text-secondary">Beneficio Exclusivo para Suscriptores Gratuitos</h3>
+                <h3 id="modal-title-ad" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
                 <p className="mt-4 text-text-secondary">Para publicar un aviso clasificado, necesitas una suscripción gratuita activa en CiPress.</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="#" className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
