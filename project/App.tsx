@@ -198,6 +198,15 @@ const App: React.FC = () => {
     setPhotojournalismPosts(dbPosts);
   };
 
+  const refreshGalleries = async () => {
+    try {
+      setPhotojournalismPosts(await getPhotojournalismPosts());
+      setShareablePhotos(await getShareablePhotos());
+    } catch (e) {
+      console.error("Error refreshing galleries", e);
+    }
+  };
+
   const refreshCommunityPosts = async () => {
     const dbPosts = await getCommunityPosts();
     setCommunityPosts(dbPosts);
@@ -516,6 +525,7 @@ const App: React.FC = () => {
           onAddPressRelease={handleAddPressRelease}
           onUpdatePressRelease={handleUpdatePressRelease}
           onDeletePressRelease={handleDeletePressRelease}
+          onGalleriesUpdated={refreshGalleries}
         /> : <LoginPage onNavigate={handleNavigate} returnTo="dashboard" onLoginSuccess={handleLogin} />;
       case 'home':
       default:
@@ -577,7 +587,7 @@ const App: React.FC = () => {
       </main>
 
       {!selectedEntrepreneur && !selectedSponsor && !selectedNewsArticle && !selectedDestacado && !selectedJob && !selectedPressRelease && !selectedCourse && !selectedPhotoPost && currentPage !== 'register' && currentPage !== 'login' && (
-        <Footer onNavigate={handleNavigate} partnerLogos={partnerLogos} />
+        <Footer onNavigate={handleNavigate} partnerLogos={partnerLogos} currentUser={currentUser} />
       )}
 
     </div>

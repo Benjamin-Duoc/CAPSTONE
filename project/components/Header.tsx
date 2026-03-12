@@ -54,8 +54,12 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, c
                                         onClick={() => setShowUserMenu(!showUserMenu)}
                                         className="flex items-center space-x-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-white border-2 border-highlight flex items-center justify-center text-primary font-black text-xs">
-                                            {(currentUser.firstName?.[0] || 'U') + (currentUser.lastName?.[0] || '')}
+                                        <div className="w-8 h-8 rounded-full bg-white border-2 border-highlight flex items-center justify-center text-primary font-black text-xs overflow-hidden">
+                                            {currentUser.avatarUrl ? (
+                                                <img src={currentUser.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                            ) : (
+                                                (currentUser.firstName?.[0] || 'U') + (currentUser.lastName?.[0] || '')
+                                            )}
                                         </div>
                                         <div className="text-left hidden sm:block">
                                             <p className="text-sm font-bold text-text-primary leading-tight text-[15px]">Hola {currentUser.firstName || 'Usuario'}</p>

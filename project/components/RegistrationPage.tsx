@@ -19,11 +19,29 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: 'bg-gray-200' });
+
+    const calculatePasswordStrength = (password: string) => {
+        let score = 0;
+        if (password.length > 5) score += 1;
+        if (password.length > 7) score += 1;
+        if (/[A-Z]/.test(password)) score += 1;
+        if (/[0-9]/.test(password)) score += 1;
+        if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+        if (password.length === 0) setPasswordStrength({ score: 0, label: '', color: 'bg-gray-200' });
+        else if (score <= 2) setPasswordStrength({ score, label: 'Débil', color: 'bg-red-500' });
+        else if (score <= 4) setPasswordStrength({ score, label: 'Media', color: 'bg-yellow-500' });
+        else setPasswordStrength({ score, label: 'Fuerte', color: 'bg-green-500' });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setError('');
+        if (name === 'password') {
+            calculatePasswordStrength(value);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +49,11 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
 
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden.');
+            return;
+        }
+
+        if (passwordStrength.score <= 2) {
+            setError('La contraseña es demasiado débil. Usa al menos 6 caracteres, combinando letras, números o mayúsculas.');
             return;
         }
 
@@ -172,6 +195,21 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
                                 value={formData.password}
                                 onChange={handleChange}
                             />
+                            {formData.password.length > 0 && (
+                                <div className="mt-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-xs text-gray-500 font-medium">Seguridad de la contraseña:</span>
+                                        <span className={`text-xs font-bold ${passwordStrength.color.replace('bg-', 'text-')}`}>{passwordStrength.label}</span>
+                                    </div>
+                                    <div className="flex gap-1 h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                                        <div className={`h-full ${passwordStrength.color} transition-all duration-300`} style={{ width: passwordStrength.score >= 1 ? '20%' : '0%' }}></div>
+                                        <div className={`h-full ${passwordStrength.score >= 2 ? passwordStrength.color : 'bg-transparent'} transition-all duration-300`} style={{ width: passwordStrength.score >= 2 ? '20%' : '0%' }}></div>
+                                        <div className={`h-full ${passwordStrength.score >= 3 ? passwordStrength.color : 'bg-transparent'} transition-all duration-300`} style={{ width: passwordStrength.score >= 3 ? '20%' : '0%' }}></div>
+                                        <div className={`h-full ${passwordStrength.score >= 4 ? passwordStrength.color : 'bg-transparent'} transition-all duration-300`} style={{ width: passwordStrength.score >= 4 ? '20%' : '0%' }}></div>
+                                        <div className={`h-full ${passwordStrength.score >= 5 ? passwordStrength.color : 'bg-transparent'} transition-all duration-300`} style={{ width: passwordStrength.score >= 5 ? '20%' : '0%' }}></div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Repetir Contraseña</label>

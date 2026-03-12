@@ -56,7 +56,7 @@ def create_app(config_class=None):
     from flask import send_from_directory
     import os
     
-    @app.route('/backendcipress/media/<path:filename>')
+    @app.route('/media/<path:filename>')
     def serve_media(filename):
         """Serve media files from the media folder"""
         media_folder = os.path.join(os.path.dirname(__file__), '..', app.config.get('MEDIA_FOLDER', 'media'))

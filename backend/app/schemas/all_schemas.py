@@ -6,7 +6,8 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         include_fk = True
-        exclude = ('password_hash',)
+        exclude = ('password_hash',) # avatar_url is included automatically
+
 
 class AppConfigSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -43,6 +44,7 @@ class PhotojournalismPostSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = PhotojournalismPost
         load_instance = True
+        include_fk = True 
 
 class CommunityPostSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -118,6 +120,7 @@ class ShareablePhotoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ShareablePhoto
         load_instance = True
+        include_fk = True
 
 class PartnerLogoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

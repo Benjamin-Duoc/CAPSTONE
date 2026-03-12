@@ -37,6 +37,8 @@ class GenericService:
         return normalized
 
     def get_all(self):
+        if hasattr(self.model, 'id'):
+            return self.model.query.order_by(self.model.id.desc()).all()
         return self.model.query.all()
 
     def get_by_id(self, id):

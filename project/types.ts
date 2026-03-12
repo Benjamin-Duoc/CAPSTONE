@@ -167,6 +167,7 @@ export interface CommunityPost {
 
 export interface PhotojournalismPost {
     id: number;
+    userId?: number;
     title: string;
     imageUrl: string;
     caption: string;
@@ -191,7 +192,12 @@ export interface Specialist {
 
 export interface ShareablePhoto {
     id: number;
+    userId?: number;
     imageUrl: string;
+    originalImageUrl?: string;
+    watermarkedImageUrl?: string;
+    price?: string;
+    isSold?: boolean;
     caption: string;
     photographerName: string;
     photographerAvatarUrl: string;

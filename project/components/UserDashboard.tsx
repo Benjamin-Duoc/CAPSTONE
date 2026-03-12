@@ -3,6 +3,7 @@ import type { User, PremiumSponsor, PressRelease } from '../types';
 import MyProfileView from './dashboard/MyProfileView';
 import ConfianEnCipressView from './dashboard/ConfianEnCipressView';
 import RedactarComunicadoView from './dashboard/RedactarComunicadoView';
+import MisGaleriasView from './dashboard/MisGaleriasView';
 import { 
     UserIcon, 
     CreditCardIcon, 
@@ -27,6 +28,7 @@ interface UserDashboardProps {
     onAddPressRelease: (pressRelease: Omit<PressRelease, 'id'>) => Promise<void>;
     onUpdatePressRelease: (pressRelease: PressRelease) => Promise<void>;
     onDeletePressRelease: (id: number) => Promise<void>;
+    onGalleriesUpdated?: () => void;
 }
 
 type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Mis Galerías' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral';
@@ -56,7 +58,7 @@ const MENU_ITEMS: MenuItem[] = [
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
     currentUser, onLogout, onNavigate, onUpdateProfile, 
     premiumSponsors, onAddSponsor, onUpdateSponsor,
-    pressReleases, onAddPressRelease, onUpdatePressRelease, onDeletePressRelease
+    pressReleases, onAddPressRelease, onUpdatePressRelease, onDeletePressRelease, onGalleriesUpdated
 }) => {
     const [activeSection, setActiveSection] = useState<MenuSection>('Mi Perfil');
 
@@ -113,7 +115,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             case 'Publicar Oferta Laboral':
                 return <div className="p-8 text-center text-gray-500 font-medium">Vista para "{activeSection}" en construcción...</div>;
             case 'Mis Galerías':
-                return <div className="p-8 text-center text-gray-500 font-medium">Información de "Mis Galerías" (Próximamente)</div>;
+                return currentUser ? <MisGaleriasView user={currentUser} onGalleriesUpdated={onGalleriesUpdated} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
             case 'Confían en CiPress':
                 return currentUser ? <ConfianEnCipressView 
                     currentUser={currentUser} 
@@ -139,8 +141,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             {/* Sidebar Lateral Inteligente */}
             <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col md:sticky md:top-20 md:h-[calc(100vh-80px)] z-20">
                 <div className="p-6 border-b border-gray-100 flex items-center mb-2">
-                    <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg mr-3 shadow-inner">
-                        {currentUser?.firstName?.charAt(0) || 'U'}
+                    <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg mr-3 shadow-inner overflow-hidden">
+                        {currentUser?.avatarUrl ? (
+                            <img src={currentUser.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            currentUser?.firstName?.charAt(0) || 'U'
+                        )}
                     </div>
                     <div>
                         <h2 className="font-bold text-gray-800 leading-tight">Mi Espacio</h2>

@@ -322,6 +322,7 @@ def create_db():
         # --- PHOTOJOURNALISM ---
         photos = [
             {
+                "user_id": 3,
                 "title": "El Espejo Roto de Aculeo",
                 "image_url": "https://picsum.photos/seed/photojournalism1/800/450",
                 "caption": "La sequía avanza implacable en la zona central...",
@@ -332,6 +333,7 @@ def create_db():
                 "date_added": datetime(2024, 7, 26)
             },
             {
+                "user_id": 3,
                 "title": "Murales que Hablan en Valparaíso",
                 "image_url": "https://picsum.photos/seed/photojournalism2/800/450",
                 "caption": "Un muralista da los toques finales a su obra...",
@@ -356,8 +358,8 @@ def create_db():
 
         # --- SHAREABLE PHOTOS ---
         shareable = [
-            {"image_url": "https://picsum.photos/seed/gallery1/600/400", "caption": "Protestas ciudadanas en Plaza Italia.", "photographer_name": "Javiera Latorre", "keywords": json.dumps(["protesta", "santiago"]), "date_added": "2024-07-26", "text_color": "#FFFFFF"},
-            {"image_url": "https://picsum.photos/seed/gallery2/600/400", "caption": "Incendio forestal en Valparaíso.", "photographer_name": "Ignacio Paredes", "keywords": json.dumps(["incendio", "valparaiso"]), "date_added": "2024-07-25", "text_color": "#FFFFFF"}
+            {"user_id": 4, "image_url": "https://picsum.photos/seed/gallery1/600/400", "original_image_url": "https://picsum.photos/seed/gallery1/600/400", "watermarked_image_url": "https://picsum.photos/seed/gallery1/600/400", "price": "$15.000 CLP", "is_sold": False, "caption": "Protestas ciudadanas en Plaza Italia.", "photographer_name": "Javiera Latorre", "keywords": json.dumps(["protesta", "santiago"]), "date_added": "2024-07-26", "text_color": "#FFFFFF"},
+            {"user_id": 4, "image_url": "https://picsum.photos/seed/gallery2/600/400", "original_image_url": "https://picsum.photos/seed/gallery2/600/400", "watermarked_image_url": "https://picsum.photos/seed/gallery2/600/400", "price": "$25.000 CLP", "is_sold": False, "caption": "Incendio forestal en Valparaíso.", "photographer_name": "Ignacio Paredes", "keywords": json.dumps(["incendio", "valparaiso"]), "date_added": "2024-07-25", "text_color": "#FFFFFF"}
         ]
         for sh in shareable:
             db.session.add(ShareablePhoto(**sh))

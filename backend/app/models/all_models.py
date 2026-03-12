@@ -23,6 +23,7 @@ class User(db.Model):
     # Actually, let's keep 'role' as string column in User for backward compat if needed, but make it FK to Role.name if possible. 
     # SQLite supports FKs. 
     password_hash = db.Column(db.String, nullable=False)
+    avatar_url = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     role_rel = db.relationship('Role', backref=db.backref('users', lazy=True))
@@ -98,6 +99,7 @@ class PressRelease(db.Model):
 class PhotojournalismPost(db.Model):
     __tablename__ = 'photojournalism_posts'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True) # Linked User
     title = db.Column(db.String)
     image_url = db.Column(db.String)
     caption = db.Column(db.String)
@@ -293,7 +295,12 @@ class NgoSpotlight(db.Model):
 class ShareablePhoto(db.Model):
     __tablename__ = 'shareable_photo'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True) # Linked User
     image_url = db.Column(db.String)
+    original_image_url = db.Column(db.String, nullable=True) # Full-res for buyers
+    watermarked_image_url = db.Column(db.String, nullable=True) # Watermarked thumb
+    price = db.Column(db.String, nullable=True) # e.g. "$15.000 CLP"
+    is_sold = db.Column(db.Boolean, default=False)
     caption = db.Column(db.String)
     photographer_name = db.Column(db.String)
     photographer_avatar_url = db.Column(db.String)

@@ -51,13 +51,15 @@ const MyProfileView: React.FC<MyProfileViewProps> = ({ currentUser, onSaveProfil
         e.preventDefault();
         setIsSaving(true);
         
-        const updates: Partial<User> = {
+        const updates: any = {
+            id: currentUser.id,
             ...formData,
         };
 
-        if (!updates.newPassword) {
-            delete updates.newPassword;
+        if (updates.newPassword) {
+            updates.password = updates.newPassword;
         }
+        delete updates.newPassword;
 
         try {
             await onSaveProfile(updates);

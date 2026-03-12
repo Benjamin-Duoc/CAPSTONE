@@ -328,20 +328,20 @@ const CommunityActivityCarousel: React.FC<{ posts: CommunityPost[] }> = ({ posts
     );
 };
 
-const PhotojournalismCard: React.FC<{ post: PhotojournalismPost }> = ({ post }) => (
+const PhotojournalismCard: React.FC<{ post: any }> = ({ post }) => (
     <div className="bg-surface rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-        <img src={post.imageUrl || DEFAULT_IMAGE} alt={post.title} onError={handleImageError} className="w-full h-auto max-h-[500px] object-cover" />
+        <img src={post.image_url || post.imageUrl || DEFAULT_IMAGE} alt={post.title} onError={handleImageError} className="w-full h-auto max-h-[500px] object-cover" />
         <div className="p-6">
             <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4">
                 <div>
                     <h3 className="text-2xl font-bold font-serif text-text-primary">{post.title}</h3>
-                    <p className="text-sm text-text-secondary">Foto del {post.dateTaken}</p>
+                    <p className="text-sm text-text-secondary">Foto del {post.date_taken || post.dateTaken}</p>
                 </div>
                 <div className="flex items-center space-x-3 flex-shrink-0">
-                    <img src={post.photographerAvatarUrl || DEFAULT_IMAGE} alt={post.photographerName} onError={handleImageError} className="w-12 h-12 rounded-full object-cover" />
+                    <img src={post.photographer_avatar_url || post.photographerAvatarUrl || DEFAULT_IMAGE} alt={post.photographer_name || post.photographerName} onError={handleImageError} className="w-12 h-12 rounded-full object-cover" />
                     <div className="text-right">
-                        <p className="font-semibold text-text-primary text-sm">{post.photographerName}</p>
-                        <a href={`https://wa.me/${post.whatsappContact}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center justify-end">
+                        <p className="font-semibold text-text-primary text-sm">{post.photographer_name || post.photographerName}</p>
+                        <a href={`https://wa.me/${post.whatsapp_contact || post.whatsappContact}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center justify-end">
                             <WhatsAppIcon className="h-4 w-4 mr-1" />
                             Contactar
                         </a>

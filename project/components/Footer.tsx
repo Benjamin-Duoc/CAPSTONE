@@ -1,30 +1,33 @@
 
 import React from 'react';
-import type { Page, PartnerLogo } from '../types';
+import type { Page, PartnerLogo, User } from '../types';
 import Logo from './Logo';
 
 interface FooterProps {
   onNavigate: (page: Page, subPage?: string) => void;
   partnerLogos: PartnerLogo[];
+  currentUser?: User | null;
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigate, partnerLogos }) => {
+const Footer: React.FC<FooterProps> = ({ onNavigate, partnerLogos, currentUser }) => {
   return (
     <footer className="bg-surface text-text-primary border-t border-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-gradient-to-r from-secondary to-blue-900 rounded-lg p-8 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-          <div>
-            <h2 className="text-2xl font-bold font-serif text-white">Suscríbete Gratis a CiPress</h2>
-            <p className="text-blue-200 mt-1">Únete gratis al Círculo de Periodistas Emprendedores e Innovadores de Chile y sé parte del fututo del periodismo.</p>
+        {!currentUser && (
+          <div className="bg-gradient-to-r from-secondary to-blue-900 rounded-lg p-8 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div>
+              <h2 className="text-2xl font-bold font-serif text-white">Suscríbete Gratis a CiPress</h2>
+              <p className="text-blue-200 mt-1">Únete gratis al Círculo de Periodistas Emprendedores e Innovadores de Chile y sé parte del fututo del periodismo.</p>
+            </div>
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
+              className="mt-6 md:mt-0 px-6 py-3 font-bold text-secondary bg-white rounded-md hover:bg-gray-200 transition-colors duration-200 shadow-lg flex-shrink-0"
+            >
+              Registrarme
+            </a>
           </div>
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); onNavigate('register'); }}
-            className="mt-6 md:mt-0 px-6 py-3 font-bold text-secondary bg-white rounded-md hover:bg-gray-200 transition-colors duration-200 shadow-lg flex-shrink-0"
-          >
-            Registrarme
-          </a>
-        </div>
+        )}
 
         {/* Partner Logos Section */}
         <div className="text-center py-8">
