@@ -12,7 +12,7 @@ import { ENV } from '../src/config/env';
 // Use environment-specific API URL
 // In development, Vite proxy will forward /api requests to localhost:5000
 // In production, use the full API URL from environment variables
-const API_BASE = ENV.isDevelopment ? '/api' : ENV.apiUrl;
+export const API_BASE = ENV.isDevelopment ? '/api' : ENV.apiUrl;
 
 // --- Case Conversion Helpers ---
 

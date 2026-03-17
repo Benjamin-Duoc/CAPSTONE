@@ -142,6 +142,7 @@ class TalentProfileSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = TalentProfile
         load_instance = True
+        include_fk = True
 
 class SpecialistSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

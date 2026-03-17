@@ -31,6 +31,9 @@ import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import PhotojournalismDetailPage from './components/PhotojournalismDetailPage';
 import UserDashboard from './components/UserDashboard';
+import ClienteDashboard from './components/ClienteDashboard';
+import FreeDashboard from './components/FreeDashboard';
+import DestacadosModule from './components/DestacadosModule';
 
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo, DestacadoArticle } from './types';
 
@@ -104,7 +107,7 @@ const App: React.FC = () => {
     if (isAdminUser(user)) {
       handleNavigate('admin');
     } else {
-      handleNavigate(returnToPage || 'home');
+      handleNavigate(returnToPage || 'dashboard'); // We route to dashboard, and render switches internally
     }
   };
 
@@ -512,21 +515,46 @@ const App: React.FC = () => {
       case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} />;
       case 'register': return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
       case 'login': return <LoginPage onNavigate={handleNavigate} returnTo={returnToPage} onLoginSuccess={handleLogin} />;
-      case 'dashboard': 
-        return currentUser ? <UserDashboard 
-          currentUser={currentUser} 
-          onLogout={handleLogout} 
-          onNavigate={handleNavigate} 
-          onUpdateProfile={handleUpdateProfile}
-          premiumSponsors={premiumSponsors}
-          onAddSponsor={handleAddSponsor}
-          onUpdateSponsor={handleUpdateSponsor}
-          pressReleases={pressReleases}
-          onAddPressRelease={handleAddPressRelease}
-          onUpdatePressRelease={handleUpdatePressRelease}
-          onDeletePressRelease={handleDeletePressRelease}
-          onGalleriesUpdated={refreshGalleries}
-        /> : <LoginPage onNavigate={handleNavigate} returnTo="dashboard" onLoginSuccess={handleLogin} />;
+      case 'dashboard': {
+        if (!currentUser) return <LoginPage onNavigate={handleNavigate} returnTo="dashboard" onLoginSuccess={handleLogin} />;
+        
+        const role = (typeof currentUser.role === 'string' ? currentUser.role : (currentUser.role as any)?.name || '').toUpperCase();
+        
+        if (role === 'CLIENTE') {
+           return <ClienteDashboard
+             currentUser={currentUser}
+             onLogout={handleLogout}
+             premiumSponsors={premiumSponsors}
+             onAddSponsor={handleAddSponsor}
+             onUpdateSponsor={handleUpdateSponsor}
+           />;
+        } else if (role === 'COLABORADOR GRATIS') {
+           return <FreeDashboard
+             currentUser={currentUser}
+             onLogout={handleLogout}
+             pressReleases={pressReleases}
+             onAddPressRelease={handleAddPressRelease}
+             onUpdatePressRelease={handleUpdatePressRelease}
+             onDeletePressRelease={handleDeletePressRelease}
+           />;
+        } else {
+           // COLABORADOR_PREMIUM and legacy roles
+           return <UserDashboard 
+             currentUser={currentUser} 
+             onLogout={handleLogout} 
+             onNavigate={handleNavigate} 
+             onUpdateProfile={handleUpdateProfile}
+             premiumSponsors={premiumSponsors}
+             onAddSponsor={handleAddSponsor}
+             onUpdateSponsor={handleUpdateSponsor}
+             pressReleases={pressReleases}
+             onAddPressRelease={handleAddPressRelease}
+             onUpdatePressRelease={handleUpdatePressRelease}
+             onDeletePressRelease={handleDeletePressRelease}
+             onGalleriesUpdated={refreshGalleries}
+           />;
+        }
+      }
       case 'home':
       default:
         return <HomePage

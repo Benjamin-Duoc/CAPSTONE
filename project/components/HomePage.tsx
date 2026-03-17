@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { API_BASE } from '../utils/db';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User, DestacadoArticle } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
@@ -634,6 +635,28 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
 
+    // Featured Content (Time-based strict rotation from Backend)
+    const [featuredPressReleases, setFeaturedPressReleases] = useState<PressRelease[]>([]);
+
+    useEffect(() => {
+        const fetchFeatured = async () => {
+            try {
+                const response = await fetch(`${API_BASE}/featured-content`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setFeaturedPressReleases(data);
+                }
+            } catch (err) {
+                console.error("Error fetching featured content:", err);
+            }
+        };
+        fetchFeatured();
+        
+        // Refresh every minute to ensure smooth hourly transitions without reloading
+        const interval = setInterval(fetchFeatured, 60000);
+        return () => clearInterval(interval);
+    }, []);
+
     // Carousel Logic for Tips
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
     const sortedTips = [...entrepreneurshipTips].sort((a, b) => b.id - a.id);
@@ -1035,16 +1058,20 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'pressReleases')} />}
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {[...pressReleases].sort((a, b) => b.id - a.id).slice(0, 4).map(release => (
-                                    <NewsCard
-                                        key={release.id}
-                                        article={{
-                                            ...release,
-                                            category: release.institution,
-                                        }}
-                                        onClick={() => onSelectPressRelease(release)}
-                                    />
-                                ))}
+                                {featuredPressReleases.length > 0 ? (
+                                    featuredPressReleases.map(release => (
+                                        <NewsCard
+                                            key={release.id}
+                                            article={{
+                                                ...release,
+                                                category: release.institution,
+                                            }}
+                                            onClick={() => onSelectPressRelease(release)}
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-text-secondary italic col-span-2">No hay comunicados destacados en este momento.</p>
+                                )}
                             </div>
                             <div className={`bg-secondary/5 p-4 rounded-lg mt-8 border border-secondary/10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3e%3cpath d='M-5,5 l10,-10 M0,20 l20,-20 M15,25 l10,-10' stroke='%231e3a8a' stroke-width='1' stroke-opacity='0.2'/%3e%3c/svg%3e")]`}>
                                 <div>

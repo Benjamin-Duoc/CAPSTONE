@@ -81,6 +81,7 @@ class NewsArticle(db.Model):
     image_url = db.Column(db.String)
     summary = db.Column(db.Text)
     report_content = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class PressRelease(db.Model):
     __tablename__ = 'press_release'
@@ -95,6 +96,7 @@ class PressRelease(db.Model):
     report_content = db.Column(db.Text)
     report_author = db.Column(db.String)
     report_date = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class PhotojournalismPost(db.Model):
     __tablename__ = 'photojournalism_posts'
@@ -353,6 +355,7 @@ class PremiumSponsor(db.Model):
 class TalentProfile(db.Model):
     __tablename__ = 'talent_profiles'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True) # Linked User
     name = db.Column(db.String)
     avatar_url = db.Column(db.String)
     title = db.Column(db.String)

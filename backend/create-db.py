@@ -29,8 +29,9 @@ def create_db():
         # --- ROLES ---
         roles_data = [
             {"name": "Administrador", "description": "Control total del sitio, portada, secciones editoriales, avisos laborales y moderación."},
-            {"name": "Colaborador", "description": "Puede publicar comunicados, fotos, eventos, actividades comunitarias."},
-            {"name": "Cliente", "description": "Lo mismo que el gratuito + mayor visibilidad y secciones exclusivas."},
+            {"name": "Cliente", "description": "Empresa con acceso estricto a editar el bloque Confían en CiPress. Max 3."},
+            {"name": "Colaborador Premium", "description": "Colaborador con acceso a Dashboard, Home Prime Time (08:00 a 12:00) y duración de 3 hrs."},
+            {"name": "Colaborador Gratis", "description": "Publica gratis pero su visualización en Home es nocturna, rotativa o backup."},
             {"name": "Empresa", "description": "Publica contenidos pagados (noticias auspiciadas, avisos comerciales)."}
         ]
         
@@ -40,25 +41,23 @@ def create_db():
         db.session.commit() # Commit roles first to be safe
 
         # --- USUARIOS ---
-        # Password hash for "123"
         password_123 = generate_password_hash("123")
 
         users_to_create = [
             # Administradores
             {"first_name": "Ana", "last_name": "Sanz", "email": "ana@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
-            {"first_name": "Anais", "last_name": "Ruiz", "email": "anais@administrador.cl", "role": "Administrador", "region": "Metropolitana de Santiago"},
             
-            # Colaboradores
-            {"first_name": "Gema", "last_name": "Soto", "email": "gema@gratis.cl", "role": "Colaborador", "region": "Biobío"},
-            {"first_name": "Gaby", "last_name": "Lara", "email": "gaby@gratis.cl", "role": "Colaborador", "region": "Valparaíso"},
+            # Cliente 
+            {"first_name": "Cliente", "last_name": "Test", "email": "vip@cliente.com", "role": "Cliente", "region": "Metropolitana de Santiago"},
 
-            # Clientes
-            {"first_name": "Pía", "last_name": "Maza", "email": "pia@premium.cl", "role": "Cliente", "region": "Metropolitana de Santiago"},
-            {"first_name": "Paulina", "last_name": "Ríos", "email": "paulina@premium.cl", "role": "Cliente", "region": "Araucanía"},
+            # Empresa
+            {"first_name": "Empresa", "last_name": "Test", "email": "ely@empresa.cl", "role": "Empresa", "region": "Metropolitana de Santiago"},
 
-            # Empresas
-            {"first_name": "Ely", "last_name": "Pino", "email": "ely@empresa.cl", "role": "Empresa", "region": "Metropolitana de Santiago"},
-            {"first_name": "Emy", "last_name": "Mora", "email": "emy@empresa.cl", "role": "Empresa", "region": "Antofagasta"},
+            # Premium
+            {"first_name": "Juan", "last_name": "Premium", "email": "premium@colab.com", "role": "Colaborador Premium", "region": "Valparaíso"},
+
+            # Gratis
+            {"first_name": "Pedro", "last_name": "Gratis", "email": "gratis@colab.com", "role": "Colaborador Gratis", "region": "Biobío"},
         ]
 
         for u_data in users_to_create:

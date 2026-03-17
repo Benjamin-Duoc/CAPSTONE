@@ -77,6 +77,9 @@ def create_app(config_class=None):
     from .routes.sponsor_routes import sponsor_bp
     app.register_blueprint(sponsor_bp)
 
+    from .routes.home_routes import home_bp
+    app.register_blueprint(home_bp)
+
     from .routes.route_factory import create_crud_blueprint
     from app.models.all_models import (
         User, Role, AppConfig, SiteStat, HeroHeading,
