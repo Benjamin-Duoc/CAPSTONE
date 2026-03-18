@@ -24,7 +24,7 @@ const toCamel = (s: string) => {
   });
 };
 
-const keysToCamel = (obj: any): any => {
+export const keysToCamel = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map((v) => keysToCamel(v));
   } else if (obj !== null && obj.constructor === Object) {
@@ -43,7 +43,7 @@ const toSnake = (s: string) => {
   return s.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
-const keysToSnake = (obj: any): any => {
+export const keysToSnake = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map((v) => keysToSnake(v));
   } else if (obj !== null && obj.constructor === Object) {
@@ -112,7 +112,10 @@ const createItem = async <T>(endpoint: string, item: any): Promise<T> => {
     body: JSON.stringify(keysToSnake(item)),
     credentials: 'include'
   });
-  if (!res.ok) throw new Error(`Failed to create item in ${endpoint}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || `Failed to create item in ${endpoint}`);
+  }
   const data = await res.json();
   return deserializeReportContent(keysToCamel(data));
 };
@@ -125,7 +128,10 @@ const updateItem = async <T>(endpoint: string, item: any): Promise<T> => {
     body: JSON.stringify(keysToSnake(item)),
     credentials: 'include'
   });
-  if (!res.ok) throw new Error(`Failed to update item in ${endpoint}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || `Failed to update item in ${endpoint}`);
+  }
   const data = await res.json();
   return deserializeReportContent(keysToCamel(data));
 };
@@ -160,9 +166,10 @@ const deserializeReportContent = (item: any) => {
   return item;
 };
 
-const transformList = <T>(list: any[]): T[] => {
+export const transformList = <T>(list: any[]): T[] => {
   return list.map(item => deserializeReportContent(item));
 };
+
 
 // --- Users ---
 
@@ -459,6 +466,31 @@ export const savePartnerLogos = async (data: PartnerLogo[]) => { console.warn('d
 
 // --- Talent Profiles ---
 export const getTalentProfiles = async () => fetchList<TalentProfile>('/talent-profiles', initialData.talentProfiles);
+
+export const getMyTalentProfile = async (): Promise<TalentProfile | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/talent-profiles/my`, { credentials: 'include' });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data ? keysToCamel(data) : null;
+  } catch (error) {
+    console.error('Error fetching my talent profile:', error);
+    return null;
+  }
+};
+
+export const saveMyTalentProfile = async (data: Partial<TalentProfile>): Promise<TalentProfile> => {
+  const response = await fetch(`${API_BASE}/talent-profiles/my`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(keysToSnake(data)),
+    credentials: 'include'
+  });
+  if (!response.ok) throw new Error('Error al guardar el perfil');
+  const result = await response.json();
+  return keysToCamel(result);
+};
+
 export const createTalentProfile = async (item: Omit<TalentProfile, 'id'>) => createItem<TalentProfile>('/talent-profiles', item);
 export const updateTalentProfile = async (item: TalentProfile) => updateItem<TalentProfile>('/talent-profiles', item);
 export const deleteTalentProfile = async (id: number) => deleteItem('/talent-profiles', id);
@@ -492,6 +524,24 @@ export const saveRotationInterval = async (data: number) => {
   } catch (e) {
     console.error("Error saving rotation", e);
   }
+};
+
+// -----------------------------------------------------------------------------
+// Payments
+// -----------------------------------------------------------------------------
+
+export const initiatePayment = async (userId: number): Promise<{ url: string; token: string }> => {
+  const res = await fetch(`${API_BASE}/payments/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId }),
+    credentials: 'include'
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || "Error al iniciar el pago");
+  }
+  return res.json();
 };
 
 // ==========================================

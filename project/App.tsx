@@ -103,17 +103,23 @@ const App: React.FC = () => {
   const handleLogin = (user: User) => {
     setCurrentUser(user);
     setIsAdminMode(isAdminUser(user));
+    // Persist user
+    localStorage.setItem('cipress_user', JSON.stringify(user));
+    localStorage.setItem('cipress_last_active', Date.now().toString());
+    
     // Role-based navigation
     if (isAdminUser(user)) {
       handleNavigate('admin');
     } else {
-      handleNavigate(returnToPage || 'dashboard'); // We route to dashboard, and render switches internally
+      handleNavigate(returnToPage || 'dashboard');
     }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
     setIsAdminMode(false);
+    localStorage.removeItem('cipress_user');
+    localStorage.removeItem('cipress_last_active');
     handleNavigate('home');
   };
 
@@ -157,9 +163,108 @@ const App: React.FC = () => {
 
   // Load data from Backend on mount
   useEffect(() => {
-    const loadData = async () => {
+    const loadInitialState = async () => {
+      // 1. Restore User Session
+      const savedUser = localStorage.getItem('cipress_user');
+      const lastActive = localStorage.getItem('cipress_last_active');
+      
+      if (savedUser && lastActive) {
+        const now = Date.now();
+        const tenMinutes = 10 * 60 * 1000;
+        
+        if (now - parseInt(lastActive) < tenMinutes) {
+          const user = JSON.parse(savedUser);
+          setCurrentUser(user);
+          setIsAdminMode(isAdminUser(user));
+          localStorage.setItem('cipress_last_active', now.toString());
+
+          // Sync user role with backend
+          const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+          fetch(`${apiUrl}/api/users/${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.role) {
+                const refreshedUser = { ...user, ...data };
+                setCurrentUser(refreshedUser);
+                setIsAdminMode(isAdminUser(refreshedUser));
+                localStorage.setItem('cipress_user', JSON.stringify(refreshedUser));
+                console.log("Sesión sincronizada con el servidor:", refreshedUser.role);
+              }
+            })
+            .catch(err => console.error("Error sincronizando sesión:", err));
+        } else {
+          localStorage.removeItem('cipress_user');
+          localStorage.removeItem('cipress_last_active');
+        }
+      }
+
+      // 2. Handle Flow Redirect Parameters (Auto-Confirm)
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      
+      if (token) {
+        // Evitar múltiples pollings si ya se está procesando
+        if (window.hasOwnProperty('_is_confirming_payment')) return;
+        (window as any)._is_confirming_payment = true;
+
+        // Assuming showNotification is defined elsewhere or needs to be added.
+        // For the purpose of this edit, we'll assume it's available.
+        // If not, it would need to be implemented (e.g., using a toast library).
+        const showNotification = (message: string, type: 'info' | 'success' | 'error') => {
+          alert(`${type.toUpperCase()}: ${message}`);
+        };
+
+        showNotification('Verificando pago...', 'info');
+        
+        let attempts = 0;
+        const maxAttempts = 10; // 20 segundos total
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+        
+        const pollStatus = async () => {
+          try {
+            const response = await fetch(`${apiUrl}/api/payments/status/${token}`);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.paid) {
+              // ¡ÉXITO!
+              const updatedUser = { ...currentUser!, role: data.role || 'Colaborador Premium' };
+              setCurrentUser(updatedUser);
+              setIsAdminMode(isAdminUser(updatedUser));
+              localStorage.setItem('cipress_user', JSON.stringify(updatedUser));
+              
+              showNotification('¡Pago exitoso! Tu perfil ha sido actualizado.', 'success');
+              setCurrentPage('dashboard'); // Navigate to dashboard on success
+              
+              // Limpiar URL
+              window.history.replaceState({}, document.title, "/");
+              delete (window as any)._is_confirming_payment;
+              return; // Detener polling
+            }
+
+            attempts++;
+            if (attempts < maxAttempts) {
+              setTimeout(pollStatus, 2000);
+            } else {
+              showNotification('El pago aún se está procesando. Por favor, revisa tu perfil en unos minutos.', 'info');
+              window.history.replaceState({}, document.title, "/");
+              delete (window as any)._is_confirming_payment;
+            }
+          } catch (error) {
+            console.error("Error verificando pago:", error);
+            attempts++;
+            if (attempts < maxAttempts) {
+              setTimeout(pollStatus, 3000);
+            } else {
+              delete (window as any)._is_confirming_payment;
+            }
+          }
+        };
+        pollStatus();
+      }
+
+      // 3. Load DB Content
       try {
-        await initDatabase(); // Auto-seed if empty
+        await initDatabase();
         setCourses(await getAllCourses());
         setJobs(await getAllJobs());
         setEntrepreneurs(await getAllEntrepreneurs());
@@ -193,7 +298,22 @@ const App: React.FC = () => {
         console.error("Error loading data from backend", e);
       }
     };
-    loadData();
+    loadInitialState();
+
+    // 4. Inactivity Tracker
+    const updateActivity = () => {
+      if (localStorage.getItem('cipress_user')) {
+        localStorage.setItem('cipress_last_active', Date.now().toString());
+      }
+    };
+
+    window.addEventListener('mousemove', updateActivity);
+    window.addEventListener('keypress', updateActivity);
+    
+    return () => {
+      window.removeEventListener('mousemove', updateActivity);
+      window.removeEventListener('keypress', updateActivity);
+    };
   }, []);
 
   const refreshPhotoPosts = async () => {
@@ -292,7 +412,16 @@ const App: React.FC = () => {
   const handleDeleteSponsor = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePremiumSponsor(id); setPremiumSponsors(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting sponsor"); } } };
 
   // Press Releases
-  const handleAddPressRelease = async (item: Omit<PressRelease, 'id'>) => { try { const res = await createPressRelease(item); setPressReleases(prev => [res, ...prev]); return true; } catch (e) { alert("Error creating press release"); return false; } };
+  const handleAddPressRelease = async (item: Omit<PressRelease, 'id'>) => { 
+    try { 
+      const res = await createPressRelease(item); 
+      setPressReleases(prev => [res, ...prev]); 
+      return true; 
+    } catch (e: any) { 
+      alert(e.message || "Error al crear el comunicado"); 
+      return false; 
+    } 
+  };
   const handleUpdatePressRelease = async (item: PressRelease) => { try { const res = await updatePressRelease(item); setPressReleases(prev => prev.map(i => i.id === res.id ? res : i)); } catch (e) { alert("Error updating press release"); } };
   const handleDeletePressRelease = async (id: number) => { if (window.confirm('Eliminar?')) { try { await deletePressRelease(id); setPressReleases(prev => prev.filter(i => i.id !== id)); } catch (e) { alert("Error deleting press release"); } } };
 
@@ -497,7 +626,7 @@ const App: React.FC = () => {
       case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} />;
       case 'entrepreneurship': return <EntrepreneurshipModule entrepreneurships={entrepreneurs} onBack={() => handleNavigate('home')} />;
       case 'freelanceServices': return <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} />;
-      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} talentProfiles={talentProfiles} onAddTalentProfile={handleAddTalentProfile} rotationInterval={rotationInterval} />;
+      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} currentUser={currentUser} onNavigate={handleNavigate} rotationInterval={rotationInterval} />;
       case 'destacados': return <DestacadosModule destacados={destacados} onSelectDestacado={handleSelectDestacado} />;
       case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
       case 'community-ads': return <CommunityAdsModule ads={communityAds} />;
@@ -518,27 +647,12 @@ const App: React.FC = () => {
       case 'dashboard': {
         if (!currentUser) return <LoginPage onNavigate={handleNavigate} returnTo="dashboard" onLoginSuccess={handleLogin} />;
         
-        const role = (typeof currentUser.role === 'string' ? currentUser.role : (currentUser.role as any)?.name || '').toUpperCase();
-        
-        if (role === 'CLIENTE') {
-           return <ClienteDashboard
-             currentUser={currentUser}
-             onLogout={handleLogout}
-             premiumSponsors={premiumSponsors}
-             onAddSponsor={handleAddSponsor}
-             onUpdateSponsor={handleUpdateSponsor}
-           />;
-        } else if (role === 'COLABORADOR GRATIS') {
-           return <FreeDashboard
-             currentUser={currentUser}
-             onLogout={handleLogout}
-             pressReleases={pressReleases}
-             onAddPressRelease={handleAddPressRelease}
-             onUpdatePressRelease={handleUpdatePressRelease}
-             onDeletePressRelease={handleDeletePressRelease}
-           />;
-        } else {
-           // COLABORADOR_PREMIUM and legacy roles
+        // Blindaje de Roles: Normalizar a minúsculas y aplicar lógica estricta con Fallback
+        const userRole = (currentUser.role || '').toLowerCase();
+        const isPremiumOrAdmin = userRole === 'administrador' || userRole === 'colaborador premium';
+
+        if (isPremiumOrAdmin) {
+           // Administrador o Colaborador Premium -> Panel Completo
            return <UserDashboard 
              currentUser={currentUser} 
              onLogout={handleLogout} 
@@ -552,6 +666,26 @@ const App: React.FC = () => {
              onUpdatePressRelease={handleUpdatePressRelease}
              onDeletePressRelease={handleDeletePressRelease}
              onGalleriesUpdated={refreshGalleries}
+             initialSection={initialTab === 'talent' ? 'Mi Perfil de Talento' : 'Mi Perfil'}
+           />;
+        } else if (userRole === 'cliente') {
+           return <ClienteDashboard
+             currentUser={currentUser}
+             onLogout={handleLogout}
+             premiumSponsors={premiumSponsors}
+             onAddSponsor={handleAddSponsor}
+             onUpdateSponsor={handleUpdateSponsor}
+           />;
+        } else {
+           // Fallback de Seguridad: Colaborador Gratis o cualquier otro rol desconocido
+           return <FreeDashboard 
+             currentUser={currentUser} 
+             onLogout={handleLogout} 
+             pressReleases={pressReleases}
+             onAddPressRelease={handleAddPressRelease}
+             onUpdatePressRelease={handleUpdatePressRelease}
+             onDeletePressRelease={handleDeletePressRelease}
+             initialTab={initialTab === 'talent' ? 'talent' : 'content'}
            />;
         }
       }

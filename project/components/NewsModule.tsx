@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { NewsArticle } from '../types';
+import { getImageUrl } from '../utils/mediaUtils';
 
 interface NewsModuleProps {
     newsArticles: NewsArticle[];
@@ -11,7 +12,7 @@ const NewsCard: React.FC<{ article: NewsArticle; isFeatured?: boolean; onClick: 
         return (
             <button onClick={onClick} className="bg-surface rounded-lg shadow-xl overflow-hidden md:col-span-2 lg:col-span-3 grid md:grid-cols-2 group border border-gray-200 text-left w-full">
                 <div className="md:order-2 overflow-hidden">
-                    <img src={article.imageUrl} alt={article.title} className="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={getImageUrl(article.imageUrl)} alt={article.title} className="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-8 flex flex-col justify-center md:order-1">
                     <span className="text-sm font-bold uppercase text-primary tracking-wide">{article.category}</span>
@@ -27,7 +28,7 @@ const NewsCard: React.FC<{ article: NewsArticle; isFeatured?: boolean; onClick: 
     return (
         <button onClick={onClick} className="bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group border border-gray-200 text-left w-full">
             <div className="overflow-hidden">
-                <img src={article.imageUrl} alt={article.title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"/>
+                <img src={getImageUrl(article.imageUrl)} alt={article.title} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"/>
             </div>
             <div className="p-5">
                 <span className="text-xs font-bold uppercase text-primary tracking-wide">{article.category}</span>

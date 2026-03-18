@@ -100,6 +100,7 @@ export interface PressRelease {
     reportContent?: ReportContentItem[];
     reportAuthor?: string;
     reportDate?: string;
+    createdAt?: string;
 }
 
 export interface NgoSpotlight {
@@ -310,13 +311,15 @@ export interface PartnerLogo {
 
 export interface TalentProfile {
     id: number;
+    userId?: number;
     name: string;
     avatarUrl: string;
     title: string; // max 8 words
-    skills: [string, string, string]; // Top 3 skills
+    skills: [string, string, string] | string[]; // Top 3 skills, handling both fixed and dynamic arrays
     availability: 'Presencial' | 'Remoto' | 'Híbrido';
     expectedSalary: string; // e.g., "$1.000.000 CLP"
     region: string;
     linkedinUrl: string;
     experienceYears: number;
+    isPremium?: boolean;
 }

@@ -7,6 +7,7 @@ interface PressReleaseFormProps {
     onSave: (pressRelease: PressRelease | Omit<PressRelease, 'id'>) => void;
     onClose: () => void;
     isModal?: boolean;
+    isLimitReached?: boolean;
 }
 
 const initialPressReleaseState: Omit<PressRelease, 'id'> = {
@@ -21,7 +22,7 @@ const initialPressReleaseState: Omit<PressRelease, 'id'> = {
     reportDate: '',
 };
 
-const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSave, onClose, isModal = true }) => {
+const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSave, onClose, isModal = true, isLimitReached = false }) => {
     const [formData, setFormData] = useState<Omit<PressRelease, 'id'> | PressRelease>(initialPressReleaseState);
 
     useEffect(() => {
@@ -132,9 +133,24 @@ const PressReleaseForm: React.FC<PressReleaseFormProps> = ({ pressRelease, onSav
                     />
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-4">
+                <div className="flex justify-end items-center space-x-4 pt-4">
+                    {isLimitReached && !pressRelease && (
+                        <div className="flex-1 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex items-center">
+                            <span>🚫 Límite diario alcanzado (3/3). Pásate a Premium para publicar sin límites.</span>
+                        </div>
+                    )}
                     <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
-                    <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Guardar Cambios</button>
+                    <button 
+                        type="submit" 
+                        disabled={isLimitReached && !pressRelease}
+                        className={`px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-colors ${
+                            (isLimitReached && !pressRelease) 
+                            ? 'bg-gray-400 cursor-not-allowed' 
+                            : 'bg-primary hover:bg-orange-600'
+                        }`}
+                    >
+                        {pressRelease ? 'Guardar Cambios' : 'Subir Comunicado'}
+                    </button>
                 </div>
             </form>
         </div>

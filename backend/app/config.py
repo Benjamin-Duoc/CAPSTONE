@@ -32,6 +32,11 @@ class Config:
     # API Keys
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
     
+    # Flow Payments
+    FLOW_API_KEY = os.environ.get('FLOW_API_KEY')
+    FLOW_SECRET_KEY = os.environ.get('FLOW_SECRET_KEY')
+    FLOW_API_URL = os.environ.get('FLOW_API_URL', 'https://sandbox.flow.cl/api')
+    
     # Server
     HOST = os.environ.get('HOST', '0.0.0.0')
     PORT = int(os.environ.get('PORT', 5000))
@@ -39,6 +44,9 @@ class Config:
     
     # CORS
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*').split(',')
+    
+    # Frontend
+    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:3000')
     
     # Media Files
     MEDIA_FOLDER = os.environ.get('MEDIA_FOLDER', 'media')

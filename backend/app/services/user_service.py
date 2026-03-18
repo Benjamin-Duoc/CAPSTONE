@@ -32,7 +32,7 @@ class UserService:
             region=user_data.get('region'),
             email=user_data.get('email'),
             password_hash=generate_password_hash(user_data.get('password')),
-            role=user_data.get('role', 'Colaborador'),
+            role=user_data.get('role', 'Colaborador Gratis'),
             avatar_url=user_data.get('avatarUrl') or user_data.get('avatar_url')
         )
         db.session.add(new_user)
@@ -50,6 +50,10 @@ class UserService:
 
     def get_all_users(self):
         return User.query.all()
+
+    def get_user_by_id(self, user_id):
+        return User.query.get(user_id)
+
 
     def update_user(self, user_id, user_data):
         user = User.query.get(user_id)

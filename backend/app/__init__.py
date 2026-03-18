@@ -80,6 +80,15 @@ def create_app(config_class=None):
     from .routes.home_routes import home_bp
     app.register_blueprint(home_bp)
 
+    from .routes.talent_routes import talent_bp
+    app.register_blueprint(talent_bp)
+
+    from .routes.press_release_routes import press_release_bp
+    app.register_blueprint(press_release_bp)
+
+    from .routes.payment_routes import payment_bp
+    app.register_blueprint(payment_bp)
+
     from .routes.route_factory import create_crud_blueprint
     from app.models.all_models import (
         User, Role, AppConfig, SiteStat, HeroHeading,
@@ -122,7 +131,7 @@ def create_app(config_class=None):
         ('ngo_spotlights', NgoSpotlight, NgoSpotlightSchema, '/api/ngo-spotlights'),
         ('partner_logos', PartnerLogo, PartnerLogoSchema, '/api/partner-logos'),
         ('photojournalism_posts', PhotojournalismPost, PhotojournalismPostSchema, '/api/photojournalism-posts'),
-        ('press_releases', PressRelease, PressReleaseSchema, '/api/press-releases'),
+        # ('press_releases', PressRelease, PressReleaseSchema, '/api/press-releases'), # Replaced by custom press_release_bp
         ('promo_videos', PromoVideo, PromoVideoSchema, '/api/promo-videos'),
         ('resources', Resource, ResourceSchema, '/api/resources'),
         ('shareable_photos', ShareablePhoto, ShareablePhotoSchema, '/api/shareable-photos'),
@@ -131,7 +140,7 @@ def create_app(config_class=None):
         ('special_ads', SpecialAd, SpecialAdSchema, '/api/special-ads'),
         ('specialists', Specialist, SpecialistSchema, '/api/specialists'),
         ('sponsored_ads', SponsoredAd, SponsoredAdSchema, '/api/sponsored-ads'),
-        ('talent_profiles', TalentProfile, TalentProfileSchema, '/api/talent-profiles'),
+        # ('talent_profiles', TalentProfile, TalentProfileSchema, '/api/talent-profiles'), # Replaced by custom talent_bp
     ]
 
     for name, model, schema, prefix in modules:
@@ -145,8 +154,8 @@ def create_app(config_class=None):
     print(">>> CIPRESS BACKEND INICIADO")
     print("="*60)
     print(f"Hora de inicio: {datetime.utcnow().isoformat()}")
-    print(f"URL: http://localhost:5000")
-    print(f"Frontend esperado: http://localhost:3000")
+    print(f"URL Backend: http://127.0.0.1:5000")
+    print(f"URL Frontend: http://127.0.0.1:3000")
     print("\nENDPOINTS SINGULARES (para frontend):")
     print("  * GET  /hero-heading")
     print("  * GET  /app-config")

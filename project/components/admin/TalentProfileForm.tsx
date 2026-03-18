@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import type { TalentProfile } from '../../types';
 import { chileanRegions } from '../../data/mockData';
+import { LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 
 interface TalentProfileFormProps {
     talentProfile: TalentProfile | null;
+    isPremium: boolean;
     onSave: (profile: TalentProfile | Omit<TalentProfile, 'id'>) => void;
     onClose: () => void;
+    isModal?: boolean;
 }
 
 const initialProfileState: Omit<TalentProfile, 'id'> = {
@@ -20,7 +23,7 @@ const initialProfileState: Omit<TalentProfile, 'id'> = {
     experienceYears: 0,
 };
 
-const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, onSave, onClose }) => {
+const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, isPremium, onSave, onClose, isModal = true }) => {
     const [formData, setFormData] = useState<Omit<TalentProfile, 'id'> | TalentProfile>(initialProfileState);
     const [titleError, setTitleError] = useState('');
 
@@ -53,6 +56,12 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, on
         setFormData(prev => ({ ...prev, skills: newSkills }));
     };
 
+    const handlePremiumAlert = () => {
+        if (!isPremium) {
+            alert('¡Destaca entre la competencia! 🚀\n\nMejora a tu cuenta a PREMIUM para que las empresas y reclutadores puedan contactarte directamente por LinkedIn y ver tus pretensiones de renta en el listado prioritario.');
+        }
+    };
+
     const handleImageUpload = () => {
         const input = document.createElement('input');
         input.type = 'file';
@@ -80,11 +89,18 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, on
         onSave(formData);
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-4">{talentProfile ? 'Editar Perfil de Talento' : 'Crear Perfil de Talento'}</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+    const content = (
+        <div className={`bg-white ${isModal ? 'rounded-lg shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto' : 'p-0 w-full'}`}>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">{talentProfile ? 'Editar Perfil de Talento' : 'Crear Perfil de Talento'}</h2>
+                {!isModal && (
+                    <button onClick={onClose} className="text-sm font-medium text-primary hover:underline flex items-center">
+                        <ArrowLeftIcon className="h-4 w-4 mr-1" />
+                        Volver
+                    </button>
+                )}
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="p-4 border rounded-lg space-y-4">
                         <h3 className="text-lg font-semibold text-gray-700">Información Personal</h3>
                         <div>
@@ -138,30 +154,80 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, on
                                 </select>
                             </div>
                         </div>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Renta Mensual Pretendida (CLP)</label>
-                                <input type="text" name="expectedSalary" placeholder="Ej: $1.200.000 o a convenir" value={formData.expectedSalary} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative group cursor-pointer" onClick={handlePremiumAlert}>
+                                <label className="flex items-center text-sm font-medium text-gray-700">
+                                    Renta Mensual Pretendida (CLP)
+                                    {!isPremium && <LockClosedIcon className="h-4 w-4 ml-1 text-orange-500" title="Solo Premium" />}
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="expectedSalary" 
+                                    placeholder={isPremium ? "Ej: $1.200.000 o a convenir" : "Bloqueado - Solo Premium"} 
+                                    value={isPremium ? formData.expectedSalary : ''} 
+                                    onChange={handleChange} 
+                                    className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
+                                    required={isPremium} 
+                                    disabled={!isPremium}
+                                />
+                                {!isPremium && <div className="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-transparent z-10" />}
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Años de Experiencia</label>
-                                <input type="number" name="experienceYears" value={formData.experienceYears} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required min="0" />
+                            <div className="relative group cursor-pointer" onClick={handlePremiumAlert}>
+                                <label className="flex items-center text-sm font-medium text-gray-700">
+                                    Años de Experiencia
+                                    {!isPremium && <LockClosedIcon className="h-4 w-4 ml-1 text-orange-500" title="Solo Premium" />}
+                                </label>
+                                <input 
+                                    type="number" 
+                                    name="experienceYears" 
+                                    value={isPremium ? formData.experienceYears : 0} 
+                                    onChange={handleChange} 
+                                    className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
+                                    required={isPremium} 
+                                    min="0" 
+                                    disabled={!isPremium}
+                                />
+                                {!isPremium && <div className="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-transparent z-10" />}
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Vínculo a LinkedIn</label>
-                            <input type="url" name="linkedinUrl" placeholder="https://linkedin.com/in/tu-perfil" value={formData.linkedinUrl} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <div className="relative group cursor-pointer" onClick={handlePremiumAlert}>
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                                Vínculo a LinkedIn
+                                {!isPremium && <LockClosedIcon className="h-4 w-4 ml-1 text-orange-500" title="Solo Premium" />}
+                            </label>
+                            <input 
+                                type="url" 
+                                name="linkedinUrl" 
+                                placeholder={isPremium ? "https://linkedin.com/in/tu-perfil" : "Bloqueado - Solo Premium"} 
+                                value={isPremium ? formData.linkedinUrl : ''} 
+                                onChange={handleChange} 
+                                className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
+                                required={isPremium} 
+                                disabled={!isPremium}
+                            />
+                            {!isPremium && <div className="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-transparent z-10" />}
                         </div>
                     </div>
 
-                    <div className="flex justify-end space-x-4 pt-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Guardar Perfil</button>
+                    <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
+                        {isModal && <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>}
+                        <button type="submit" className="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-orange-600 transition-colors">
+                            {talentProfile ? 'Actualizar Mi Perfil' : 'Crear Perfil Profesional'}
+                        </button>
                     </div>
                 </form>
             </div>
-        </div>
     );
+
+    if (isModal) {
+        return (
+            <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+                {content}
+            </div>
+        );
+    }
+
+    return content;
 };
 
 export default TalentProfileForm;

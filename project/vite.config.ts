@@ -12,17 +12,17 @@ export default defineConfig(({ mode }) => {
 
     server: {
       port: 3000,
-      host: '0.0.0.0',
+      host: '127.0.0.1',
 
       // Proxy only in development mode
       proxy: mode === 'development' ? {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:5000',
+          target: env.VITE_API_URL || 'http://127.0.0.1:5000',
           changeOrigin: true,
           secure: false,
         },
         '/backendcipress/media': {
-          target: env.VITE_MEDIA_URL || 'http://localhost:5000',
+          target: env.VITE_MEDIA_URL || 'http://127.0.0.1:5000',
           changeOrigin: true,
           secure: false,
         }

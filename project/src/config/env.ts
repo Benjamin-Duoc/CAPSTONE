@@ -20,13 +20,14 @@ const getEnvConfig = (): EnvConfig => {
     // Get API URL from environment or use defaults
     const apiUrl = import.meta.env.VITE_API_URL ||
         (isDevelopment
-            ? 'http://localhost:5000/backendcipress/api'
+            ? 'http://127.0.0.1:5000/backendcipress/api'
             : 'https://www.cipress.cl/backendcipress/api');
 
     // Get Media URL from environment or use defaults
+    // Note: The backend typically serves media at [host]/backendcipress/media/
     const mediaUrl = import.meta.env.VITE_MEDIA_URL ||
         (isDevelopment
-            ? 'http://localhost:5000/backendcipress/media'
+            ? 'http://127.0.0.1:5000/backendcipress/media'
             : 'https://www.cipress.cl/backendcipress/media');
 
     return {
@@ -49,7 +50,14 @@ export const getMediaUrl = (path: string): string => {
     }
 
     // Remove leading slash if present
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    let cleanPath = path.startsWith('/') ? path.slice(1) : path;
+
+    // AVOID DOUBLE MEDIA PREFIX:
+    // If the path from DB already starts with 'media/' (e.g. '/media/images/photo.jpg')
+    // and our base mediaUrl already ends with '/media', we strip the prefix from the path.
+    if (cleanPath.startsWith('media/') && ENV.mediaUrl.endsWith('/media')) {
+        cleanPath = cleanPath.slice(6); // Remove 'media/'
+    }
 
     // Combine media URL with path
     return `${ENV.mediaUrl}/${cleanPath}`;

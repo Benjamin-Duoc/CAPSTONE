@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import type { User, PremiumSponsor, PressRelease } from '../types';
+import { initiatePayment } from '../utils/db';
 import MyProfileView from './dashboard/MyProfileView';
 import ConfianEnCipressView from './dashboard/ConfianEnCipressView';
 import RedactarComunicadoView from './dashboard/RedactarComunicadoView';
 import MisGaleriasView from './dashboard/MisGaleriasView';
+import TalentProfileView from './dashboard/TalentProfileView';
 import { 
     UserIcon, 
     CreditCardIcon, 
@@ -13,7 +15,9 @@ import {
     SparklesIcon, 
     BuildingOfficeIcon,
     LockClosedIcon,
-    ArrowLeftOnRectangleIcon 
+    ArrowLeftOnRectangleIcon,
+    CheckIcon,
+    StarIcon
 } from '@heroicons/react/24/outline';
 
 interface UserDashboardProps {
@@ -29,6 +33,7 @@ interface UserDashboardProps {
     onUpdatePressRelease: (pressRelease: PressRelease) => Promise<void>;
     onDeletePressRelease: (id: number) => Promise<void>;
     onGalleriesUpdated?: () => void;
+    initialSection?: MenuSection;
 }
 
 type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Mis Galerías' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral';
@@ -46,7 +51,7 @@ const MENU_ITEMS: MenuItem[] = [
     { name: 'Suscripción', icon: CreditCardIcon, category: 'Mi Cuenta', visibleFor: ['all'], lockedFor: [] },
     
     { name: 'Redactar Comunicado', icon: PencilSquareIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
-    { name: 'Mis Galerías', icon: PhotoIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador'] },
+    { name: 'Mis Galerías', icon: PhotoIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador gratis'] },
     
     { name: 'Confían en CiPress', icon: BuildingOfficeIcon, category: 'Área Comercial', visibleFor: ['cliente', 'empresa', 'administrador'], lockedFor: [] },
     { name: 'Mis Servicios Freelance', icon: SparklesIcon, category: 'Área Comercial', visibleFor: ['cliente', 'administrador'], lockedFor: ['colaborador'] },
@@ -58,9 +63,11 @@ const MENU_ITEMS: MenuItem[] = [
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
     currentUser, onLogout, onNavigate, onUpdateProfile, 
     premiumSponsors, onAddSponsor, onUpdateSponsor,
-    pressReleases, onAddPressRelease, onUpdatePressRelease, onDeletePressRelease, onGalleriesUpdated
+    pressReleases, onAddPressRelease, onUpdatePressRelease, onDeletePressRelease, onGalleriesUpdated,
+    initialSection = 'Mi Perfil'
 }) => {
-    const [activeSection, setActiveSection] = useState<MenuSection>('Mi Perfil');
+    const [activeSection, setActiveSection] = useState<MenuSection>(initialSection);
+    const [isProcessingUpgrade, setIsProcessingUpgrade] = useState(false);
 
     // Mapeo seguro del rol (todo a lowercase)
     const userRole = (typeof currentUser?.role === 'string' 
@@ -80,6 +87,18 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         return item.lockedFor.some(role => userRole.includes(role));
     };
 
+    const handleUpgrade = async () => {
+        if (!currentUser) return;
+        setIsProcessingUpgrade(true);
+        try {
+            const { url } = await initiatePayment(currentUser.id);
+            window.location.href = url;
+        } catch (error: any) {
+            alert(error.message || "Error al iniciar el proceso de pago.");
+            setIsProcessingUpgrade(false);
+        }
+    };
+
     // Agrupar ítems visibles por categoría
     const categories = ['Mi Cuenta', 'Mis Publicaciones', 'Área Comercial', 'Área Laboral'];
 
@@ -97,7 +116,89 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             case 'Mi Perfil':
                 return currentUser ? <MyProfileView currentUser={currentUser} onSaveProfile={onUpdateProfile} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando perfil...</div>;
             case 'Suscripción':
-                return <div className="p-8 text-center text-gray-500 font-medium">Información de "Suscripción" (Próximamente)</div>;
+                const isPremiumUser = userRole.includes('premium');
+                return (
+                    <div className="p-8 max-w-4xl mx-auto">
+                        <div className="text-center mb-10">
+                            <h3 className="text-3xl font-bold font-serif text-text-primary">Gestión de Suscripción</h3>
+                            {isPremiumUser ? (
+                                <div className="mt-4 inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full border border-green-200">
+                                    <StarIcon className="h-5 w-5 mr-2 animate-pulse" />
+                                    <span className="font-bold">Suscripción Premium Activa</span>
+                                </div>
+                            ) : (
+                                <p className="text-text-secondary mt-2">Estás usando una cuenta básica de colaborador</p>
+                            )}
+                        </div>
+
+                        {isPremiumUser ? (
+                            <div className="bg-white p-10 rounded-3xl border border-primary/20 shadow-xl text-center">
+                                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <SparklesIcon className="h-10 w-10 text-primary" />
+                                </div>
+                                <h4 className="text-2xl font-bold text-text-primary mb-4">¡Ya eres cliente Premium! 🚀</h4>
+                                <p className="text-lg text-text-secondary mb-8">
+                                    Gracias por comprar la membresía y confiar en **CiPress**. Tu apoyo nos permite seguir conectando al mejor talento periodístico de Chile.
+                                </p>
+                                <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto text-left">
+                                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
+                                        <CheckIcon className="h-6 w-6 text-green-500" />
+                                        <span className="text-sm font-medium text-gray-700">Visibilidad 24/7</span>
+                                    </div>
+                                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
+                                        <CheckIcon className="h-6 w-6 text-green-500" />
+                                        <span className="text-sm font-medium text-gray-700">Banco de Talentos VIP</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {/* Plan Actual */}
+                                <div className="bg-surface p-8 rounded-2xl border border-gray-200 opacity-60">
+                                    <h4 className="text-xl font-bold text-gray-500">Colaborador Gratis</h4>
+                                    <p className="text-3xl font-black text-gray-400 mt-2">$0 <span className="text-sm font-normal">/mes</span></p>
+                                    <ul className="mt-6 space-y-3">
+                                        <li className="flex items-start text-sm text-gray-400">
+                                            <CheckIcon className="h-5 w-5 mr-2" />
+                                            <span>Subida de comunicados.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                {/* Plan Premium */}
+                                <div className="bg-white p-8 rounded-2xl border-2 border-primary shadow-2xl relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 text-[10px] font-bold">VIP</div>
+                                    <h4 className="text-xl font-bold text-primary flex items-center">
+                                        <StarIcon className="h-6 w-6 mr-2" />
+                                        Premium
+                                    </h4>
+                                    <p className="text-3xl font-black text-text-primary mt-2">$3.000 <span className="text-sm font-normal">/mes</span></p>
+                                    <ul className="mt-6 space-y-3">
+                                        <li className="flex items-start text-sm text-text-secondary">
+                                            <CheckIcon className="h-5 w-5 text-green-500 mr-2" />
+                                            <span>Visibilidad total en Portada.</span>
+                                        </li>
+                                        <li className="flex items-start text-sm text-text-secondary">
+                                            <CheckIcon className="h-5 w-5 text-green-500 mr-2" />
+                                            <span>Prioridad en Banco de Talentos.</span>
+                                        </li>
+                                    </ul>
+                                    <button 
+                                        onClick={handleUpgrade}
+                                        disabled={isProcessingUpgrade}
+                                        className={`w-full mt-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg flex items-center justify-center ${isProcessingUpgrade ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                    >
+                                        {isProcessingUpgrade ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                                                Conectando...
+                                            </>
+                                        ) : 'Subir a Premium'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
             case 'Redactar Comunicado':
                 return currentUser ? <RedactarComunicadoView 
                     currentUser={currentUser}
@@ -112,6 +213,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     onDeletePressRelease={onDeletePressRelease}
                 /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
             case 'Mi Perfil de Talento':
+                return currentUser ? <TalentProfileView currentUser={currentUser} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
             case 'Publicar Oferta Laboral':
                 return <div className="p-8 text-center text-gray-500 font-medium">Vista para "{activeSection}" en construcción...</div>;
             case 'Mis Galerías':
@@ -137,9 +239,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     };
 
     return (
-        <div className="bg-gray-50 flex flex-col md:flex-row animate-fade-in">
+        <div className="bg-gray-50 flex flex-col md:flex-row animate-fade-in border-t border-gray-100">
             {/* Sidebar Lateral Inteligente */}
-            <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col md:sticky md:top-20 md:h-[calc(100vh-80px)] z-20">
+            <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col md:sticky md:top-20 z-20">
                 <div className="p-6 border-b border-gray-100 flex items-center mb-2">
                     <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg mr-3 shadow-inner overflow-hidden">
                         {currentUser?.avatarUrl ? (
@@ -154,7 +256,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     </div>
                 </div>
 
-                <div className="flex-grow overflow-y-auto px-4 py-4 space-y-6">
+                <div className="flex-grow px-4 py-4 space-y-6">
                     {categories.map(cat => {
                         const itemsInCategory = MENU_ITEMS.filter(item => item.category === cat && isVisible(item));
                         if (itemsInCategory.length === 0) return null;
@@ -207,7 +309,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             </aside>
 
             {/* Contenido Principal */}
-            <main className="flex-1 bg-white relative z-10 min-h-[calc(100vh-80px)] shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.02)] pt-4 md:pt-0 pb-12 md:pb-24">
+            <main className="flex-1 bg-white relative z-10 shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.02)] pt-4 md:pt-0 pb-12 md:pb-24">
                 {renderContent()}
             </main>
         </div>

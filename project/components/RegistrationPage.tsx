@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Page, User } from '../types';
 import { registerUser } from '../utils/db';
+import { chileanRegions } from '../data/mockData';
 import Logo from './Logo';
 
 interface RegistrationPageProps {
@@ -34,7 +35,6 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
         else if (score <= 4) setPasswordStrength({ score, label: 'Media', color: 'bg-yellow-500' });
         else setPasswordStrength({ score, label: 'Fuerte', color: 'bg-green-500' });
     };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -42,6 +42,12 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
         if (name === 'password') {
             calculatePasswordStrength(value);
         }
+    };
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -68,18 +74,19 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
             });
 
             if (result.success) {
+                setError(''); // Limpiamos errores previos
                 setSuccess(true);
                 // Esperamos 2 segundos para que el usuario vea el mensaje de éxito
                 setTimeout(() => {
                     if (onLogin) {
-                        // Logueamos automáticamente al usuario (Simulación del objeto User)
+                        // Logueamos automáticamente al usuario (Usa el ID real del backend)
                         onLogin({
-                            id: Date.now(), // El ID real vendrá del backend en una app completa
+                            id: result.userId, 
                             firstName: formData.firstName,
                             lastName: formData.lastName,
                             email: formData.email,
                             region: formData.region,
-                            role: 'Colaborador', // Added default role
+                            role: 'Colaborador Gratis', 
                             password: formData.password, // Added password to match the type formally though it shouldn't be here in plain text.
                             createdAt: new Date().toISOString()
                         });
@@ -124,8 +131,10 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 text-red-700 text-sm rounded" role="alert">
-                            <p>{error}</p>
+                        <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200" role="alert">
+                            <p className="text-sm text-red-600 font-medium text-center">
+                                {error}
+                            </p>
                         </div>
                     )}
 
@@ -158,16 +167,21 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onNavigate, onLogin
                         </div>
                         <div>
                             <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">Región</label>
-                            <input
+                            <select
                                 id="region"
                                 name="region"
-                                type="text"
                                 required
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                placeholder="Ingresa tu region nacional o internacional"
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-white"
                                 value={formData.region}
-                                onChange={handleChange}
-                            />
+                                onChange={handleSelectChange}
+                            >
+                                <option value="" disabled>Selecciona tu región</option>
+                                {chileanRegions.map((region) => (
+                                    <option key={region} value={region}>
+                                        {region}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>

@@ -447,8 +447,9 @@ def create_db():
 
         # --- TALENT PROFILES ---
         talents = [
-            {"name": "Javiera Latorre", "title": "Periodista de datos", "skills": json.dumps(["Análisis de Datos", "Investigación"]), "availability": "Remoto", "region": "Metropolitana", "expected_salary": "$1.500.000 CLP", "experience_years": 5},
-            {"name": "Ricardo Núñez", "title": "Productor audiovisual", "skills": json.dumps(["Premiere Pro", "Cámara"]), "availability": "Híbrido", "region": "Valparaíso", "expected_salary": "$1.800.000 CLP", "experience_years": 8}
+            {"user_id": 4, "name": "Juan Premium", "title": "Periodista de Investigación Senior", "skills": ["Investigación Corrupción", "Data Mining", "Reporteo Local"], "availability": "Remoto", "region": "Valparaíso", "expected_salary": "$2.200.000 CLP", "experience_years": 12, "avatar_url": "https://i.pravatar.cc/150?u=4"},
+            {"user_id": 5, "name": "Pedro Gratis", "title": "Redactor Junior", "skills": ["SEO", "Redacción Creativa"], "availability": "Híbrido", "region": "Biobío", "expected_salary": "$800.000 CLP", "experience_years": 2, "avatar_url": "https://i.pravatar.cc/150?u=5"},
+            {"name": "Javiera Latorre", "title": "Periodista de datos (Demo)", "skills": ["Análisis de Datos", "Investigación"], "availability": "Remoto", "region": "Metropolitana", "expected_salary": "$1.500.000 CLP", "experience_years": 5, "avatar_url": "https://i.pravatar.cc/150?u=10"}
         ]
         for tp in talents:
             db.session.add(TalentProfile(**tp))

@@ -1,19 +1,56 @@
-
-import React, { useState, useMemo } from 'react';
-import type { Job, TalentProfile } from '../types';
-import { BriefcaseIcon, MapPinIcon, LightBulbIcon, LinkedInIcon } from './icons';
-import TalentProfileForm from './admin/TalentProfileForm';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { Page, User, Job, TalentProfile } from '../types';
+import { BriefcaseIcon, MapPinIcon, LightBulbIcon, StarIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { LinkedInIcon } from './icons';
+import { getTalentProfiles } from '../utils/db';
 
 interface OpportunitiesModuleProps {
     jobs: Job[];
     onSelectJob: (job: Job) => void;
     initialTab?: string;
-    talentProfiles: TalentProfile[];
-    onAddTalentProfile: (profile: Omit<TalentProfile, 'id'>) => void;
+    currentUser: User | null;
+    onNavigate: (page: Page, subPage?: string) => void;
     rotationInterval: number;
 }
 
 type Tab = 'jobs' | 'talents';
+
+interface LoginGuardModalProps {
+    onClose: () => void;
+    onNavigate: (page: Page) => void;
+}
+
+const LoginGuardModal: React.FC<LoginGuardModalProps> = ({ onClose, onNavigate }) => (
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[100] p-4 backdrop-blur-sm">
+        <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative">
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <XMarkIcon className="h-6 w-6" />
+            </button>
+            <div className="text-center">
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex justify-center items-center mx-auto mb-4">
+                    <StarIcon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">¡Destaca tu talento en CiPress! 🚀</h3>
+                <p className="text-gray-600 mb-8">Para aparecer en nuestra base de talentos y que las empresas te contacten, necesitas una cuenta de Colaborador. ¡Es gratis!</p>
+                
+                <div className="space-y-4">
+                    <button 
+                        onClick={() => onNavigate('register')}
+                        className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-orange-600 transition-colors shadow-md"
+                    >
+                        Crear mi cuenta gratis
+                    </button>
+                    <button 
+                        onClick={() => onNavigate('login')}
+                        className="w-full py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        Ya tengo cuenta (Ingresar)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+);
 
 const JobCard: React.FC<{ job: Job; onSelect: () => void }> = ({ job, onSelect }) => (
     <button onClick={onSelect} className="w-full text-left bg-surface p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 border border-gray-200 group">
@@ -36,37 +73,85 @@ const JobCard: React.FC<{ job: Job; onSelect: () => void }> = ({ job, onSelect }
 );
 
 const TalentProfileCard: React.FC<{ profile: TalentProfile }> = ({ profile }) => (
-    <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 p-5 flex flex-col text-center items-center">
+    <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 p-5 flex flex-col text-center items-center relative group">
+        {profile.isPremium && (
+            <div className="absolute top-2 right-2">
+                <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center">
+                    <StarIcon className="h-3 w-3 mr-1" />
+                    PREMIUM
+                </span>
+            </div>
+        )}
         <img src={profile.avatarUrl} alt={profile.name} className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" />
         <h3 className="font-bold text-lg text-text-primary mt-3">{profile.name}</h3>
         <p className="text-sm text-primary font-semibold text-center h-10">{profile.title}</p>
-        <div className="mt-3 flex flex-wrap justify-center gap-2">
-            {profile.skills.map((skill, index) => (
-                <span key={index} className="text-xs font-semibold bg-secondary/10 text-secondary px-2 py-1 rounded-full">{skill}</span>
+        <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+            {(Array.isArray(profile.skills) 
+                ? profile.skills 
+                : (typeof profile.skills === 'string' ? JSON.parse(profile.skills) : [])
+            ).map((skill: string, index: number) => (
+                <span key={index} className="text-[10px] font-bold bg-secondary/5 text-secondary border border-secondary/10 px-2 py-0.5 rounded-md">{skill}</span>
             ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-gray-100 w-full text-sm text-text-secondary space-y-1">
-            <p><span className="font-semibold">Disponibilidad:</span> {profile.availability}</p>
-            <p><span className="font-semibold">Región:</span> {profile.region}</p>
-            <p><span className="font-semibold">Experiencia:</span> {profile.experienceYears} {profile.experienceYears === 1 ? 'año' : 'años'}</p>
+        
+        <div className="mt-4 pt-3 border-t border-gray-100 w-full text-xs text-text-secondary space-y-1">
+            <div className="flex justify-between px-1">
+                <span>Disponibilidad:</span>
+                <span className="font-semibold text-text-primary">{profile.availability}</span>
+            </div>
+            {profile.isPremium ? (
+                <>
+                    <div className="flex justify-between px-1">
+                        <span>Experiencia:</span>
+                        <span className="font-semibold text-text-primary">{profile.experienceYears} años</span>
+                    </div>
+                </>
+            ) : (
+                <div className="text-center py-1 bg-gray-50 rounded mt-2 text-[10px] italic text-gray-400">
+                    Info. adicional solo para Premium
+                </div>
+            )}
         </div>
-        <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="w-full mt-4 px-4 py-2 text-sm font-bold text-white bg-[#0077B5] rounded-md hover:bg-[#005E92] transition-colors flex items-center justify-center space-x-2">
-            <LinkedInIcon className="h-5 w-5" />
-            <span>Ver Perfil en LinkedIn</span>
-        </a>
+
+        {profile.isPremium && profile.linkedinUrl && (
+            <a 
+                href={profile.linkedinUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-full mt-4 px-4 py-2 text-xs font-bold text-white bg-[#0077B5] rounded-md hover:bg-[#005E92] transition-colors flex items-center justify-center space-x-2"
+            >
+                <LinkedInIcon className="h-4 w-4" />
+                <span>Contactar en LinkedIn</span>
+            </a>
+        )}
     </div>
 );
 
-
-const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelectJob, initialTab, talentProfiles, onAddTalentProfile, rotationInterval }) => {
+const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelectJob, initialTab, currentUser, onNavigate, rotationInterval }) => {
     const [activeTab, setActiveTab] = useState<Tab>((initialTab as Tab) || 'jobs');
-    const [isTalentFormOpen, setIsTalentFormOpen] = useState(false);
+    const [isLoginGuardOpen, setIsLoginGuardOpen] = useState(false);
+    const [talentProfiles, setTalentProfiles] = useState<TalentProfile[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    // Load talent profiles locally to avoid prop drilling and ensure data is fresh
+    useEffect(() => {
+        const loadTalents = async () => {
+            setLoading(true);
+            try {
+                const refreshed = await getTalentProfiles();
+                setTalentProfiles(refreshed);
+            } catch (error) {
+                console.error("Error fetching talent profiles:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadTalents();
+    }, []);
 
     // Talent Pagination
     const [talentCurrentPage, setTalentCurrentPage] = useState(1);
     const TALENTS_PER_PAGE = 15;
-
-
 
     const shuffledTalentProfiles = useMemo(() => {
         // Create a seed based on the current time divided by the rotation interval.
@@ -95,8 +180,6 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
         return array;
     }, [talentProfiles, rotationInterval]);
 
-
-
     const totalTalentPages = Math.ceil(shuffledTalentProfiles.length / TALENTS_PER_PAGE);
 
     const currentTalentProfiles = useMemo(() => {
@@ -111,9 +194,13 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
         }
     };
 
-    const handleSaveTalentProfile = (newProfile: Omit<TalentProfile, 'id'>) => {
-        onAddTalentProfile(newProfile);
-        setIsTalentFormOpen(false);
+    const handleCreateProfileClick = () => {
+        if (!currentUser) {
+            setIsLoginGuardOpen(true);
+        } else {
+            // Redirect to dashboard, specifically to the talent section
+            onNavigate('dashboard', 'talent');
+        }
     };
 
 
@@ -158,10 +245,18 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
                                 <h3 className="font-bold font-serif text-xl text-highlight">¿Buscas tu próxima oportunidad?</h3>
                                 <p className="mt-1 text-sm text-blue-300">Crea tu perfil en nuestra base de talentos. Es un beneficio gratuito para suscriptores.</p>
                             </div>
-                            <button onClick={() => setIsTalentFormOpen(true)} className="mt-4 sm:mt-0 flex-shrink-0 px-5 py-2 font-bold text-secondary bg-highlight rounded-md hover:bg-yellow-300 transition-colors duration-200 shadow-md">
+                            <button onClick={handleCreateProfileClick} className="mt-4 sm:mt-0 flex-shrink-0 px-5 py-2 font-bold text-secondary bg-highlight rounded-md hover:bg-yellow-300 transition-colors duration-200 shadow-md">
                                 Crear mi Perfil
                             </button>
                         </div>
+                        {loading && (
+                            <div className="flex justify-center p-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                            </div>
+                        )}
+                        {!loading && currentTalentProfiles.length === 0 && (
+                            <p className="text-center py-12 text-gray-500 italic">No hay perfiles disponibles en el banco de talentos.</p>
+                        )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {currentTalentProfiles.map(profile => <TalentProfileCard key={profile.id} profile={profile} />)}
                         </div>
@@ -202,7 +297,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
     );
 
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-background">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Oportunidades y Conexiones</h1>
@@ -218,7 +313,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
                     {renderContent()}
                 </div>
             </div>
-            {isTalentFormOpen && <TalentProfileForm talentProfile={null} onSave={handleSaveTalentProfile} onClose={() => setIsTalentFormOpen(false)} />}
+            {isLoginGuardOpen && <LoginGuardModal onClose={() => setIsLoginGuardOpen(false)} onNavigate={onNavigate} />}
         </div>
     );
 };

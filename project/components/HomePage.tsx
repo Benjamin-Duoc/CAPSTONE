@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { API_BASE } from '../utils/db';
+import { API_BASE, keysToCamel, transformList } from '../utils/db';
+import { getImageUrl } from '../utils/mediaUtils';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User, DestacadoArticle } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
@@ -644,7 +645,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                 const response = await fetch(`${API_BASE}/featured-content`);
                 if (response.ok) {
                     const data = await response.json();
-                    setFeaturedPressReleases(data);
+                    setFeaturedPressReleases(transformList<PressRelease>(keysToCamel(data)));
                 }
             } catch (err) {
                 console.error("Error fetching featured content:", err);
@@ -1033,7 +1034,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <button onClick={() => onSelectNewsArticle(mainNewsArticle)} className="bg-surface rounded-lg group block border border-gray-200 hover:shadow-lg transition-shadow duration-300 text-left">
                                         <div className="overflow-hidden rounded-t-lg">
-                                            <img src={mainNewsArticle.imageUrl || DEFAULT_IMAGE} alt={mainNewsArticle.title} onError={handleImageError} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
+                                            <img src={getImageUrl(mainNewsArticle.imageUrl) || DEFAULT_IMAGE} alt={mainNewsArticle.title} onError={handleImageError} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" />
                                         </div>
                                         <div className="p-5">
                                             <span className="text-xs font-bold uppercase text-primary">{mainNewsArticle.category}</span>

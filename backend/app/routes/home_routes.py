@@ -69,5 +69,16 @@ def get_featured_content():
             results = all_free_posts[start_idx:end_idx]
             
     # Dump exactly 4 (or less if not enough in DB)
+    if len(results) < 4:
+        # Backfill with the latest press releases regardless of role or time
+        already_have_ids = [r.id for r in results]
+        backfill_count = 4 - len(results)
+        
+        backfill_items = query.filter(
+            ~PressRelease.id.in_(already_have_ids) if already_have_ids else True
+        ).order_by(PressRelease.created_at.desc()).limit(backfill_count).all()
+        
+        results.extend(backfill_items)
+
     schema = PressReleaseSchema(many=True)
     return jsonify(schema.dump(results[:4])), 200
