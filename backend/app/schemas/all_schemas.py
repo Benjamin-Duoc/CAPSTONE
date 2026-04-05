@@ -70,6 +70,7 @@ class EntrepreneurshipSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Entrepreneurship
         load_instance = True
+        include_fk = True
 
 class EntrepreneurshipTipSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

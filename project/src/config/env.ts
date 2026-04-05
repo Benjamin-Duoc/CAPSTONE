@@ -20,14 +20,14 @@ const getEnvConfig = (): EnvConfig => {
     // Get API URL from environment or use defaults
     const apiUrl = import.meta.env.VITE_API_URL ||
         (isDevelopment
-            ? 'http://127.0.0.1:5000/backendcipress/api'
+            ? 'http://127.0.0.1:5000/api'
             : 'https://www.cipress.cl/backendcipress/api');
 
     // Get Media URL from environment or use defaults
     // Note: The backend typically serves media at [host]/backendcipress/media/
     const mediaUrl = import.meta.env.VITE_MEDIA_URL ||
         (isDevelopment
-            ? 'http://127.0.0.1:5000/backendcipress/media'
+            ? 'http://127.0.0.1:5000/media'
             : 'https://www.cipress.cl/backendcipress/media');
 
     return {
@@ -66,9 +66,18 @@ export const getMediaUrl = (path: string): string => {
 // Helper function to get full API URL
 export const getApiUrl = (endpoint: string): string => {
     // Remove leading slash if present
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    let cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
 
-    return `${ENV.apiUrl}/${cleanEndpoint}`;
+    // AVOID DOUBLE API PREFIX:
+    // If the endpoint already starts with 'api/' and our ENV.apiUrl already ends with '/api',
+    // remove it from the endpoint to avoid '.../api/api/...'
+    if (cleanEndpoint.startsWith('api/') && ENV.apiUrl.endsWith('/api')) {
+        cleanEndpoint = cleanEndpoint.slice(4);
+    }
+
+    // Ensure we don't end up with a double slash if apiUrl ends with / and cleanEndpoint starts with null/empty
+    const base = ENV.apiUrl.endsWith('/') ? ENV.apiUrl.slice(0, -1) : ENV.apiUrl;
+    return `${base}/${cleanEndpoint}`;
 };
 
 // Log configuration on load (only in development)

@@ -5,11 +5,12 @@ import type { DestacadoArticle } from '../types';
 interface DestacadosModuleProps {
     destacados: DestacadoArticle[];
     onSelectDestacado: (destacado: DestacadoArticle) => void;
+    onBack: () => void;
 }
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
 
-const DestacadosModule: React.FC<DestacadosModuleProps> = ({ destacados, onSelectDestacado }) => {
+const DestacadosModule: React.FC<DestacadosModuleProps> = ({ destacados, onSelectDestacado, onBack }) => {
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.src = DEFAULT_IMAGE;
     };
@@ -17,6 +18,16 @@ const DestacadosModule: React.FC<DestacadosModuleProps> = ({ destacados, onSelec
     return (
         <div className="bg-background min-h-screen py-16">
             <div className="container mx-auto px-4 max-w-6xl">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
                 <div className="mb-12 border-b-2 border-primary pb-4">
                     <h1 className="text-4xl md:text-5xl font-bold font-serif text-text-primary">
                         Noticias Destacadas

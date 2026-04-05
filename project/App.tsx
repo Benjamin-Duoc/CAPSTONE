@@ -67,7 +67,8 @@ import {
   getTalentProfiles, createTalentProfile, updateTalentProfile, deleteTalentProfile,
   getRotationInterval, saveRotationInterval,
   getAllUsers, registerUser, updateUser, deleteUser,
-  getDestacados, createDestacado, updateDestacado, deleteDestacado
+  getDestacados, createDestacado, updateDestacado, deleteDestacado,
+  getApiUrl
 } from './utils/db';
 
 
@@ -179,8 +180,7 @@ const App: React.FC = () => {
           localStorage.setItem('cipress_last_active', now.toString());
 
           // Sync user role with backend
-          const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-          fetch(`${apiUrl}/api/users/${user.id}`)
+          fetch(getApiUrl(`users/${user.id}`))
             .then(res => res.json())
             .then(data => {
               if (data && data.role) {
@@ -218,11 +218,9 @@ const App: React.FC = () => {
         
         let attempts = 0;
         const maxAttempts = 10; // 20 segundos total
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-        
         const pollStatus = async () => {
           try {
-            const response = await fetch(`${apiUrl}/api/payments/status/${token}`);
+            const response = await fetch(getApiUrl(`payments/status/${token}`));
             const data = await response.json();
             
             if (data.status === 'success' && data.paid) {
@@ -623,25 +621,25 @@ const App: React.FC = () => {
           rotationInterval={rotationInterval} onUpdateRotationInterval={handleUpdateRotationInterval}
           users={users} onAddUser={handleAddUser} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser}
         />;
-      case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} />;
+      case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} onBack={() => handleNavigate('home')} />;
       case 'entrepreneurship': return <EntrepreneurshipModule entrepreneurships={entrepreneurs} onBack={() => handleNavigate('home')} />;
-      case 'freelanceServices': return <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} />;
-      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} currentUser={currentUser} onNavigate={handleNavigate} rotationInterval={rotationInterval} />;
-      case 'destacados': return <DestacadosModule destacados={destacados} onSelectDestacado={handleSelectDestacado} />;
-      case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} />;
-      case 'community-ads': return <CommunityAdsModule ads={communityAds} />;
-      case 'specialists': return <SpecialistsModule specialists={specialists} />;
-      case 'photo-gallery': return <PhotoGalleryModule shareablePhotos={shareablePhotos} />;
-      case 'photojournalism': return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} />;
-      case 'resources': return <ResourcesModule resources={resources} />;
-      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} />;
-      case 'events': return <EventsModule events={events} />;
-      case 'legal': return <LegalModule />;
-      case 'press-releases': return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} />;
+      case 'freelanceServices': return <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} onBack={() => handleNavigate('home')} />;
+      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} currentUser={currentUser} onNavigate={handleNavigate} rotationInterval={rotationInterval} onBack={() => handleNavigate('home')} />;
+      case 'destacados': return <DestacadosModule destacados={destacados} onSelectDestacado={handleSelectDestacado} onBack={() => handleNavigate('home')} />;
+      case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} onBack={() => handleNavigate('home')} />;
+      case 'community-ads': return <CommunityAdsModule ads={communityAds} onBack={() => handleNavigate('home')} />;
+      case 'specialists': return <SpecialistsModule specialists={specialists} onBack={() => handleNavigate('home')} />;
+      case 'photo-gallery': return <PhotoGalleryModule shareablePhotos={shareablePhotos} onBack={() => handleNavigate('home')} />;
+      case 'photojournalism': return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />;
+      case 'resources': return <ResourcesModule resources={resources} onBack={() => handleNavigate('home')} />;
+      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} onBack={() => handleNavigate('home')} />;
+      case 'events': return <EventsModule events={events} onBack={() => handleNavigate('home')} />;
+      case 'legal': return <LegalModule onBack={() => handleNavigate('home')} />;
+      case 'press-releases': return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} onBack={() => handleNavigate('home')} />;
       case 'about': return <AboutPage onNavigate={handleNavigate} />;
       case 'privacy-policy': return <PrivacyPolicyPage onNavigate={handleNavigate} />;
       case 'terms-of-service': return <TermsOfServicePage onNavigate={handleNavigate} />;
-      case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} />;
+      case 'community-post': return <CommunityPostPage posts={communityPosts} onAddPost={handleAddCommunityPost} onUpdatePost={handleUpdateCommunityPost} onDeletePost={handleDeleteCommunityPost} onNavigate={handleNavigate} currentUser={currentUser} onBack={() => handleNavigate('home')} />;
       case 'register': return <RegistrationPage onNavigate={handleNavigate} onLogin={handleLogin} />;
       case 'login': return <LoginPage onNavigate={handleNavigate} returnTo={returnToPage} onLoginSuccess={handleLogin} />;
       case 'dashboard': {
@@ -649,10 +647,18 @@ const App: React.FC = () => {
         
         // Blindaje de Roles: Normalizar a minúsculas y aplicar lógica estricta con Fallback
         const userRole = (currentUser.role || '').toLowerCase();
-        const isPremiumOrAdmin = userRole === 'administrador' || userRole === 'colaborador premium';
+        const isCliente = userRole === 'cliente';
 
-        if (isPremiumOrAdmin) {
-           // Administrador o Colaborador Premium -> Panel Completo
+        if (isCliente) {
+           return <ClienteDashboard
+             currentUser={currentUser}
+             onLogout={handleLogout}
+             premiumSponsors={premiumSponsors}
+             onAddSponsor={handleAddSponsor}
+             onUpdateSponsor={handleUpdateSponsor}
+           />;
+        } else {
+           // Administrador, Colaborador Premium y Colaborador Gratis -> Panel Completo (Controlado internamente por rol)
            return <UserDashboard 
              currentUser={currentUser} 
              onLogout={handleLogout} 
@@ -666,26 +672,15 @@ const App: React.FC = () => {
              onUpdatePressRelease={handleUpdatePressRelease}
              onDeletePressRelease={handleDeletePressRelease}
              onGalleriesUpdated={refreshGalleries}
-             initialSection={initialTab === 'talent' ? 'Mi Perfil de Talento' : 'Mi Perfil'}
-           />;
-        } else if (userRole === 'cliente') {
-           return <ClienteDashboard
-             currentUser={currentUser}
-             onLogout={handleLogout}
-             premiumSponsors={premiumSponsors}
-             onAddSponsor={handleAddSponsor}
-             onUpdateSponsor={handleUpdateSponsor}
-           />;
-        } else {
-           // Fallback de Seguridad: Colaborador Gratis o cualquier otro rol desconocido
-           return <FreeDashboard 
-             currentUser={currentUser} 
-             onLogout={handleLogout} 
-             pressReleases={pressReleases}
-             onAddPressRelease={handleAddPressRelease}
-             onUpdatePressRelease={handleUpdatePressRelease}
-             onDeletePressRelease={handleDeletePressRelease}
-             initialTab={initialTab === 'talent' ? 'talent' : 'content'}
+             initialSection={
+               initialTab === 'talent' ? 'Mi Perfil de Talento' : 
+               initialTab === 'comunicado' ? 'Redactar Comunicado' : 
+               initialTab === 'emprendimiento' ? 'Confían en CiPress' : 
+               initialTab === 'pyme' ? 'Mis Pymes' :
+               initialTab === 'galeria' ? 'Mis Galerías' :
+               initialTab === 'comunicados' ? 'Redactar Comunicado' :
+               'Mi Perfil'
+             }
            />;
         }
       }

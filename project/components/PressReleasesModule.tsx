@@ -5,6 +5,7 @@ import type { PressRelease } from '../types';
 interface PressReleasesModuleProps {
     pressReleases: PressRelease[];
     onSelectPressRelease: (pressRelease: PressRelease) => void;
+    onBack: () => void;
 }
 
 const PressReleaseCard: React.FC<{ release: PressRelease; onClick: () => void }> = ({ release, onClick }) => (
@@ -19,7 +20,7 @@ const PressReleaseCard: React.FC<{ release: PressRelease; onClick: () => void }>
     </button>
 );
 
-const PressReleasesModule: React.FC<PressReleasesModuleProps> = ({ pressReleases, onSelectPressRelease }) => {
+const PressReleasesModule: React.FC<PressReleasesModuleProps> = ({ pressReleases, onSelectPressRelease, onBack }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 12;
 
@@ -44,6 +45,16 @@ const PressReleasesModule: React.FC<PressReleasesModuleProps> = ({ pressReleases
     return (
         <div className="bg-background min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Periodistas en Acción</h1>
                     <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Estas son las principales noticias de la semana</p>

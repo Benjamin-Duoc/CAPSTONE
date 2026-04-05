@@ -4,11 +4,12 @@ import { CalendarIcon, MapPinIcon } from './icons';
 
 interface EventsModuleProps {
     events: Event[];
+    onBack: () => void;
 }
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => (
     <div className="bg-surface p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex items-start space-x-6 border border-gray-200">
-        <div className="flex-shrink-0 text-center bg-background rounded-lg p-4 w-24">
+        <div className="flex-shrink-0 text-center bg-gray-50 rounded-lg p-4 w-24">
             <p className="text-4xl font-black font-serif text-primary">{event.date.split(' ')[0]}</p>
             <p className="text-lg font-semibold text-text-secondary -mt-1">{event.date.split(' ')[1]}</p>
         </div>
@@ -33,10 +34,20 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => (
 );
 
 
-const EventsModule: React.FC<EventsModuleProps> = ({ events }) => {
+const EventsModule: React.FC<EventsModuleProps> = ({ events, onBack }) => {
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Agenda de Eventos</h1>
                     <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Participa en los webinars, talleres y conferencias que están marcando la pauta en la industria.</p>

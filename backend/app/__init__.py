@@ -24,7 +24,7 @@ def create_app(config_class=None):
     db.init_app(app)
     ma.init_app(app)
     
-    # 🔥 Sembrado automático DESACTIVADO (Usar create-db.py)
+    # Sembrado automatico DESACTIVADO (Usar create-db.py)
     # run_seed(app)
     
     # Configuración Global

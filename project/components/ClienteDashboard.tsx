@@ -48,10 +48,20 @@ const ClienteDashboard: React.FC<ClienteDashboardProps> = ({
                     </div>
                     
                     <ConfianEnCipressView
-                        currentUser={currentUser}
+                        currentUser={currentUser!}
                         premiumSponsors={premiumSponsors}
-                        onAddSponsor={onAddSponsor}
-                        onUpdateSponsor={onUpdateSponsor}
+                        onSave={async (data) => {
+                            const existingSponsor = premiumSponsors.find(s => s.userId === currentUser?.id);
+                            if (existingSponsor) {
+                                await onUpdateSponsor({ ...existingSponsor, ...data } as PremiumSponsor);
+                            } else {
+                                await onAddSponsor({ 
+                                    ...data, 
+                                    nameColor: '#000000', 
+                                    ctaColor: '#FF6B00' 
+                                } as Omit<PremiumSponsor, 'id'>);
+                            }
+                        }}
                     />
                 </div>
             </div>

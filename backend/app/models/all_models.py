@@ -110,6 +110,7 @@ class PhotojournalismPost(db.Model):
     date_taken = db.Column(db.String)
     whatsapp_contact = db.Column(db.String)
     date_added = db.Column(db.DateTime)
+    created_by = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 # -----------------------------------------------------------------------------
@@ -194,6 +195,7 @@ class Course(db.Model):
 class Entrepreneurship(db.Model):
     __tablename__ = 'entrepreneurship'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
     name = db.Column(db.String)
     type = db.Column(db.String)
     founder = db.Column(db.String)

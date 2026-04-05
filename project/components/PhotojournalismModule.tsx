@@ -9,6 +9,8 @@ interface PhotojournalismModuleProps {
     onSelectPost?: (post: PhotojournalismPost) => void;
     currentUser?: User | null;
     onPostUpdated?: () => void;
+    onBack: () => void;
+    onNavigate: (page: string, subPage?: string) => void;
 }
 
 const PhotoCard: React.FC<{
@@ -70,7 +72,7 @@ const PhotoCard: React.FC<{
 };
 
 
-const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [], onSelectPost, currentUser, onPostUpdated }) => {
+const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [], onSelectPost, currentUser, onPostUpdated, onBack, onNavigate }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [dbPosts, setDbPosts] = useState<PhotojournalismPost[]>([]);
@@ -152,8 +154,11 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     }
 
     const openUploadModal = () => {
-        setEditingPost(null);
-        setIsPhotojournalismModalOpen(true);
+        if (currentUser) {
+            onNavigate('dashboard', 'galeria');
+        } else {
+            onNavigate('login');
+        }
     };
 
     const handleEditPost = (post: PhotojournalismPost) => {
@@ -372,9 +377,19 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     };
 
     return (
-        <div className="bg-background min-h-screen">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="text-center mb-12">
+        <div className="bg-neutral min-h-screen">
+            <div className="container mx-auto px-4 md:px-8 py-10">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Repositorio de Foto-Periodismo</h1>
                     <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Explora el archivo visual de nuestra comunidad. Cada imagen cuenta una historia.</p>
                 </div>

@@ -9,6 +9,7 @@ interface CommunityPostPageProps {
     onDeletePost: (postId: number) => void | Promise<void>;
     onNavigate: (page: Page) => void;
     currentUser: User | null;
+    onBack: () => void;
 }
 
 const CommunityPostCard: React.FC<{
@@ -56,7 +57,7 @@ const CommunityPostCard: React.FC<{
     </div>
 );
 
-const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost, onUpdatePost, onDeletePost, onNavigate, currentUser }) => {
+const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost, onUpdatePost, onDeletePost, onNavigate, currentUser, onBack }) => {
     const [postTitle, setPostTitle] = useState('');
     const [postUrl, setPostUrl] = useState('');
     const [comment, setComment] = useState('');
@@ -120,7 +121,11 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
 
         setIsSubmitting(true);
         try {
-            await onAddPost({ postTitle, postUrl, comment });
+            let finalUrl = postUrl.trim();
+            if (finalUrl && !/^https?:\/\//i.test(finalUrl)) {
+                finalUrl = 'https://' + finalUrl;
+            }
+            await onAddPost({ postTitle, postUrl: finalUrl, comment });
             setPostTitle('');
             setPostUrl('');
             setComment('');
@@ -153,10 +158,14 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
 
         setIsUpdating(true);
         try {
+            let finalUrl = editPostUrl.trim();
+            if (finalUrl && !/^https?:\/\//i.test(finalUrl)) {
+                finalUrl = 'https://' + finalUrl;
+            }
             await onUpdatePost({
                 ...editingPost,
                 postTitle: editPostTitle,
-                postUrl: editPostUrl,
+                postUrl: finalUrl,
                 comment: editComment,
             });
             handleCancelEdit();
@@ -173,15 +182,16 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
     };
 
     return (
-        <div className="bg-background min-h-screen animate-fade-in">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <button
-                    onClick={() => onNavigate('home')}
-                    className="mb-8 inline-flex items-center text-primary font-semibold hover:underline"
-                    aria-label="Volver a la página de inicio"
+        <div className="bg-background min-h-screen py-12 animate-fade-in">
+            <div className="container mx-auto px-4 max-w-4xl">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Volver
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
                 </button>
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Actividad de la Comunidad</h1>

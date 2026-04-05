@@ -56,6 +56,20 @@ const RedactarComunicadoView: React.FC<RedactarComunicadoViewProps> = ({
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const isPremium = currentUser?.role?.toLowerCase().includes('premium') || currentUser?.role?.toLowerCase() === 'administrador';
+    
+    let countToday = 0;
+    if (!isPremium) {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        countToday = userPressReleases.filter(pr => {
+            if (!pr.createdAt) return false;
+            const prDate = new Date(pr.createdAt);
+            return prDate >= todayStart;
+        }).length;
+    }
+    const limitReached = !isPremium && countToday >= 3;
+
     return (
         <div className="max-w-6xl mx-auto pb-12 animate-fade-in relative">
             <div className="px-6 md:px-10 py-8">
@@ -78,11 +92,12 @@ const RedactarComunicadoView: React.FC<RedactarComunicadoViewProps> = ({
                         </button>
                         <button
                             onClick={handleCreateNew}
+                            disabled={limitReached}
                             className={`pb-4 text-lg font-bold transition-colors whitespace-nowrap flex items-center ${
                                 activeTab === 'editor' && !editingRelease
                                     ? 'text-primary border-b-2 border-primary'
                                     : 'text-gray-500 hover:text-gray-700'
-                            }`}
+                            } ${limitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             <PlusIcon className="w-5 h-5 mr-2" />
                             Redactar Nuevo
@@ -94,6 +109,13 @@ const RedactarComunicadoView: React.FC<RedactarComunicadoViewProps> = ({
                             </div>
                         )}
                     </div>
+                    
+                    {!isPremium && (
+                        <div className={`flex items-center space-x-2 px-4 py-2 mt-4 sm:mt-0 rounded-lg text-sm font-bold shadow-sm ${limitReached ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+                            <span>Límite Diario:</span>
+                            <span className="text-lg">{countToday}/3</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Tab Content: Editor */}
@@ -107,6 +129,7 @@ const RedactarComunicadoView: React.FC<RedactarComunicadoViewProps> = ({
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
                             isModal={false}
+                            isLimitReached={limitReached}
                         />
                     </div>
                 )}

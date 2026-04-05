@@ -5,6 +5,7 @@ import { StarIcon, ChevronDownIcon } from './icons';
 interface CoursesModuleProps {
     courses: Course[];
     onSelectCourse: (course: Course) => void;
+    onBack: () => void;
 }
 
 const CourseCard: React.FC<{ course: Course; onSelect: () => void; }> = ({ course, onSelect }) => {
@@ -55,7 +56,7 @@ const FilterDropdown: React.FC<{ label: string; options: string[]; selected: str
 };
 
 
-const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse }) => {
+const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse, onBack }) => {
     const [filters, setFilters] = useState({
         category: '',
         level: '',
@@ -77,13 +78,23 @@ const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse }
     }, [filters, courses]);
     
     const courseCategories = [...new Set(courses.map(c => c.category))];
-    const courseLevels = [...new Set(courses.map(c => c.level))];
-    const courseFormats = [...new Set(courses.map(c => c.format))];
-    const courseCosts = [...new Set(courses.map(c => c.cost))];
+    const courseLevels = ['Básico', 'Intermedio', 'Avanzado', 'Experto'];
+    const courseFormats = ['Online', 'Presencial', 'Hibrido'];
+    const courseCosts = ['Gratis', 'Hasta $50.000', '$50.000 - $100.000', 'Más de $100.000'];
 
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Capacitación para Innovar</h1>
                     <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Adquiere las herramientas y conocimientos para liderar en la nueva era de las comunicaciones.</p>
@@ -99,7 +110,7 @@ const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse }
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredCourses.map(course => (
+                    {filteredCourses.slice(0, 20).map(course => (
                         <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />
                     ))}
                 </div>

@@ -3,7 +3,7 @@ import type { User, PressRelease, TalentProfile } from '../types';
 import PressReleaseForm from './admin/PressReleaseForm';
 import TalentProfileForm from './admin/TalentProfileForm';
 import { ArrowLeftOnRectangleIcon, UserIcon, DocumentTextIcon, CreditCardIcon, CheckIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { getMyTalentProfile, saveMyTalentProfile, initiatePayment } from '../utils/db';
+import { getMyTalentProfile, saveMyTalentProfile, initiatePayment, getApiUrl } from '../utils/db';
 
 interface FreeDashboardProps {
     currentUser: User | null;
@@ -12,7 +12,8 @@ interface FreeDashboardProps {
     onAddPressRelease: (pressRelease: Omit<PressRelease, 'id'>) => Promise<void>;
     onUpdatePressRelease: (pressRelease: PressRelease) => Promise<void>;
     onDeletePressRelease: (id: number) => Promise<void>;
-    initialTab?: 'content' | 'talent' | 'subscription';
+    onNavigate: (page: string) => void;
+    initialTab?: 'content' | 'talent' | 'subscription' | 'participate';
 }
 
 const FreeDashboard: React.FC<FreeDashboardProps> = ({
@@ -22,10 +23,11 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
     onAddPressRelease,
     onUpdatePressRelease,
     onDeletePressRelease,
+    onNavigate,
     initialTab = 'content'
 }) => {
     const isPremium = (currentUser?.role || '').toLowerCase() === 'colaborador premium';
-    const [activeTab, setActiveTab] = useState<'content' | 'talent' | 'subscription'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'content' | 'talent' | 'subscription' | 'participate'>(initialTab);
     const [myProfile, setMyProfile] = useState<TalentProfile | null>(null);
     const [isLoadingProfile, setIsLoadingProfile] = useState(false);
     const [isProcessingUpgrade, setIsProcessingUpgrade] = useState(false);
@@ -54,7 +56,7 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
         if (!currentUser) return;
         setIsProcessingUpgrade(true);
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'}/api/payments/create`, {
+            const res = await fetch(getApiUrl('payments/create'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: currentUser.id }),
@@ -104,6 +106,13 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
                         <span>Banco de Talentos</span>
                     </button>
                     <button 
+                        onClick={() => setActiveTab('participate')}
+                        className={`flex items-center space-x-3 w-full p-3 rounded-lg font-medium transition-colors ${activeTab === 'participate' ? 'bg-primary text-white' : 'text-text-secondary hover:bg-gray-100'}`}
+                    >
+                        <SparklesIcon className="h-5 w-5" />
+                        <span>Participación</span>
+                    </button>
+                    <button 
                         onClick={() => setActiveTab('subscription')}
                         className={`flex items-center space-x-3 w-full p-3 rounded-lg font-medium transition-colors ${activeTab === 'subscription' ? 'bg-primary text-white' : 'text-text-secondary hover:bg-gray-100'}`}
                     >
@@ -140,10 +149,15 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
                                 const todayStart = new Date();
                                 todayStart.setHours(0, 0, 0, 0);
                                 
-                                const userPressReleases = (pressReleases || []).filter(pr => pr.authorUserId === currentUser?.id);
+                                const userPressReleases = (pressReleases || []).filter(pr => 
+                                    pr.authorUserId === currentUser?.id || 
+                                    pr.author === currentUser?.email || 
+                                    (currentUser && pr.author === `${currentUser.firstName} ${currentUser.lastName}`.trim())
+                                );
                                 const countToday = userPressReleases.filter(pr => {
-                                    if (!pr.createdAt) return false;
-                                    return new Date(pr.createdAt) >= todayStart;
+                                    if (!pr.createdAt && !pr.date) return false;
+                                    const prDate = new Date(pr.createdAt || pr.date);
+                                    return prDate >= todayStart;
                                 }).length;
                                 
                                 const limitReached = !isPremium && countToday >= 3;
@@ -211,7 +225,7 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
                                 </div>
                             )}
                         </div>
-                    ) : (
+                    ) : activeTab === 'subscription' ? (
                         <div className="max-w-4xl mx-auto">
                             <div className="text-center mb-10">
                                 <h3 className="text-3xl font-bold font-serif text-text-primary">Tu Suscripción CiPress</h3>
@@ -300,7 +314,39 @@ const FreeDashboard: React.FC<FreeDashboardProps> = ({
                                 </p>
                             </div>
                         </div>
-                    )}
+                    ) : activeTab === 'participate' ? (
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-secondary/5 border-l-4 border-secondary p-4 rounded-r-lg mb-8">
+                                <h3 className="text-lg font-bold text-secondary">Herramientas de Participación</h3>
+                                <p className="text-text-secondary mt-1 text-sm">
+                                    Participa activamente en nuestra comunidad. 
+                                </p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div onClick={() => onNavigate('entrepreneurs')} className="bg-surface p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                    <h4 className="text-lg font-bold text-gray-800">Emprendimientos</h4>
+                                    <p className="text-sm text-gray-500 mt-2">Visita la sección y postula tu emprendimiento periodístico.</p>
+                                </div>
+                                <div onClick={() => onNavigate('community_posts')} className="bg-surface p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                    <h4 className="text-lg font-bold text-gray-800">Comunidad</h4>
+                                    <p className="text-sm text-gray-500 mt-2">Comparte artículos e inicia debates con otros periodistas.</p>
+                                </div>
+                                <div onClick={() => onNavigate('photojournalism')} className="bg-surface p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                    <h4 className="text-lg font-bold text-gray-800">Fotoperiodismo</h4>
+                                    <p className="text-sm text-gray-500 mt-2">Explora y colabora en la sección de fotoperiodismo.</p>
+                                </div>
+                                <div onClick={() => onNavigate('gallery')} className="bg-surface p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                    <h4 className="text-lg font-bold text-gray-800">Galería de Fotos</h4>
+                                    <p className="text-sm text-gray-500 mt-2">Navega por galerías de imágenes cedidas o vende tus propias fotos (requiere Premium para vender).</p>
+                                </div>
+                                <div onClick={() => onNavigate('opportunities')} className="bg-surface p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer text-center md:col-span-2">
+                                    <h4 className="text-lg font-bold text-gray-800">Ofrecer Servicios Freelance</h4>
+                                    <p className="text-sm text-gray-500 mt-2">Busca ofertas o promociona tus talentos en el directorio freelance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </div>

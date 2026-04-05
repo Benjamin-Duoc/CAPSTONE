@@ -21,59 +21,74 @@ def create_payment():
     if not user:
         return jsonify({"error": "User not found"}), 404
     
-    flow = FlowClient()
+    try:
+        flow = FlowClient()
+        if not flow.is_configured():
+            logger.error("Flow credentials missing in configuration")
+            return jsonify({
+                "status": "error", 
+                "message": "La pasarela de pagos no está configurada en el servidor (faltan llaves API)."
+            }), 500
     
-    # Configuration for the payment
-    # Use time.time() instead of SQL functions for the order_id to avoid Python-level errors
-    timestamp = int(time.time())
-    order_id = f"PREMIUM_{user_id}_{timestamp}"
-    subject = "Suscripcion Premium CiPress"
-    amount = 3000
-    email = user.email
-    
-    # URLs for redirection and confirmation
-    # Usamos la raíz (/) porque Flow añade automáticamente "?token=..." al redirigir.
-    # Esto evita problemas de 404 en el servidor de desarrollo.
-    url_return = current_app.config.get('FRONTEND_URL', "http://127.0.0.1:3000/") 
-    url_confirmation = f"{request.host_url.rstrip('/')}/api/payments/confirm"
-    
-    result = flow.create_payment(
-        order_id=order_id,
-        subject=subject,
-        amount=amount,
-        email=email,
-        url_return=url_return,
-        url_confirmation=url_confirmation
-    )
-    
-    # Si Flow nos responde con la URL y el Token, ¡fue un éxito!
-    if "url" in result and "token" in result:
-        url_pago = f"{result['url']}?token={result['token']}"
-        return jsonify({
-            "status": "success", 
-            "message": "Link de cobro generado",
-            "payment_url": url_pago,
-            "url": url_pago, # Maintain compatibility with previous frontend if needed
-            "token": result['token']
-        }), 200
-    else:
-        # ¡El Paracaídas de Errores!
-        codigo_error = result.get('code')
-        mensaje_original = result.get('message', 'Error desconocido en Flow')
+        # Configuration for the payment
+        # Use time.time() instead of SQL functions for the order_id to avoid Python-level errors
+        timestamp = int(time.time())
+        order_id = f"PREMIUM_{user_id}_{timestamp}"
+        subject = "Suscripcion Premium CiPress"
+        amount = 3000
+        email = user.email
         
-        mensaje_amigable = "No pudimos conectar con la pasarela de pagos en este momento."
+        # URLs for redirection and confirmation
+        url_return = current_app.config.get('FRONTEND_URL', "https://www.cipress.cl/") 
         
-        # Si detectamos el error 1620 de Sandbox
-        if codigo_error == 1620:
-            mensaje_amigable = "El correo de tu cuenta no es válido para transacciones de prueba. Al estar en modo Sandbox, por favor intenta usar el correo asociado a tu cuenta de desarrollador."
+        backend_url = current_app.config.get('BACKEND_URL', request.host_url).rstrip('/')
+        url_confirmation = f"{backend_url}/api/payments/confirm"
         
-        logger.error(f"Error de Flow [{codigo_error}]: {mensaje_original}")
+        result = flow.create_payment(
+            order_id=order_id,
+            subject=subject,
+            amount=amount,
+            email=email,
+            url_return=url_return,
+            url_confirmation=url_confirmation
+        )
+        
+        # Si Flow nos responde con la URL y el Token, ¡fue un éxito!
+        if "url" in result and "token" in result:
+            url_pago = f"{result['url']}?token={result['token']}"
+            return jsonify({
+                "status": "success", 
+                "message": "Link de cobro generado",
+                "payment_url": url_pago,
+                "url": url_pago, # Maintain compatibility with previous frontend if needed
+                "token": result['token']
+            }), 200
+        else:
+            # ¡El Paracaídas de Errores!
+            codigo_error = result.get('code')
+            mensaje_original = result.get('message', 'Error desconocido en Flow')
+            
+            mensaje_amigable = "No pudimos conectar con la pasarela de pagos en este momento."
+            
+            # Si detectamos el error 1620 de Sandbox
+            if codigo_error == 1620:
+                mensaje_amigable = "El correo de tu cuenta no es válido para transacciones de prueba. Al estar en modo Sandbox, por favor intenta usar el correo asociado a tu cuenta de desarrollador."
+            
+            logger.error(f"Error de Flow [{codigo_error}]: {mensaje_original}")
+            return jsonify({
+                "status": "error", 
+                "message": mensaje_amigable,
+                "technical_details": mensaje_original,
+                "error": mensaje_amigable # Maintain compatibility
+            }), 400
+
+    except Exception as e:
+        logger.exception("Error critico en create_payment")
         return jsonify({
             "status": "error", 
-            "message": mensaje_amigable,
-            "technical_details": mensaje_original,
-            "error": mensaje_amigable # Maintain compatibility
-        }), 400
+            "message": "Error interno al procesar el pago.",
+            "details": str(e)
+        }), 500
 
 @payment_bp.route('/confirm', methods=['POST'])
 def confirm_payment():

@@ -54,13 +54,14 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) =
                 <img src={course.imageUrl} alt={course.title} className="absolute inset-0 w-full h-full object-cover opacity-40" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-12">
-                     <button
-                        onClick={onBack}
-                        className="absolute top-8 inline-flex items-center text-white font-semibold hover:underline bg-black/30 px-3 py-1 rounded-full"
-                        aria-label="Volver a la página anterior"
+                    <button 
+                        onClick={onBack} 
+                        className="absolute top-8 flex items-center text-white font-bold bg-black/30 px-4 py-2 rounded-full hover:bg-black/50 hover:translate-x-[-4px] transition-all group"
                     >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        Volver a Cursos
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        volver
                     </button>
                     <span className="text-base font-bold uppercase tracking-wider text-accent">{course.category}</span>
                     <h1 className="text-4xl md:text-6xl font-black font-serif text-white mt-2 shadow-text">{course.title}</h1>

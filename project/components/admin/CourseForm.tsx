@@ -107,6 +107,7 @@ const CourseForm: React.FC<CourseFormProps> = ({ course, onSave, onClose }) => {
                                 <option>Básico</option>
                                 <option>Intermedio</option>
                                 <option>Avanzado</option>
+                                <option>Experto</option>
                             </select>
                         </div>
                     </div>
@@ -115,14 +116,20 @@ const CourseForm: React.FC<CourseFormProps> = ({ course, onSave, onClose }) => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Formato</label>
                              <select name="format" value={formData.format} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
-                                <option>Video</option>
-                                <option>PDF</option>
-                                <option>Webinar</option>
+                                <option>Online</option>
+                                <option>Presencial</option>
+                                <option>Hibrido</option>
                             </select>
                         </div>
                          <div>
                             <label className="block text-sm font-medium text-gray-700">Costo</label>
-                            <input type="text" name="cost" value={formData.cost} onChange={handleChange} placeholder="Ej: $45.000 CLP o Gratis" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
+                            <select name="cost" value={formData.cost} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Seleccione...</option>
+                                <option value="Gratis">Gratis</option>
+                                <option value="Hasta $50.000">Hasta $50.000</option>
+                                <option value="$50.000 - $100.000">$50.000 - $100.000</option>
+                                <option value="Más de $100.000">Más de $100.000</option>
+                            </select>
                         </div>
                     </div>
                     

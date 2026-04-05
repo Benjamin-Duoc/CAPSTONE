@@ -5,6 +5,7 @@ import MyProfileView from './dashboard/MyProfileView';
 import ConfianEnCipressView from './dashboard/ConfianEnCipressView';
 import RedactarComunicadoView from './dashboard/RedactarComunicadoView';
 import MisGaleriasView from './dashboard/MisGaleriasView';
+import MisPymesView from './dashboard/MisPymesView';
 import TalentProfileView from './dashboard/TalentProfileView';
 import { 
     UserIcon, 
@@ -36,7 +37,7 @@ interface UserDashboardProps {
     initialSection?: MenuSection;
 }
 
-type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Mis Galerías' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral';
+type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Mis Galerías' | 'Mis Pymes' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral';
 
 interface MenuItem {
     name: MenuSection;
@@ -52,6 +53,7 @@ const MENU_ITEMS: MenuItem[] = [
     
     { name: 'Redactar Comunicado', icon: PencilSquareIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
     { name: 'Mis Galerías', icon: PhotoIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador gratis'] },
+    { name: 'Mis Pymes', icon: BuildingOfficeIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
     
     { name: 'Confían en CiPress', icon: BuildingOfficeIcon, category: 'Área Comercial', visibleFor: ['cliente', 'empresa', 'administrador'], lockedFor: [] },
     { name: 'Mis Servicios Freelance', icon: SparklesIcon, category: 'Área Comercial', visibleFor: ['cliente', 'administrador'], lockedFor: ['colaborador'] },
@@ -217,7 +219,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             case 'Publicar Oferta Laboral':
                 return <div className="p-8 text-center text-gray-500 font-medium">Vista para "{activeSection}" en construcción...</div>;
             case 'Mis Galerías':
-                return currentUser ? <MisGaleriasView user={currentUser} onGalleriesUpdated={onGalleriesUpdated} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
+                return <MisGaleriasView user={currentUser!} onGalleriesUpdated={onGalleriesUpdated} />;
+            case 'Mis Pymes':
+                return <MisPymesView currentUser={currentUser!} />;
             case 'Confían en CiPress':
                 return currentUser ? <ConfianEnCipressView 
                     currentUser={currentUser} 

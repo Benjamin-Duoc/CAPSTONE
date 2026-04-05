@@ -635,6 +635,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     const [isCommunityAdModalOpen, setIsCommunityAdModalOpen] = useState(false);
     const [isPhotojournalismModalOpen, setIsPhotojournalismModalOpen] = useState(false);
     const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
+    const [isLoginGuardOpen, setIsLoginGuardOpen] = useState(false);
+    const [loginGuardRedirect, setLoginGuardRedirect] = useState<string | null>(null);
 
     // Featured Content (Time-based strict rotation from Backend)
     const [featuredPressReleases, setFeaturedPressReleases] = useState<PressRelease[]>([]);
@@ -678,18 +680,28 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     // Handling uploads safely with login check
     const handleUploadClick = () => {
         if (currentUser) {
-            onNavigate('upload-press-release');
+            onNavigate('dashboard', 'comunicado');
         } else {
-            setIsPressReleaseModalOpen(true);
+            setLoginGuardRedirect('comunicado');
+            setIsLoginGuardOpen(true);
+        }
+    };
+    
+    const handleEntrepreneurUploadClick = () => {
+        if (currentUser) {
+            onNavigate('dashboard', 'pyme');
+        } else {
+            setLoginGuardRedirect('pyme');
+            setIsLoginGuardOpen(true);
         }
     };
 
-    // Handler for "Sube tu fuente" button
     const handleSourceUploadClick = () => {
         if (currentUser) {
-            setIsSourceFormOpen(true);
+            onNavigate('dashboard', 'talent');
         } else {
-            setIsSourceModalOpen(true);
+            setLoginGuardRedirect('talent');
+            setIsLoginGuardOpen(true);
         }
     };
 
@@ -1141,7 +1153,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         {/* Entrepreneurship Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-secondary pb-2 mb-6">
-                                <h2 className="text-3xl font-bold font-serif text-text-primary">Emprendimientos Periodísticos</h2>
+                                <h2 className="text-3xl font-bold font-serif text-text-primary">Pymes Hechas por Periodistas</h2>
                                 <button onClick={() => onNavigate('entrepreneurship')} className="font-semibold text-secondary hover:underline">Ver repositorio completo &rarr;</button>
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'entrepreneurs')} />}
                             </div>
@@ -1169,7 +1181,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <p className="text-sm text-emerald-700">Conecta con clientes y potencia tu emprendimiento dentro de la comunidad de CiPress.</p>
                                 </div>
                                 <button
-                                    onClick={() => setIsEntrepreneurModalOpen(true)}
+                                    onClick={handleEntrepreneurUploadClick}
                                     className="z-10 flex-shrink-0 px-6 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors duration-200 shadow-sm"
                                 >
                                     Sube tu emprendimiento
@@ -1189,8 +1201,15 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <h3 className="font-semibold text-base text-green-800">¿Quieres iniciar un debate?</h3>
                                     <p className="text-xs text-green-700">Comparte enlaces, ideas y opiniones con la comunidad de innovadores.</p>
                                 </div>
-                                <button
-                                    onClick={() => onNavigate('community-post')}
+                                 <button
+                                    onClick={() => {
+                                        if (currentUser) {
+                                            onNavigate('community-post');
+                                        } else {
+                                            setLoginGuardRedirect('community-post');
+                                            setIsLoginGuardOpen(true);
+                                        }
+                                    }}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-accent rounded-md hover:bg-lime-600 transition-colors duration-200 shadow-sm"
                                 >
                                     Publicar en la comunidad
@@ -1212,12 +1231,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     <h3 className="font-semibold text-base text-primary">¿Capturaste un momento noticioso?</h3>
                                     <p className="text-xs text-orange-800">Con tu suscripción gratuita, publica tu acierto y dale difusión a tu perspectiva.</p>
                                 </div>
-                                <button
+                                 <button
                                     onClick={() => {
                                         if (currentUser) {
-                                            onNavigate('photojournalism');
+                                            onNavigate('dashboard', 'galeria');
                                         } else {
-                                            setIsPhotojournalismModalOpen(true);
+                                            setLoginGuardRedirect('galeria');
+                                            setIsLoginGuardOpen(true);
                                         }
                                     }}
                                     className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors duration-200 shadow-sm"
@@ -1252,8 +1272,15 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <div className="space-y-4">
                                 {shortCollaborations.slice(0, 2).map(collab => <ShortCollaborationCard key={collab.id} collaboration={collab} />)}
                             </div>
-                            <button
-                                onClick={() => setIsCollaborationModalOpen(true)}
+                              <button
+                                onClick={() => {
+                                    if (currentUser) {
+                                        onNavigate('dashboard', 'comunicados');
+                                    } else {
+                                        setLoginGuardRedirect('comunicados');
+                                        setIsLoginGuardOpen(true);
+                                    }
+                                }}
                                 className="w-full mt-4 py-2 text-sm font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors shadow-md">
                                 Sube tu aviso
                             </button>
@@ -1342,8 +1369,15 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                     >
                                         Ver más
                                     </button>
-                                    <button
-                                        onClick={() => setIsCommunityAdModalOpen(true)}
+                                     <button
+                                        onClick={() => {
+                                            if (currentUser) {
+                                                onNavigate('dashboard', 'comunicados');
+                                            } else {
+                                                setLoginGuardRedirect('comunicados');
+                                                setIsLoginGuardOpen(true);
+                                            }
+                                        }}
                                         className="w-full py-2 text-sm font-bold text-white bg-secondary rounded-md hover:bg-blue-800 transition-colors"
                                     >
                                         Sube tu aviso
@@ -1385,8 +1419,15 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <h3 className="font-semibold text-base text-secondary">¿Tienes material gráfico para vender o compartir? ¿Haces fotografía profesional para eventos?</h3>
                             <p className="text-xs text-blue-800">Sube una muestra de tu trabajo y sé contactado por quienes lo buscan.</p>
                         </div>
-                        <button
-                            onClick={() => setIsPhotoModalOpen(true)}
+                         <button
+                            onClick={() => {
+                                if (currentUser) {
+                                    onNavigate('dashboard', 'galeria');
+                                } else {
+                                    setLoginGuardRedirect('galeria');
+                                    setIsLoginGuardOpen(true);
+                                }
+                            }}
                             className="flex-shrink-0 px-5 py-2 text-sm font-bold text-white bg-secondary rounded-md hover:bg-blue-900 transition-colors duration-200 shadow-sm"
                         >
                             Sube tu foto
@@ -1420,7 +1461,17 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <span className="mt-6 inline-block font-bold text-[#ffcd38] group-hover:text-yellow-300 transition-colors uppercase text-sm tracking-widest">Inscribirse &rarr;</span>
                             </button>
 
-                            <button onClick={() => onNavigate('freelanceServices')} className="bg-white/10 p-6 lg:p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group border border-transparent hover:border-white/20 flex flex-col h-full">
+                            <button 
+                                onClick={() => {
+                                    if (currentUser) {
+                                        onNavigate('freelanceServices');
+                                    } else {
+                                        setLoginGuardRedirect('freelance-services');
+                                        setIsLoginGuardOpen(true);
+                                    }
+                                }} 
+                                className="bg-white/10 p-6 lg:p-8 rounded-lg text-center hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 group border border-transparent hover:border-white/20 flex flex-col h-full w-full"
+                             >
                                 <div className="inline-flex justify-center items-center w-16 h-16 bg-[#ffcd38] rounded-full mx-auto mb-6 shadow-lg">
                                     <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </div>
@@ -1444,11 +1495,49 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             {isPressReleaseModalOpen && <PressReleasePublicationModal onClose={() => setIsPressReleaseModalOpen(false)} />}
             {isSourceModalOpen && <SourcePublicationModal onClose={() => setIsSourceModalOpen(false)} />}
             {isSourceFormOpen && <UserSpecialistForm onSave={handleSpecialistSubmit} onClose={() => setIsSourceFormOpen(false)} />}
-            {isEntrepreneurModalOpen && <EntrepreneurPublicationModal onClose={() => setIsEntrepreneurModalOpen(false)} />}
             {isPhotoModalOpen && <PhotoPublicationModal onClose={() => setIsPhotoModalOpen(false)} />}
             {isCommunityAdModalOpen && <CommunityAdPublicationModal onClose={() => setIsCommunityAdModalOpen(false)} />}
             {isPhotojournalismModalOpen && <PhotojournalismPublicationModal onClose={() => setIsPhotojournalismModalOpen(false)} />}
-            {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
+             {isCollaborationModalOpen && <CollaborationPublicationModal onClose={() => setIsCollaborationModalOpen(false)} />}
+            
+            {isLoginGuardOpen && (
+                <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100] p-4 animate-fade-in" onClick={() => setIsLoginGuardOpen(false)}>
+                    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md text-center relative transform transition-all animate-scale-in" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setIsLoginGuardOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Cerrar">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <div className="inline-flex justify-center items-center w-16 h-16 bg-primary/10 rounded-full mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl font-bold font-serif text-secondary mb-3">¡Únete a nuestra comunidad!</h3>
+                        <p className="text-text-secondary mb-8 leading-relaxed">Debes estar registrado para poder publicar contenido en CiPress. Crea tu cuenta gratuita en segundos.</p>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => {
+                                    setIsLoginGuardOpen(false);
+                                    onNavigate('registration');
+                                }}
+                                className="w-full py-3 text-base font-bold text-white bg-primary rounded-lg hover:bg-orange-600 transition-colors shadow-md shadow-primary/20"
+                            >
+                                Registrarme ahora
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsLoginGuardOpen(false);
+                                    onNavigate('login', loginGuardRedirect || undefined);
+                                }}
+                                className="w-full py-3 text-base font-bold text-secondary bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Ya tengo cuenta, iniciar sesión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };

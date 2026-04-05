@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import type { Page, User, Job, TalentProfile } from '../types';
+import type { Page, User, Job, TalentProfile, FreelanceService } from '../types';
 import { BriefcaseIcon, MapPinIcon, LightBulbIcon, StarIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { LinkedInIcon } from './icons';
-import { getTalentProfiles } from '../utils/db';
+import { getTalentProfiles, getFreelanceServices } from '../utils/db';
+import FreelanceServicesModule from './FreelanceServicesModule';
 
 interface OpportunitiesModuleProps {
     jobs: Job[];
@@ -11,9 +12,10 @@ interface OpportunitiesModuleProps {
     currentUser: User | null;
     onNavigate: (page: Page, subPage?: string) => void;
     rotationInterval: number;
+    onBack: () => void;
 }
 
-type Tab = 'jobs' | 'talents';
+type Tab = 'jobs' | 'talents' | 'freelance';
 
 interface LoginGuardModalProps {
     onClose: () => void;
@@ -113,7 +115,7 @@ const TalentProfileCard: React.FC<{ profile: TalentProfile }> = ({ profile }) =>
             )}
         </div>
 
-        {profile.isPremium && profile.linkedinUrl && (
+        {profile.linkedinUrl && (
             <a 
                 href={profile.linkedinUrl} 
                 target="_blank" 
@@ -127,10 +129,13 @@ const TalentProfileCard: React.FC<{ profile: TalentProfile }> = ({ profile }) =>
     </div>
 );
 
-const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelectJob, initialTab, currentUser, onNavigate, rotationInterval }) => {
+const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ 
+    jobs, onSelectJob, initialTab, currentUser, onNavigate, rotationInterval, onBack 
+}) => {
     const [activeTab, setActiveTab] = useState<Tab>((initialTab as Tab) || 'jobs');
     const [isLoginGuardOpen, setIsLoginGuardOpen] = useState(false);
     const [talentProfiles, setTalentProfiles] = useState<TalentProfile[]>([]);
+    const [freelanceServices, setFreelanceServices] = useState<FreelanceService[]>([]);
     const [loading, setLoading] = useState(false);
 
     // Load talent profiles locally to avoid prop drilling and ensure data is fresh
@@ -140,8 +145,10 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
             try {
                 const refreshed = await getTalentProfiles();
                 setTalentProfiles(refreshed);
+                const services = await getFreelanceServices();
+                setFreelanceServices(services);
             } catch (error) {
-                console.error("Error fetching talent profiles:", error);
+                console.error("Error fetching data for opportunities:", error);
             } finally {
                 setLoading(false);
             }
@@ -214,7 +221,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
                             <h2 className="text-2xl font-bold font-serif text-text-primary">Oportunidades Laborales</h2>
                             <p className="text-text-secondary mt-1">Encuentra tu próximo desafío profesional en el sector.</p>
                         </div>
-                        <div className="bg-background p-4 rounded-lg text-center border border-gray-200">
+                        <div className="bg-gray-50 p-4 rounded-lg text-center border border-gray-200">
                             <p className="text-base text-text-secondary">
                                 Para publicar, envía tu aviso de trabajo a <a href="mailto:contacto@cipress.cl" className="font-semibold text-primary hover:underline">contacto@cipress.cl</a>
                             </p>
@@ -283,7 +290,12 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
                         )}
                     </div>
                 );
-
+            case 'freelance':
+                return (
+                    <div className="mt-[-3rem]">
+                        <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} />
+                    </div>
+                );
         }
     };
 
@@ -297,9 +309,20 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
     );
 
     return (
-        <div className="bg-background">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="text-center mb-12">
+        <div className="bg-neutral min-h-screen">
+            <div className="container mx-auto px-4 md:px-8 py-10">
+                
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
+                </button>
+
+                <div className="text-center mb-10">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Oportunidades y Conexiones</h1>
                     <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">El núcleo para conectar la oferta y la demanda de talento periodístico innovador.</p>
                 </div>
@@ -307,6 +330,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ jobs, onSelec
                 <div className="flex justify-center flex-wrap gap-2 md:gap-4 mb-8">
                     <TabButton tabName="jobs" label="Oportunidades Laborales" />
                     <TabButton tabName="talents" label="Base de Talentos" />
+                    <TabButton tabName="freelance" label="Servicios Freelance" />
                 </div>
 
                 <div>

@@ -12,7 +12,13 @@ class FlowClient:
         self.secret_key = current_app.config.get('FLOW_SECRET_KEY')
         self.api_url = current_app.config.get('FLOW_API_URL')
 
+    def is_configured(self):
+        return all([self.api_key, self.secret_key, self.api_url])
+
     def generate_signature(self, params):
+        if not self.secret_key:
+            raise ValueError("FLOW_SECRET_KEY is not configured")
+            
         # 1. Sort parameters alphabetically by key
         sorted_keys = sorted(params.keys())
         

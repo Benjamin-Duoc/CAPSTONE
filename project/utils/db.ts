@@ -7,7 +7,8 @@ import type {
   ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat,
   PartnerLogo, TalentProfile, DestacadoArticle
 } from '../types';
-import { ENV } from '../src/config/env';
+import { ENV, getApiUrl } from '../src/config/env';
+export { getApiUrl };
 
 // Use environment-specific API URL
 // In development, Vite proxy will forward /api requests to localhost:5000

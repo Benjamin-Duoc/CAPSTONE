@@ -20,9 +20,9 @@ export interface Course {
     id: number;
     title: string;
     category: 'Periodismo de Datos' | 'SEO' | 'Marketing Digital' | 'Podcast' | 'Fact-Checking' | 'Video Móvil';
-    level: 'Básico' | 'Intermedio' | 'Avanzado';
-    format: 'Video' | 'PDF' | 'Webinar';
-    cost: 'Gratis' | 'Pago' | string; // Allow for specific prices
+    level: 'Básico' | 'Intermedio' | 'Avanzado' | 'Experto' | string;
+    format: 'Video' | 'PDF' | 'Webinar' | 'Online' | 'Presencial' | 'Hibrido' | string;
+    cost: 'Gratis' | 'Pago' | 'Hasta $50.000' | '$50.000 - $100.000' | 'Más de $100.000' | string;
     rating: number;
     reviewCount: number;
     imageUrl: string;
@@ -65,6 +65,7 @@ export interface Job {
 
 export interface Entrepreneurship {
     id: number;
+    userId?: number;
     name: string;
     type: 'Micromedio' | 'Agencia' | 'Productora' | 'Corrección' | string;
     founder: string;

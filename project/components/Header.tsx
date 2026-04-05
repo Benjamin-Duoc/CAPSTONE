@@ -13,12 +13,12 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate, isAdminMode, currentUser, onLogout, onEditProfile }) => {
     const [showUserMenu, setShowUserMenu] = useState(false); // Estado para el menú desplegable (Del Main)
 
-    // Usamos la lista del MAIN porque incluye "Fotoperiodismo"
     const mainNavItems: { page: Page; label: string }[] = [
-        { page: 'opportunities', label: 'Oportunidades Laborales' },
         { page: 'courses', label: 'Capacitación' },
-        { page: 'funding', label: 'Fondos' },
-        { page: 'photo-gallery', label: 'Galería Fotográfica' },
+        { page: 'specialists', label: 'Fuentes Destacadas' },
+        { page: 'funding', label: 'Fondos y Becas' },
+        { page: 'events', label: 'Próximos Eventos' },
+        { page: 'opportunities', label: 'Oportunidades Laborales' },
         { page: 'photojournalism', label: 'Fotoperiodismo' },
     ];
 

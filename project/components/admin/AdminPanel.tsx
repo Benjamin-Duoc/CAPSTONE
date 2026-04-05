@@ -725,7 +725,7 @@ const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">Emprendimientos Periodísticos</h2>
+                            <h2 className="text-2xl font-bold">Pymes Hechas por Periodistas</h2>
                             <button onClick={handleAddNewEntrepreneur} className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">Añadir Nuevo Emprendimiento</button>
                         </div>
                         <div className="overflow-x-auto bg-surface rounded-lg shadow">

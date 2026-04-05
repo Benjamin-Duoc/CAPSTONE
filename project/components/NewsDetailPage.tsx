@@ -48,13 +48,14 @@ const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, onBack }) => {
     return (
         <div className="bg-background animate-fade-in">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <button
-                    onClick={onBack}
-                    className="mb-8 inline-flex items-center text-primary font-semibold hover:underline"
-                    aria-label="Volver a la página anterior"
+                <button 
+                    onClick={onBack} 
+                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Volver a Análisis
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    volver
                 </button>
 
                 <article>
