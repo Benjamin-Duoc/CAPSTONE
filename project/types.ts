@@ -1,4 +1,4 @@
-export type Page = 'home' | 'courses' | 'opportunities' | 'analysis' | 'community-ads' | 'specialists' | 'photo-gallery' | 'photojournalism' | 'resources' | 'funding' | 'events' | 'legal' | 'premium-collaborator' | 'free-collaborator' | 'client-company' | 'login' | 'register' | 'about' | 'privacy-policy' | 'terms-of-service' | 'admin' | 'press-releases' | 'upload-press-release' | 'community-post' | 'destacados' | 'entrepreneurship' | 'freelanceServices' | 'mi-espacio';
+export type Page = 'home' | 'courses' | 'opportunities' | 'analysis' | 'community-ads' | 'specialists' | 'specialist-detail' | 'photo-gallery' | 'photojournalism' | 'resources' | 'funding' | 'events' | 'legal' | 'premium-collaborator' | 'free-collaborator' | 'client-company' | 'login' | 'register' | 'about' | 'privacy-policy' | 'terms-of-service' | 'admin' | 'press-releases' | 'upload-press-release' | 'community-post' | 'destacados' | 'entrepreneurship' | 'freelanceServices' | 'mi-espacio' | 'urgent-collaborations';
 
 export interface User {
     id: number;
@@ -19,7 +19,7 @@ export type ReportContentItem =
 export interface Course {
     id: number;
     title: string;
-    category: 'Periodismo de Datos' | 'SEO' | 'Marketing Digital' | 'Podcast' | 'Fact-Checking' | 'Video Móvil';
+    category: 'Periodismo de Datos' | 'SEO' | 'Marketing Digital' | 'Podcast' | 'Fact-Checking' | 'Video Móvil' | 'IA Generativa' | 'Investigación' | 'Ética Periodística' | 'Redes Sociales' | string;
     level: 'Básico' | 'Intermedio' | 'Avanzado' | 'Experto' | string;
     format: 'Video' | 'PDF' | 'Webinar' | 'Online' | 'Presencial' | 'Hibrido' | string;
     cost: 'Gratis' | 'Pago' | 'Hasta $50.000' | '$50.000 - $100.000' | 'Más de $100.000' | string;
@@ -102,6 +102,7 @@ export interface PressRelease {
     reportAuthor?: string;
     reportDate?: string;
     createdAt?: string;
+    isPublicVisible?: boolean;
 }
 
 export interface NgoSpotlight {
@@ -190,6 +191,7 @@ export interface Specialist {
     whatsappContact: string;
     dateAdded: string; // ISO date string for sorting
     textColor: string;
+    isPremium?: boolean;
 }
 
 export interface ShareablePhoto {
@@ -262,6 +264,7 @@ export interface HeroHeading {
 // FIX: Add missing 'ShortCollaboration' type to resolve compilation error.
 export interface ShortCollaboration {
     id: number;
+    authorUserId?: number; // Added to track creator
     title: string;
     deadline: string;
     budget: string;
@@ -321,6 +324,7 @@ export interface TalentProfile {
     expectedSalary: string; // e.g., "$1.000.000 CLP"
     region: string;
     linkedinUrl: string;
+    email?: string;
     experienceYears: number;
     isPremium?: boolean;
 }

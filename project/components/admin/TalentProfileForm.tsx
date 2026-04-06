@@ -167,7 +167,6 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, is
                                     value={isPremium ? formData.expectedSalary : ''} 
                                     onChange={handleChange} 
                                     className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
-                                    required={isPremium} 
                                     disabled={!isPremium}
                                 />
                                 {!isPremium && <div className="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-transparent z-10" />}
@@ -183,7 +182,6 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, is
                                     value={isPremium ? formData.experienceYears : 0} 
                                     onChange={handleChange} 
                                     className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
-                                    required={isPremium} 
                                     min="0" 
                                     disabled={!isPremium}
                                 />
@@ -202,7 +200,6 @@ const TalentProfileForm: React.FC<TalentProfileFormProps> = ({ talentProfile, is
                                 value={isPremium ? formData.linkedinUrl : ''} 
                                 onChange={handleChange} 
                                 className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 ${!isPremium ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`} 
-                                required={isPremium} 
                                 disabled={!isPremium}
                             />
                             {!isPremium && <div className="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-transparent z-10" />}

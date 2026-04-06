@@ -83,7 +83,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState({ start: '', end: '' });
 
-    const ITEMS_PER_PAGE = 9;
+    const ITEMS_PER_PAGE = 12;
 
     // Fetch posts from Supabase on mount
     useEffect(() => {
@@ -386,7 +386,7 @@ const PhotojournalismModule: React.FC<PhotojournalismModuleProps> = ({ posts = [
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

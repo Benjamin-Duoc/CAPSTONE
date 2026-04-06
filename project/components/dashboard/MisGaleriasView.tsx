@@ -50,10 +50,10 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                     const data = await resPhoto.json();
                     setPhotoPosts(data.filter((p: any) => p.user_id === user.id || p.userId === user.id));
                 }
-                const resShare = await fetch(`${API_BASE}/shareable-photos`);
+                const resShare = await fetch(`${API_BASE}/shareable-photos?author_id=${user.id}`);
                 if (resShare.ok) {
                     const data = await resShare.json();
-                    setShareablePhotos(data.filter((p: any) => p.user_id === user.id || p.userId === user.id));
+                    setShareablePhotos(data);
                 }
             } catch (e) {
                 console.error("Error fetching galleries", e);
@@ -130,16 +130,16 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                     const newEntry = activeTab === 'periodismo' ? {
                         title: batchTitle,
                         caption: batchCaption,
-                        image_url: uploadData.url,
+                        image_url: uploadData.url.replace('/media/', '/backendcipress/media/'),
                         date_taken: new Date().toISOString().split('T')[0],
                         date_added: new Date().toISOString(),
                         photographer_name: `${user.firstName} ${user.lastName}`,
                         user_id: user.id
                     } : {
                         caption: batchTitle + (batchCaption ? ` - ${batchCaption}` : ''),
-                        image_url: uploadData.url,
-                        original_image_url: uploadData.url,
-                        watermarked_image_url: uploadData.watermarked_url || null,
+                        image_url: uploadData.url.replace('/media/', '/backendcipress/media/'),
+                        original_image_url: uploadData.url.replace('/media/', '/backendcipress/media/'),
+                        watermarked_image_url: uploadData.watermarked_url ? uploadData.watermarked_url.replace('/media/', '/backendcipress/media/') : null,
                         price: batchPrice,
                         keywords: JSON.stringify([batchTitle]),
                         date_added: new Date().toISOString(),
@@ -163,6 +163,10 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                         } else {
                             setShareablePhotos(prev => [savedData, ...prev]);
                         }
+                    } else if (saveRes.status === 403) {
+                        const errData = await saveRes.json();
+                        alert(errData.message || 'Límite de cuota alcanzado.');
+                        break; // Stop batch upload
                     }
                 }
             } catch (err) {
@@ -184,6 +188,28 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
         alert(`¡Subida completada! Se guardaron ${successCount} de ${total} fotos.`);
     };
 
+    const handleDeletePhoto = async (id: number, type: 'periodismo' | 'galeria') => {
+        if (!window.confirm('¿Estás seguro de que deseas eliminar esta foto?')) return;
+        const endpoint = type === 'periodismo' ? `${API_BASE}/photojournalism-posts/${id}` : `${API_BASE}/shareable-photos/${id}`;
+        try {
+            const res = await fetch(endpoint, { method: 'DELETE' });
+            if (res.ok || res.status === 204) {
+                if (type === 'periodismo') {
+                    setPhotoPosts(prev => prev.filter(p => p.id !== id));
+                } else {
+                    setShareablePhotos(prev => prev.filter(p => p.id !== id));
+                }
+                if (onGalleriesUpdated) onGalleriesUpdated();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                alert(errData.message || 'Error al eliminar la foto.');
+            }
+        } catch (error) {
+            console.error('Error deleting photo:', error);
+            alert('Error al intentar eliminar la foto.');
+        }
+    };
+
     const renderPhotoList = () => {
         if (activeTab === 'periodismo') {
             const filtered = photoPosts.filter((p: any) => 
@@ -197,10 +223,17 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                             <div className="relative h-48">
                                 <img src={p.image_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             </div>
-                            <div className="p-4">
-                                <h4 className="font-bold text-gray-900 mb-1 line-clamp-1">{p.title}</h4>
+                            <div className="p-4 relative">
+                                <button 
+                                    onClick={() => handleDeletePhoto(p.id, 'periodismo')}
+                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-red-600 transition-colors"
+                                    title="Eliminar foto"
+                                >
+                                    <TrashIcon className="h-5 w-5" />
+                                </button>
+                                <h4 className="font-bold text-gray-900 mb-1 line-clamp-1 pr-6">{p.title}</h4>
                                 <p className="text-xs text-gray-500 mb-3">{new Date(p.date_added || p.date_taken).toLocaleDateString()}</p>
-                                <p className="text-sm text-gray-600 line-clamp-2">{p.caption}</p>
+                                <p className="text-sm text-gray-600 line-clamp-2 pr-6">{p.caption}</p>
                             </div>
                         </div>
                     ))}
@@ -224,12 +257,19 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                                     </div>
                                 )}
                             </div>
-                            <div className="p-4">
-                                <div className="flex justify-between items-start mb-2">
+                            <div className="p-4 relative">
+                                <button 
+                                    onClick={() => handleDeletePhoto(p.id, 'galeria')}
+                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-red-600 transition-colors"
+                                    title="Eliminar foto"
+                                >
+                                    <TrashIcon className="h-5 w-5" />
+                                </button>
+                                <div className="flex justify-between items-start mb-2 pr-6">
                                     <h4 className="font-bold text-primary">{p.price || 'Sin Precio'}</h4>
                                     <span className="text-xs text-gray-400">{new Date(p.date_added).toLocaleDateString()}</span>
                                 </div>
-                                <p className="text-sm text-gray-600 line-clamp-2">{p.caption}</p>
+                                <p className="text-sm text-gray-600 line-clamp-2 pr-6">{p.caption}</p>
                             </div>
                         </div>
                     ))}

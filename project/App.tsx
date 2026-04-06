@@ -34,6 +34,9 @@ import UserDashboard from './components/UserDashboard';
 import ClienteDashboard from './components/ClienteDashboard';
 import FreeDashboard from './components/FreeDashboard';
 import DestacadosModule from './components/DestacadosModule';
+import SpecialistDetailPage from './components/SpecialistDetailPage';
+import FundingDetailPage from './components/FundingDetailPage';
+import TalentDetailPage from './components/TalentDetailPage';
 
 import type { Page, User, Entrepreneurship, Course, Job, NewsArticle, PremiumSponsor, HeroHeading, PhotojournalismPost, Resource, FundingOpportunity, Specialist, ShareablePhoto, PressRelease, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, CommunityPost, SpecialAd, Event, SiteStat, PartnerLogo, TalentProfile, FreelanceService, CommunityAd, NgoSpotlight, LegalTopic, PromoVideo, DestacadoArticle } from './types';
 
@@ -86,6 +89,9 @@ const App: React.FC = () => {
   const [selectedPressRelease, setSelectedPressRelease] = useState<PressRelease | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedPhotoPost, setSelectedPhotoPost] = useState<PhotojournalismPost | null>(null);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<Specialist | null>(null);
+  const [selectedFunding, setSelectedFunding] = useState<FundingOpportunity | null>(null);
+  const [selectedTalent, setSelectedTalent] = useState<TalentProfile | null>(null);
 
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -345,6 +351,18 @@ const App: React.FC = () => {
   // --- Navigation & Selection Handlers ---
 
   const handleNavigate = (page: Page, subPage?: string) => {
+    // 1. REGLA GLOBAL: Solo se permiten ciertas páginas sin login
+    const publicPages: Page[] = ['home', 'about', 'privacy-policy', 'terms-of-service', 'login', 'register', 'destacados'];
+    
+    // Si no está logeado y moviéndose a una página protegida
+    if (!currentUser && !publicPages.includes(page)) {
+      setReturnToPage(page);
+      setInitialTab(subPage || null);
+      setCurrentPage('login');
+      window.scrollTo(0, 0);
+      return;
+    }
+
     if (page === 'login' && currentPage !== 'login' && currentPage !== 'register') {
       setReturnToPage(currentPage);
     }
@@ -356,6 +374,9 @@ const App: React.FC = () => {
     setSelectedPressRelease(null);
     setSelectedCourse(null);
     setSelectedPhotoPost(null);
+    setSelectedSpecialist(null);
+    setSelectedFunding(null);
+    setSelectedTalent(null);
     setCurrentPage(page);
     setInitialTab(subPage || null);
     window.scrollTo(0, 0);
@@ -370,6 +391,9 @@ const App: React.FC = () => {
   const handleSelectPressRelease = (p: PressRelease) => { setSelectedPressRelease(p); window.scrollTo(0, 0); };
   const handleSelectCourse = (c: Course) => { setSelectedCourse(c); window.scrollTo(0, 0); };
   const handleSelectPhotoPost = (p: PhotojournalismPost) => { setSelectedPhotoPost(p); window.scrollTo(0, 0); };
+  const handleSelectSpecialist = (s: Specialist) => { setSelectedSpecialist(s); window.scrollTo(0, 0); };
+  const handleSelectFunding = (f: FundingOpportunity) => { setSelectedFunding(f); window.scrollTo(0, 0); };
+  const handleSelectTalent = (t: TalentProfile) => { setSelectedTalent(t); window.scrollTo(0, 0); };
 
 
   // --- CRUD Operations (Connected to Backend) ---
@@ -447,10 +471,13 @@ const App: React.FC = () => {
   const handleAddCommunityPost = async (item: Omit<CommunityPost, 'id' | 'authorName' | 'authorAvatarUrl'>) => {
     if (!currentUser) { alert('Debes iniciar sesión'); return; }
     try {
+      const userProfile = talentProfiles.find(p => p.userId === currentUser.id);
+      const userAvatar = userProfile?.avatarUrl || 'https://i.pravatar.cc/150?u=' + currentUser.email;
+
       const newItem = {
         ...item,
         authorName: `${currentUser.firstName} ${currentUser.lastName}`,
-        authorAvatarUrl: 'https://i.pravatar.cc/150?u=' + currentUser.email,
+        authorAvatarUrl: userAvatar,
         createdBy: currentUser.email
       };
       const res = await createCommunityPost(newItem);
@@ -588,6 +615,9 @@ const App: React.FC = () => {
     if (selectedPressRelease) return <PressReleaseDetailPage pressRelease={selectedPressRelease} onBack={() => setSelectedPressRelease(null)} />;
     if (selectedPhotoPost) return <PhotojournalismDetailPage post={selectedPhotoPost} onBack={() => setSelectedPhotoPost(null)} />;
     if (selectedCourse) return <CourseDetailPage course={selectedCourse} onBack={() => setSelectedCourse(null)} />;
+    if (selectedSpecialist) return <SpecialistDetailPage specialist={selectedSpecialist} onBack={() => setSelectedSpecialist(null)} />;
+    if (selectedFunding) return <FundingDetailPage funding={selectedFunding} onBack={() => setSelectedFunding(null)} />;
+    if (selectedTalent) return <TalentDetailPage profile={selectedTalent} onBack={() => setSelectedTalent(null)} />;
 
     switch (currentPage) {
       case 'admin':
@@ -623,16 +653,16 @@ const App: React.FC = () => {
         />;
       case 'courses': return <CoursesModule courses={courses} onSelectCourse={handleSelectCourse} onBack={() => handleNavigate('home')} />;
       case 'entrepreneurship': return <EntrepreneurshipModule entrepreneurships={entrepreneurs} onBack={() => handleNavigate('home')} />;
-      case 'freelanceServices': return <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} onBack={() => handleNavigate('home')} />;
-      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} currentUser={currentUser} onNavigate={handleNavigate} rotationInterval={rotationInterval} onBack={() => handleNavigate('home')} />;
+      case 'opportunities': return <OpportunitiesModule jobs={jobs} onSelectJob={handleSelectJob} initialTab={initialTab || 'jobs'} currentUser={currentUser} onNavigate={handleNavigate} rotationInterval={rotationInterval} onSelectTalent={handleSelectTalent} onBack={() => handleNavigate('home')} />;
+      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} onSelectFunding={handleSelectFunding} onBack={() => handleNavigate('home')} />;
       case 'destacados': return <DestacadosModule destacados={destacados} onSelectDestacado={handleSelectDestacado} onBack={() => handleNavigate('home')} />;
       case 'analysis': return <NewsModule newsArticles={newsArticles} onSelectNewsArticle={handleSelectNewsArticle} onBack={() => handleNavigate('home')} />;
       case 'community-ads': return <CommunityAdsModule ads={communityAds} onBack={() => handleNavigate('home')} />;
-      case 'specialists': return <SpecialistsModule specialists={specialists} onBack={() => handleNavigate('home')} />;
+      case 'specialists': return <SpecialistsModule specialists={specialists} onSelectSpecialist={handleSelectSpecialist} onBack={() => handleNavigate('home')} />;
       case 'photo-gallery': return <PhotoGalleryModule shareablePhotos={shareablePhotos} onBack={() => handleNavigate('home')} />;
       case 'photojournalism': return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />;
       case 'resources': return <ResourcesModule resources={resources} onBack={() => handleNavigate('home')} />;
-      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} onBack={() => handleNavigate('home')} />;
+      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} onSelectFunding={handleSelectFunding} onBack={() => handleNavigate('home')} />;
       case 'events': return <EventsModule events={events} onBack={() => handleNavigate('home')} />;
       case 'legal': return <LegalModule onBack={() => handleNavigate('home')} />;
       case 'press-releases': return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} onBack={() => handleNavigate('home')} />;
@@ -672,6 +702,10 @@ const App: React.FC = () => {
              onUpdatePressRelease={handleUpdatePressRelease}
              onDeletePressRelease={handleDeletePressRelease}
              onGalleriesUpdated={refreshGalleries}
+             shortCollaborations={shortCollaborations}
+             onAddShortCollaboration={handleAddShortCollaboration}
+             onUpdateShortCollaboration={handleUpdateShortCollaboration}
+             onDeleteShortCollaboration={handleDeleteShortCollaboration}
              initialSection={
                initialTab === 'talent' ? 'Mi Perfil de Talento' : 
                initialTab === 'comunicado' ? 'Redactar Comunicado' : 
@@ -679,6 +713,8 @@ const App: React.FC = () => {
                initialTab === 'pyme' ? 'Mis Pymes' :
                initialTab === 'galeria' ? 'Mis Galerías' :
                initialTab === 'comunicados' ? 'Redactar Comunicado' :
+               initialTab === 'specialist' ? 'Mis Fuentes Especializadas' :
+               initialTab === 'urgentes' ? 'Colaboraciones Urgentes' :
                'Mi Perfil'
              }
            />;
@@ -698,6 +734,8 @@ const App: React.FC = () => {
           onSelectJob={handleSelectJob}
           onSelectPressRelease={handleSelectPressRelease}
           onSelectCourse={handleSelectCourse}
+          onSelectSpecialist={(s) => setSelectedSpecialist(s)}
+          onSelectFunding={handleSelectFunding}
           isAdminMode={isAdminMode}
           courses={courses}
           jobs={jobs}
@@ -723,6 +761,7 @@ const App: React.FC = () => {
           sponsoredAds={sponsoredAds}
           specialAds={specialAds}
           stats={stats}
+          rotationInterval={rotationInterval}
         />;
     }
   };

@@ -83,6 +83,12 @@ def create_app(config_class=None):
     from .routes.talent_routes import talent_bp
     app.register_blueprint(talent_bp)
 
+    from .routes.shareable_photo_routes import shareable_photo_bp
+    app.register_blueprint(shareable_photo_bp)
+
+    from .routes.photojournalism_routes import photojournalism_bp
+    app.register_blueprint(photojournalism_bp)
+
     from .routes.press_release_routes import press_release_bp
     app.register_blueprint(press_release_bp)
 
@@ -130,11 +136,11 @@ def create_app(config_class=None):
         ('news_articles', NewsArticle, NewsArticleSchema, '/api/news-articles'),
         ('ngo_spotlights', NgoSpotlight, NgoSpotlightSchema, '/api/ngo-spotlights'),
         ('partner_logos', PartnerLogo, PartnerLogoSchema, '/api/partner-logos'),
-        ('photojournalism_posts', PhotojournalismPost, PhotojournalismPostSchema, '/api/photojournalism-posts'),
+        # ('photojournalism_posts', PhotojournalismPost, PhotojournalismPostSchema, '/api/photojournalism-posts'),
         # ('press_releases', PressRelease, PressReleaseSchema, '/api/press-releases'), # Replaced by custom press_release_bp
         ('promo_videos', PromoVideo, PromoVideoSchema, '/api/promo-videos'),
         ('resources', Resource, ResourceSchema, '/api/resources'),
-        ('shareable_photos', ShareablePhoto, ShareablePhotoSchema, '/api/shareable-photos'),
+        # ('shareable_photos', ShareablePhoto, ShareablePhotoSchema, '/api/shareable-photos'), # Replaced by custom
         ('short_collaborations', ShortCollaboration, ShortCollaborationSchema, '/api/short-collaborations'),
         ('site_stats', SiteStat, SiteStatSchema, '/api/site-stats'),
         ('special_ads', SpecialAd, SpecialAdSchema, '/api/special-ads'),

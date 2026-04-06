@@ -8,7 +8,7 @@ interface CoursesModuleProps {
     onBack: () => void;
 }
 
-const CourseCard: React.FC<{ course: Course; onSelect: () => void; }> = ({ course, onSelect }) => {
+export const CourseCard: React.FC<{ course: Course; onSelect: () => void; }> = ({ course, onSelect }) => {
   return (
     <button onClick={onSelect} className="w-full text-left bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col border border-gray-200 hover:border-primary">
       <img src={course.imageUrl} alt={course.title} className="w-full h-40 object-cover" />
@@ -63,24 +63,53 @@ const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse, 
         format: '',
         cost: ''
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 12;
 
     const handleFilterChange = (filterName: keyof typeof filters, value: string) => {
         setFilters(prev => ({ ...prev, [filterName]: value }));
+        setCurrentPage(1); // Reset to first page on filter change
+    };
+
+    const courseCategories = [...new Set(courses.map(c => c.category))];
+    const courseLevels = ['Básico', 'Intermedio', 'Avanzado', 'Experto'];
+    const courseFormats = ['Online', 'Presencial', 'Híbrido'];
+    const courseCosts = ['Gratis', '1 a 10.000', '10.000 – 25000', '25000 – 50000', '50000+'];
+
+    const parseCost = (costStr: string): number => {
+        if (!costStr) return 0;
+        if (costStr.toLowerCase().includes('gratis')) return 0;
+        // Extract numbers from string like "$45.000 CLP"
+        const cleanStr = costStr.replace(/[^\d]/g, '');
+        return parseInt(cleanStr, 10) || 0;
     };
 
     const filteredCourses = useMemo(() => {
         return courses.filter(course => {
-            return (filters.category ? course.category === filters.category : true) &&
-                   (filters.level ? course.level === filters.level : true) &&
-                   (filters.format ? course.format === filters.format : true) &&
-                   (filters.cost ? course.cost === filters.cost : true);
+            const matchesCategory = filters.category ? course.category === filters.category : true;
+            const matchesLevel = filters.level ? course.level === filters.level : true;
+            const matchesFormat = filters.format ? course.format === filters.format : true;
+            
+            let matchesCost = true;
+            if (filters.cost) {
+                const costVal = parseCost(course.cost);
+                if (filters.cost === 'Gratis') {
+                    matchesCost = costVal === 0;
+                } else if (filters.cost === '1 a 10.000') {
+                    matchesCost = costVal >= 1 && costVal <= 10000;
+                } else if (filters.cost === '10.000 – 25000') {
+                    matchesCost = costVal > 10000 && costVal <= 25000;
+                } else if (filters.cost === '25000 – 50000') {
+                    matchesCost = costVal > 25000 && costVal <= 50000;
+                } else if (filters.cost === '50000+') {
+                    matchesCost = costVal > 50000;
+                }
+            }
+
+            return matchesCategory && matchesLevel && matchesFormat && matchesCost;
         });
     }, [filters, courses]);
-    
-    const courseCategories = [...new Set(courses.map(c => c.category))];
-    const courseLevels = ['Básico', 'Intermedio', 'Avanzado', 'Experto'];
-    const courseFormats = ['Online', 'Presencial', 'Hibrido'];
-    const courseCosts = ['Gratis', 'Hasta $50.000', '$50.000 - $100.000', 'Más de $100.000'];
+
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -92,7 +121,7 @@ const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse, 
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="text-center mb-12">
@@ -110,10 +139,54 @@ const CoursesModule: React.FC<CoursesModuleProps> = ({ courses, onSelectCourse, 
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredCourses.slice(0, 20).map(course => (
-                        <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />
-                    ))}
+                    {filteredCourses.length > 0 ? (
+                        filteredCourses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map(course => (
+                            <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center py-20 bg-surface rounded-xl border-2 border-dashed border-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 className="text-xl font-bold text-text-primary">No se encontraron cursos</h3>
+                            <p className="text-text-secondary mt-2">Intenta ajustar los filtros para encontrar lo que buscas.</p>
+                            <button 
+                                onClick={() => setFilters({ category: '', level: '', format: '', cost: '' })}
+                                className="mt-6 px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-orange-600 transition-colors"
+                            >
+                                Limpiar todos los filtros
+                            </button>
+                        </div>
+                    )}
                 </div>
+
+                {filteredCourses.length > ITEMS_PER_PAGE && (
+                    <div className="flex justify-center items-center space-x-4 mt-12">
+                        <button
+                            onClick={() => {
+                                setCurrentPage(prev => prev - 1);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-text-secondary hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm text-text-secondary">
+                            Página {currentPage} de {Math.ceil(filteredCourses.length / ITEMS_PER_PAGE)}
+                        </span>
+                        <button
+                            onClick={() => {
+                                setCurrentPage(prev => prev + 1);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            disabled={currentPage === Math.ceil(filteredCourses.length / ITEMS_PER_PAGE)}
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-text-secondary hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                )}
                 {filteredCourses.length === 0 && (
                     <div className="text-center py-16 bg-surface rounded-lg shadow-md border border-gray-200">
                         <h3 className="text-xl font-semibold text-text-primary">No se encontraron cursos</h3>

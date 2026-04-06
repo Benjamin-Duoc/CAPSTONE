@@ -25,7 +25,7 @@ const DestacadosModule: React.FC<DestacadosModuleProps> = ({ destacados, onSelec
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="mb-12 border-b-2 border-primary pb-4">

@@ -14,7 +14,10 @@ def get_all_profiles():
     # Role priority: 'Colaborador Premium' (0), 'Colaborador Gratis' (1), Others (2)
     query = db.session.query(TalentProfile, User.role).join(
         User, TalentProfile.user_id == User.id
-    ).order_by(
+    )
+
+    # Sorted result setup (Case statement remains for sorting)
+    query = query.order_by(
         case(
             (User.role == 'Colaborador Premium', 0),
             (User.role == 'Colaborador Gratis', 1),
@@ -82,5 +85,6 @@ def save_my_profile():
         
         return jsonify(res_data), 200
     except Exception as e:
+        print("MARSHMALLOW ERROR ON TALENT PROFILE:", str(e), "Payload was:", data)
         db.session.rollback()
         return jsonify({"error": str(e)}), 400

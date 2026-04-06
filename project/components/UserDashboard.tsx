@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { User, PremiumSponsor, PressRelease } from '../types';
+import type { User, PremiumSponsor, PressRelease, ShortCollaboration } from '../types';
 import { initiatePayment } from '../utils/db';
 import MyProfileView from './dashboard/MyProfileView';
 import ConfianEnCipressView from './dashboard/ConfianEnCipressView';
@@ -7,6 +7,7 @@ import RedactarComunicadoView from './dashboard/RedactarComunicadoView';
 import MisGaleriasView from './dashboard/MisGaleriasView';
 import MisPymesView from './dashboard/MisPymesView';
 import TalentProfileView from './dashboard/TalentProfileView';
+import UrgentCollaborationsView from './dashboard/UrgentCollaborationsView';
 import { 
     UserIcon, 
     CreditCardIcon, 
@@ -34,10 +35,14 @@ interface UserDashboardProps {
     onUpdatePressRelease: (pressRelease: PressRelease) => Promise<void>;
     onDeletePressRelease: (id: number) => Promise<void>;
     onGalleriesUpdated?: () => void;
+    shortCollaborations: ShortCollaboration[];
+    onAddShortCollaboration: (collaboration: Omit<ShortCollaboration, 'id'>) => Promise<void>;
+    onUpdateShortCollaboration: (collaboration: ShortCollaboration) => Promise<void>;
+    onDeleteShortCollaboration: (id: number) => Promise<void>;
     initialSection?: MenuSection;
 }
 
-type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Mis Galerías' | 'Mis Pymes' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral';
+type MenuSection = 'Mi Perfil' | 'Suscripción' | 'Redactar Comunicado' | 'Colaboraciones Urgentes' | 'Mis Galerías' | 'Mis Pymes' | 'Confían en CiPress' | 'Mis Servicios Freelance' | 'Mi Perfil de Talento' | 'Publicar Oferta Laboral' | 'Mis Fuentes Especializadas';
 
 interface MenuItem {
     name: MenuSection;
@@ -52,7 +57,8 @@ const MENU_ITEMS: MenuItem[] = [
     { name: 'Suscripción', icon: CreditCardIcon, category: 'Mi Cuenta', visibleFor: ['all'], lockedFor: [] },
     
     { name: 'Redactar Comunicado', icon: PencilSquareIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
-    { name: 'Mis Galerías', icon: PhotoIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador gratis'] },
+    { name: 'Colaboraciones Urgentes', icon: SparklesIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador gratis', 'colaborador'] },
+    { name: 'Mis Galerías', icon: PhotoIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
     { name: 'Mis Pymes', icon: BuildingOfficeIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: [] },
     
     { name: 'Confían en CiPress', icon: BuildingOfficeIcon, category: 'Área Comercial', visibleFor: ['cliente', 'empresa', 'administrador'], lockedFor: [] },
@@ -60,12 +66,14 @@ const MENU_ITEMS: MenuItem[] = [
     
     { name: 'Mi Perfil de Talento', icon: UserIcon, category: 'Área Laboral', visibleFor: ['all'], lockedFor: [] },
     { name: 'Publicar Oferta Laboral', icon: BriefcaseIcon, category: 'Área Laboral', visibleFor: ['empresa', 'administrador'], lockedFor: [] },
+    { name: 'Mis Fuentes Especializadas', icon: SparklesIcon, category: 'Mis Publicaciones', visibleFor: ['all'], lockedFor: ['colaborador gratis', 'colaborador'] },
 ];
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
     currentUser, onLogout, onNavigate, onUpdateProfile, 
     premiumSponsors, onAddSponsor, onUpdateSponsor,
     pressReleases, onAddPressRelease, onUpdatePressRelease, onDeletePressRelease, onGalleriesUpdated,
+    shortCollaborations, onAddShortCollaboration, onUpdateShortCollaboration, onDeleteShortCollaboration,
     initialSection = 'Mi Perfil'
 }) => {
     const [activeSection, setActiveSection] = useState<MenuSection>(initialSection);
@@ -86,7 +94,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     // Función auxiliar para determinar si está bloqueado (Freemium Upsell)
     const isLocked = (item: MenuItem) => {
         if (userRole === 'administrador') return false;
-        return item.lockedFor.some(role => userRole.includes(role));
+        
+        // REGLA DE ORO: Si es Premium o Cliente, NADA está bloqueado
+        if (userRole.includes('premium') || userRole.includes('cliente')) return false;
+
+        return item.lockedFor.some(lockedRole => userRole.includes(lockedRole));
     };
 
     const handleUpgrade = async () => {
@@ -105,15 +117,39 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     const categories = ['Mi Cuenta', 'Mis Publicaciones', 'Área Comercial', 'Área Laboral'];
 
     const handleMenuClick = (item: MenuItem) => {
-        if (isLocked(item)) {
-            // TODO: Cambiar por un modal bonito de "Hazte Premium"
-            alert(`La sección "${item.name}" requiere un plan Premium. ¡Actualiza tu suscripción para acceder a esta función exclusiva!`);
-            return;
-        }
         setActiveSection(item.name);
     };
 
     const renderContent = () => {
+        const lockedItem = MENU_ITEMS.find(i => i.name === activeSection);
+        if (lockedItem && isLocked(lockedItem)) {
+            return (
+                <div className="p-8 max-w-2xl mx-auto mt-10">
+                    <div className="bg-white p-8 rounded-2xl border-2 border-primary shadow-2xl relative overflow-hidden text-center">
+                        <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 text-sm font-bold rounded-bl-lg flex items-center">
+                            <LockClosedIcon className="w-4 h-4 mr-1" /> Exclusivo Premium
+                        </div>
+                        <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <StarIcon className="h-10 w-10 text-primary" />
+                        </div>
+                        <h3 className="text-2xl font-bold font-serif text-text-primary mb-4">
+                            ¡Destaca en nuestro Banco de Talentos pasándote a Premium!
+                        </h3>
+                        <p className="text-text-secondary mb-8">
+                            La sección "{activeSection}" es un beneficio exclusivo. ¡Pásate a Premium para acceder a todas las herramientas avanzadas y destacar profesionalmente frente a los medios que buscan talento!
+                        </p>
+                        <button 
+                            onClick={handleUpgrade}
+                            disabled={isProcessingUpgrade}
+                            className={`w-full max-w-sm mx-auto py-3 bg-primary text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg flex items-center justify-center ${isProcessingUpgrade ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        >
+                            {isProcessingUpgrade ? 'Conectando...' : 'Mejorar a Premium Ahora'}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
         switch (activeSection) {
             case 'Mi Perfil':
                 return currentUser ? <MyProfileView currentUser={currentUser} onSaveProfile={onUpdateProfile} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando perfil...</div>;
@@ -216,8 +252,19 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
             case 'Mi Perfil de Talento':
                 return currentUser ? <TalentProfileView currentUser={currentUser} /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
-            case 'Publicar Oferta Laboral':
-                return <div className="p-8 text-center text-gray-500 font-medium">Vista para "{activeSection}" en construcción...</div>;
+            case 'Colaboraciones Urgentes':
+                return currentUser ? <UrgentCollaborationsView
+                    currentUser={currentUser}
+                    collaborations={(shortCollaborations || []).filter(c => c.authorUserId === currentUser.id)}
+                    onSave={async (data) => {
+                        if ('id' in data && data.id) {
+                            await onUpdateShortCollaboration(data as ShortCollaboration);
+                        } else {
+                            await onAddShortCollaboration({ ...data, authorUserId: currentUser.id } as Omit<ShortCollaboration, 'id'>);
+                        }
+                    }}
+                    onDelete={onDeleteShortCollaboration}
+                /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
             case 'Mis Galerías':
                 return <MisGaleriasView user={currentUser!} onGalleriesUpdated={onGalleriesUpdated} />;
             case 'Mis Pymes':
@@ -235,6 +282,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                         }
                     }}
                 /> : <div className="p-8 text-center text-gray-500 font-medium">Cargando...</div>;
+            case 'Mis Fuentes Especializadas':
+                return <div className="p-8 text-center text-gray-500 font-medium">Gestiona tus fuentes especializadas desde aquí (Vista en desarrollo).</div>;
             case 'Mis Servicios Freelance':
                 return null;
             default:

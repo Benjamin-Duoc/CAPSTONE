@@ -97,6 +97,7 @@ class PressRelease(db.Model):
     report_author = db.Column(db.String)
     report_date = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_deleted = db.Column(db.Boolean, default=False)
 
 class PhotojournalismPost(db.Model):
     __tablename__ = 'photojournalism_posts'
@@ -141,6 +142,7 @@ class CommunityAd(db.Model):
 class ShortCollaboration(db.Model):
     __tablename__ = 'short_collaborations'
     id = db.Column(db.Integer, primary_key=True)
+    author_user_id = db.Column(db.Integer, nullable=True)
     title = db.Column(db.String)
     deadline = db.Column(db.String)
     budget = db.Column(db.String)
@@ -312,6 +314,7 @@ class ShareablePhoto(db.Model):
     keywords = db.Column(db.JSON)
     date_added = db.Column(db.String)
     text_color = db.Column(db.String)
+    is_deleted = db.Column(db.Boolean, default=False)
 
 # -----------------------------------------------------------------------------
 # Partners & Sponsors

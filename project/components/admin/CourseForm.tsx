@@ -99,6 +99,16 @@ const CourseForm: React.FC<CourseFormProps> = ({ course, onSave, onClose }) => {
                                 <option>Podcast</option>
                                 <option>Fact-Checking</option>
                                 <option>Video Móvil</option>
+                                <option>IA Generativa</option>
+                                <option>Investigación</option>
+                                <option>Ética Periodística</option>
+                                <option>Redes Sociales</option>
+                                <option>Ciberseguridad</option>
+                                <option>Redacción Creativa</option>
+                                <option>Periodismo de Viajes</option>
+                                <option>Economía</option>
+                                <option>Narrativa Transmedia</option>
+                                <option>Gestión de Medios</option>
                             </select>
                         </div>
                         <div>
@@ -118,7 +128,7 @@ const CourseForm: React.FC<CourseFormProps> = ({ course, onSave, onClose }) => {
                              <select name="format" value={formData.format} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
                                 <option>Online</option>
                                 <option>Presencial</option>
-                                <option>Hibrido</option>
+                                <option>Híbrido</option>
                             </select>
                         </div>
                          <div>

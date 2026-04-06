@@ -39,7 +39,8 @@ const SpecialAdForm: React.FC<SpecialAdFormProps> = ({ ad, onSave, onClose }) =>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Descripción</label>
-                        <textarea name="description" value={formData.description} onChange={handleChange} rows={4} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <textarea name="description" value={formData.description} onChange={handleChange} maxLength={80} rows={4} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <p className="text-xs text-gray-500 mt-1">{formData.description?.length || 0}/80 caracteres</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Texto del Botón (CTA)</label>

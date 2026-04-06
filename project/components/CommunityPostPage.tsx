@@ -191,7 +191,7 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
                 <div className="text-center mb-12">
                     <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Actividad de la Comunidad</h1>
@@ -239,18 +239,21 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div>
+                            <div className="relative">
                                 <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Tu Comentario o Resumen</label>
                                 <textarea
                                     id="comment"
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary resize-none"
+                                    placeholder="¿Por qué es interesante este artículo? ¿Qué debate abre?"
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
-                                    rows={3}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
-                                    placeholder="¿Por qué es interesante este artículo? ¿Qué debate abre?"
+                                    maxLength={80}
                                     required
                                     disabled={isSubmitting}
                                 />
+                                <div className="text-xs text-gray-500 mt-1 text-right">
+                                    {comment.length}/80 caracteres
+                                </div>
                             </div>
                             <div className="text-right">
                                 <button
@@ -301,9 +304,11 @@ const CommunityPostPage: React.FC<CommunityPostPageProps> = ({ posts, onAddPost,
                                     rows={3}
                                     value={editComment}
                                     onChange={(e) => setEditComment(e.target.value)}
+                                    maxLength={80}
                                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
                                     disabled={isUpdating}
                                 />
+                                <p className="text-xs text-gray-500 mt-1">{editComment.length}/80 caracteres</p>
                             </div>
                             <div className="text-right space-x-3">
                                 <button

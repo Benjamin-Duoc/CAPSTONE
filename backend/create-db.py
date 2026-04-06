@@ -407,8 +407,8 @@ def create_db():
 
         # --- SHORT COLLABORATIONS ---
         collabs = [
-            {"title": "Periodista para cubrir evento", "deadline": "Postular antes del 30/07", "budget": "$150.000 CLP", "author": "Agencia Comms", "whatsapp_contact": "56911223344"},
-            {"title": "Redactor para 5 notas", "deadline": "Entrega en 1 semana", "budget": "$200.000 CLP", "author": "ONG Verde Chile", "whatsapp_contact": "56922334455"}
+            {"author_user_id": 1, "title": "Periodista para cubrir evento", "deadline": "Postular antes del 30/07", "budget": "$150.000 CLP", "author": "Agencia Comms", "whatsapp_contact": "56911223344"},
+            {"author_user_id": 1, "title": "Redactor para 5 notas", "deadline": "Entrega en 1 semana", "budget": "$200.000 CLP", "author": "ONG Verde Chile", "whatsapp_contact": "56922334455"}
         ]
         for col in collabs:
             db.session.add(ShortCollaboration(**col))

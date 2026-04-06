@@ -61,7 +61,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) =
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        volver
+                        Volver
                     </button>
                     <span className="text-base font-bold uppercase tracking-wider text-accent">{course.category}</span>
                     <h1 className="text-4xl md:text-6xl font-black font-serif text-white mt-2 shadow-text">{course.title}</h1>
@@ -80,7 +80,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) =
                         <section className="mb-10">
                             <h2 className="text-3xl font-bold font-serif text-text-primary mb-4 border-b-2 border-primary pb-2">¿Qué aprenderás?</h2>
                             <ul className="space-y-3">
-                                {course.topics.map((topic, index) => (
+                                {Array.isArray(course.topics) && course.topics.map((topic, index) => (
                                     <li key={index} className="flex items-start">
                                         <svg className="w-6 h-6 text-accent mr-3 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                                         <span className="text-lg text-text-secondary">{topic}</span>

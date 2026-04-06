@@ -27,7 +27,11 @@ const TalentProfileView: React.FC<TalentProfileViewProps> = ({ currentUser }) =>
         try {
             const saved = await saveMyTalentProfile(data);
             setMyProfile(saved);
-            alert("¡Tu perfil de talento ha sido actualizado! Ya está visible con prioridad Premium en el Banco de Talentos.");
+            if (isPremium) {
+                alert("¡Tu perfil de talento ha sido actualizado! Ya está visible con prioridad Premium en el Banco de Talentos.");
+            } else {
+                alert("¡Tu perfil de talento ha sido actualizado con éxito! Pásate a Premium para destacar con prioridad e incluir tu renta y contacto directo en el Banco de Talentos.");
+            }
         } catch (error) {
             alert("Error al guardar el perfil.");
         }

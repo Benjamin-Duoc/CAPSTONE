@@ -10,12 +10,12 @@ list_schema = PressReleaseSchema(many=True)
 
 @press_release_bp.route('', methods=['GET'])
 def get_all():
-    items = PressRelease.query.order_by(PressRelease.created_at.desc()).all()
+    items = PressRelease.query.filter_by(is_deleted=False).order_by(PressRelease.created_at.desc()).all()
     return jsonify(list_schema.dump(items))
 
 @press_release_bp.route('/<int:id>', methods=['GET'])
 def get_by_id(id):
-    item = PressRelease.query.get(id)
+    item = PressRelease.query.filter_by(id=id, is_deleted=False).first()
     if item:
         return jsonify(single_schema.dump(item))
     return jsonify({"error": "Not found"}), 404
@@ -67,7 +67,7 @@ def save():
 def delete(id):
     item = PressRelease.query.get(id)
     if item:
-        db.session.delete(item)
+        item.is_deleted = True
         db.session.commit()
         return '', 204
     return jsonify({"error": "Not found"}), 404

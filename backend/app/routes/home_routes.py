@@ -15,69 +15,37 @@ def get_featured_content():
     current_hour = now.hour
     
     # Query base: PressReleases joined with User
-    # We use a join to be able to filter by user's role
-    query = PressRelease.query.outerjoin(User, PressRelease.author_user_id == User.id)
+    query = PressRelease.query.outerjoin(User, PressRelease.author_user_id == User.id).filter(PressRelease.is_deleted == False)
     
     results = []
     
-    # ---------------------------------------------------------
-    # PRIME TIME (08:00 AM - 11:59 AM)
-    # ---------------------------------------------------------
-    if 8 <= current_hour < 12:
-        three_hours_ago = now - timedelta(hours=3)
-        premium_posts = query.filter(
-            User.role == 'Colaborador Premium',
-            PressRelease.created_at >= three_hours_ago
+    if 0 <= current_hour < 8:
+        # FREE ROTATION (00:00 - 07:59 AM)
+        # Display 4 Free posts explicitly, or fallback to any posts
+        free_posts = query.filter(
+            (User.role == 'Colaborador Gratis') | (User.role.is_(None))
         ).order_by(PressRelease.created_at.desc()).limit(4).all()
-        
+        results.extend(free_posts)
+    else:
+        # PREMIUM ONLY (04:00 AM - 23:59)
+        premium_posts = query.filter(
+            User.role != None,
+            User.role.ilike('%premium%')
+        ).order_by(PressRelease.created_at.desc()).limit(4).all()
         results.extend(premium_posts)
         
-        # Fill empty slots with Free posts if less than 4 Premium posts available
-        slots_to_fill = 4 - len(premium_posts)
-        if slots_to_fill > 0:
-            free_posts = query.filter(
-                (User.role == 'Colaborador Gratis') | (User.role.is_(None))
-            ).order_by(PressRelease.created_at.desc()).limit(slots_to_fill).all()
-            results.extend(free_posts)
-            
-    # ---------------------------------------------------------
-    # THE GHOST / FALLBACK TIME (04:00 AM - 07:59 AM)
-    # ---------------------------------------------------------
-    elif 4 <= current_hour < 8:
-        # Show top 4 most recent Free posts statically
-        results = query.filter(
-            (User.role == 'Colaborador Gratis') | (User.role.is_(None))
-        ).order_by(PressRelease.created_at.desc()).limit(4).all()
-        
-    # ---------------------------------------------------------
-    # FREE ROTATION (12:00 PM - 03:59 AM)
-    # ---------------------------------------------------------
-    else:
-        all_free_posts = query.filter(
-            (User.role == 'Colaborador Gratis') | (User.role.is_(None))
-        ).order_by(PressRelease.created_at.desc()).all()
-        
-        if all_free_posts:
-            page_size = 4
-            total_pages = max(1, (len(all_free_posts) + page_size - 1) // page_size)
-            
-            # Rotate pages every hour
-            current_page_idx = current_hour % total_pages
-            
-            start_idx = current_page_idx * page_size
-            end_idx = start_idx + page_size
-            results = all_free_posts[start_idx:end_idx]
-            
     # Dump exactly 4 (or less if not enough in DB)
     if len(results) < 4:
-        # Backfill with the latest press releases regardless of role or time
+        # Backfill with anything randomly to ensure 4 spots are filled
+        from sqlalchemy.sql.expression import func
         already_have_ids = [r.id for r in results]
         backfill_count = 4 - len(results)
         
-        backfill_items = query.filter(
+        backfill_query = query.filter(
             ~PressRelease.id.in_(already_have_ids) if already_have_ids else True
-        ).order_by(PressRelease.created_at.desc()).limit(backfill_count).all()
-        
+        )
+             
+        backfill_items = backfill_query.order_by(func.random()).limit(backfill_count).all()
         results.extend(backfill_items)
 
     schema = PressReleaseSchema(many=True)

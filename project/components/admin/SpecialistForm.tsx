@@ -70,7 +70,8 @@ const SpecialistForm: React.FC<SpecialistFormProps> = ({ specialist, onSave, onC
                     </div>
                      <div>
                         <label className="block text-sm font-medium text-gray-700">Descripción de la Especialidad</label>
-                        <textarea name="specialtyDescription" value={formData.specialtyDescription} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <textarea name="specialtyDescription" value={formData.specialtyDescription} onChange={handleChange} maxLength={130} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <p className="text-xs text-gray-500 mt-1">{formData.specialtyDescription?.length || 0}/130 caracteres</p>
                     </div>
                      <div>
                         <label className="block text-sm font-medium text-gray-700">Contacto de WhatsApp (sin +)</label>

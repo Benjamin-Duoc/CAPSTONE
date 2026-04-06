@@ -5,12 +5,16 @@ import { WhatsAppIcon } from './icons';
 interface SpecialistsModuleProps {
     specialists: Specialist[];
     onBack: () => void;
+    onSelectSpecialist: (specialist: Specialist) => void;
 }
 
 // Reusable card component defined within this module
-const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) => {
+const SpecialistCard: React.FC<{ specialist: Specialist; onSelect: () => void }> = ({ specialist, onSelect }) => {
     return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col h-full overflow-hidden group">
+        <div 
+            onClick={onSelect}
+            className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 flex flex-col h-full overflow-hidden group cursor-pointer"
+        >
             <div className="relative h-56">
                 <img src={specialist.imageUrl} alt={specialist.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -20,9 +24,9 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
                 </div>
             </div>
             <div className="p-4 flex flex-col flex-grow">
-                <p className="text-sm text-text-secondary flex-grow">
-                    {specialist.specialtyDescription.length > 100 
-                        ? `${specialist.specialtyDescription.substring(0, 100)}...` 
+                <p className="text-sm text-text-secondary flex-grow break-words">
+                    {specialist.specialtyDescription.length > 130 
+                        ? `${specialist.specialtyDescription.substring(0, 130)}...` 
                         : specialist.specialtyDescription}
                 </p>
                 <a 
@@ -40,9 +44,9 @@ const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) =>
 };
 
 
-const SpecialistsModule: React.FC<SpecialistsModuleProps> = ({ specialists, onBack }) => {
+const SpecialistsModule: React.FC<SpecialistsModuleProps> = ({ specialists, onBack, onSelectSpecialist }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 12;
 
     const sortedSpecialists = useMemo(() => {
         return [...specialists].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
@@ -72,7 +76,7 @@ const SpecialistsModule: React.FC<SpecialistsModuleProps> = ({ specialists, onBa
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="text-center mb-12">
@@ -82,7 +86,11 @@ const SpecialistsModule: React.FC<SpecialistsModuleProps> = ({ specialists, onBa
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {currentSpecialists.map(specialist => (
-                        <SpecialistCard key={specialist.id} specialist={specialist} />
+                        <SpecialistCard 
+                            key={specialist.id} 
+                            specialist={specialist} 
+                            onSelect={() => onSelectSpecialist(specialist)} 
+                        />
                     ))}
                 </div>
 

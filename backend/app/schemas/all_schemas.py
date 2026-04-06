@@ -35,10 +35,26 @@ class DestacadoArticleSchema(ma.SQLAlchemyAutoSchema):
         model = DestacadoArticle
         load_instance = True
 
+from marshmallow import fields
+from datetime import datetime
+
 class PressReleaseSchema(ma.SQLAlchemyAutoSchema):
+    is_public_visible = fields.Method("get_is_public_visible")
+
+    def get_is_public_visible(self, obj):
+        from app.models.all_models import User
+        user = User.query.get(obj.author_user_id) if getattr(obj, 'author_user_id', None) else None
+        if user and user.role and ('premium' in user.role.lower() or 'administrador' in user.role.lower()):
+            return True
+        current_hour = datetime.now().hour
+        if 0 <= current_hour < 8:
+            return True
+        return False
+
     class Meta:
         model = PressRelease
         load_instance = True
+        unknown = 'exclude'
 
 class PhotojournalismPostSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -50,6 +66,7 @@ class CommunityPostSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = CommunityPost
         load_instance = True
+        unknown = 'exclude'
 
 class CommunityAdSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -144,6 +161,7 @@ class TalentProfileSchema(ma.SQLAlchemyAutoSchema):
         model = TalentProfile
         load_instance = True
         include_fk = True
+        unknown = 'exclude'
 
 class SpecialistSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

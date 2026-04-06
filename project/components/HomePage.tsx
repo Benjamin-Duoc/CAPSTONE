@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { API_BASE, keysToCamel, transformList } from '../utils/db';
 import { getImageUrl } from '../utils/mediaUtils';
 import { SearchIcon, PlayIcon, ArrowUpRightIcon, WhatsAppIcon, CalendarIcon, TrophyIcon, BookmarkIcon, ScaleIcon, UserGroupIcon, LightBulbIcon, ChartBarIcon, LatinAmericaMapIcon, BriefcaseIcon, PencilAltIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import type { Page, Job, Course, Entrepreneurship, NewsArticle, PremiumSponsor, PromoVideo, CommunityPost, PhotojournalismPost, FreelanceService, CommunityAd, Specialist, ShareablePhoto, Resource, FundingOpportunity, Event, NgoSpotlight, PressRelease, HeroHeading, ShortCollaboration, EntrepreneurshipTip, SponsoredAd, SpecialAd, SiteStat, User, DestacadoArticle } from '../types';
-import PressReleaseForm from './admin/PressReleaseForm';
+import UserPressReleaseForm from './UserPressReleaseForm';
 import UserSpecialistForm from './UserSpecialistForm';
 import { EntrepreneurshipCard } from './EntrepreneurshipCard';
+import { CourseCard } from './CoursesModule';
 
 interface HomePageProps {
     onNavigate: (page: Page, subPage?: string) => void;
@@ -16,6 +17,8 @@ interface HomePageProps {
     onSelectJob: (job: Job) => void;
     onSelectPressRelease: (pressRelease: PressRelease) => void;
     onSelectCourse: (course: Course) => void;
+    onSelectSpecialist: (specialist: Specialist) => void;
+    onSelectFunding: (funding: FundingOpportunity) => void;
     isAdminMode: boolean;
     currentUser?: User | null;
     courses: Course[];
@@ -42,8 +45,8 @@ interface HomePageProps {
     sponsoredAds: SponsoredAd[];
     specialAds: SpecialAd[];
     stats: SiteStat[];
-    onAddPressRelease?: (pr: Omit<PressRelease, 'id'>) => void;
     onAddSpecialist?: (specialist: Omit<Specialist, 'id' | 'dateAdded'>) => void;
+    rotationInterval?: number;
 }
 
 const DEFAULT_IMAGE = "data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3e%3crect fill='%23e2e8f0' width='300' height='200'/%3e%3ctext fill='%2364748b' font-family='sans-serif' font-size='16' dy='6' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3eImagen no disponible%3c/text%3e%3c/svg%3e";
@@ -251,15 +254,6 @@ const JobCard: React.FC<{ job: Job; onSelect: () => void; }> = ({ job, onSelect 
     </button>
 );
 
-const CourseCard: React.FC<{ course: Course, onSelect: () => void }> = ({ course, onSelect }) => (
-    <button onClick={onSelect} className="w-full text-left bg-surface rounded-lg overflow-hidden group border border-gray-200 hover:shadow-md transition-shadow duration-300 flex flex-col">
-        <img src={course.imageUrl || DEFAULT_IMAGE} alt={course.title} onError={handleImageError} className="w-full h-32 object-cover" />
-        <div className="p-4 flex flex-col flex-grow">
-            <span className={`text-xs font-bold uppercase ${course.cost === 'Gratis' ? 'text-green-600' : 'text-highlight'}`}>{course.category}</span>
-            <h3 className="font-semibold text-base text-text-primary mt-1 flex-grow h-12">{course.title}</h3>
-        </div>
-    </button >
-);
 
 const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => (
     <div className="bg-surface p-4 rounded-lg border border-gray-200">
@@ -411,30 +405,46 @@ const CommunityAdCard: React.FC<{ ad: CommunityAd }> = ({ ad }) => {
     );
 };
 
-const SpecialistCard: React.FC<{ specialist: Specialist }> = ({ specialist }) => {
+const FeaturedSourceCard: React.FC<{ specialist: Specialist; onSelect: () => void }> = ({ specialist, onSelect }) => {
+    if (!specialist) return null;
+
     return (
-        <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col h-full overflow-hidden group">
-            <div className="relative h-56">
-                <img src={specialist.imageUrl || DEFAULT_IMAGE} alt={specialist.name} onError={handleImageError} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-4">
-                    <h3 className="text-2xl font-bold font-serif" style={{ color: specialist.textColor }}>{specialist.name}</h3>
-                    <p className="text-base font-bold" style={{ color: specialist.textColor, opacity: 0.9 }}>{specialist.title}</p>
+        <div 
+            onClick={onSelect}
+            className="bg-surface p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-transparent hover:border-secondary/20"
+        >
+            <div className="flex items-center space-x-4">
+                <div className="relative">
+                    <img
+                        src={specialist.imageUrl || DEFAULT_IMAGE}
+                        alt={specialist.name}
+                        onError={handleImageError}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white shadow group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute -bottom-1 -right-1 bg-[#25D366] p-1 rounded-full border-2 border-white">
+                        <WhatsAppIcon className="h-3 w-3 text-white" />
+                    </div>
                 </div>
-            </div >
-            <div className="p-4 flex flex-col flex-grow">
-                <p className="text-sm text-text-secondary flex-grow">{specialist.specialtyDescription}</p>
-                <a
-                    href={`https://wa.me/${specialist.whatsappContact}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full mt-4 px-4 py-2 text-sm font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-2"
-                >
-                    <WhatsAppIcon className="h-5 w-5" />
-                    <span>Contactar</span>
-                </a>
-            </div >
-        </div >
+                <div className="flex-grow min-w-0">
+                    <div className="flex items-center space-x-2">
+                        <h4 className="font-bold text-text-primary truncate transition-colors group-hover:text-secondary">{specialist.name}</h4>
+                        {specialist.isPremium && (
+                            <span className="bg-orange-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm shadow-sm flex items-center shrink-0">
+                                PREMIUM
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-xs text-secondary font-bold truncate tracking-wide uppercase">{specialist.title}</p>
+                </div>
+                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowUpRightIcon className="h-5 w-5 text-secondary" />
+                </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">"{specialist.specialtyDescription}"</p>
+                <div className="mt-2 text-[10px] font-black text-secondary uppercase tracking-widest text-right group-hover:underline">Ver Perfil Completo &rarr;</div>
+            </div>
+        </div>
     );
 };
 
@@ -495,8 +505,11 @@ const ResourceCard: React.FC<{ resource: Resource }> = ({ resource }) => (
     </a>
 );
 
-const FundingCard: React.FC<{ item: FundingOpportunity }> = ({ item }) => (
-    <div className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300 flex flex-col">
+const FundingCard: React.FC<{ item: FundingOpportunity; onSelect: () => void }> = ({ item, onSelect }) => (
+    <div 
+        onClick={onSelect}
+        className="bg-surface p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300 flex flex-col cursor-pointer hover:border-primary/30 group"
+    >
         <div className="flex items-center justify-between">
             <span className={`text-xs font-bold px-2 py-1 rounded-full ${item.type === 'Fondo' ? 'bg-accent/20 text-green-800' : item.type === 'Beca' ? 'bg-secondary/10 text-secondary' : 'bg-highlight/20 text-yellow-800'}`}>{item.type}</span>
             <TrophyIcon className="h-5 w-5 text-gray-300" />
@@ -578,40 +591,6 @@ const ShortCollaborationCard: React.FC<{ collaboration: ShortCollaboration }> = 
     )
 };
 
-const FeaturedSourceCard: React.FC<{ specialist: Specialist }> = ({ specialist }) => {
-    if (!specialist) return null;
-
-    return (
-        <div className="bg-surface p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="flex items-center space-x-4">
-                <img
-                    src={specialist.imageUrl || DEFAULT_IMAGE}
-                    alt={specialist.name}
-                    onError={handleImageError}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
-                />
-                <div>
-                    <h4 className="font-semibold text-text-primary">{specialist.name}</h4>
-                    <p className="text-xs text-primary font-semibold">{specialist.title}</p>
-                </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-text-secondary text-center mb-2">"{specialist.specialtyDescription}"</p>
-                <a
-                    href={`https://wa.me/${specialist.whatsappContact}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full mt-2 px-4 py-2 text-xs font-bold text-white bg-[#25D366] rounded-md hover:bg-[#1DAE51] transition-colors flex items-center justify-center space-x-1"
-                >
-                    <WhatsAppIcon className="h-4 w-4" />
-                    <span>Contactar</span>
-                </a>
-            </div >
-        </div >
-    );
-};
-
-
 
 const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
     <button onClick={onClick} className="ml-4 text-[13px] font-bold px-2 py-1 bg-highlight text-gray-900 rounded-md hover:bg-yellow-400 transition-all shadow-sm border border-black/10">Administrar</button>
@@ -619,13 +598,61 @@ const AdminButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 const HomePage: React.FC<HomePageProps> = (props) => {
     const {
-        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectDestacado, onSelectJob, onSelectPressRelease, onSelectCourse, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
+        onNavigate, onSelectEntrepreneur, onSelectSponsor, onSelectNewsArticle, onSelectDestacado, onSelectJob, onSelectPressRelease, onSelectCourse, onSelectSpecialist, onSelectFunding, isAdminMode, courses, jobs, entrepreneurs, newsArticles,
         pressReleases, premiumSponsors, specialists, ngoSpotlight, communityPosts,
         freelanceServices, photojournalismPosts, events,
         resources, fundingOpportunities, shareablePhotos, heroHeading, destacados, shortCollaborations, entrepreneurshipTips,
         sponsoredAds, communityAds, specialAds, stats,
-        currentUser, onAddPressRelease, onAddSpecialist
+        currentUser, onAddPressRelease, onAddSpecialist,
+        rotationInterval
     } = props;
+
+    // Golden Rule 1: Priority Visibility and Rotation for Specialists
+    const shuffledSpecialists = useMemo(() => {
+        const intervalMilliseconds = (rotationInterval || 1) * 60 * 60 * 1000;
+        const timeSeed = Math.floor(Date.now() / intervalMilliseconds);
+        
+        const seededShuffle = (array: any[]) => {
+            let seed = timeSeed;
+            const seededRandom = () => {
+                const x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            };
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        const premium = specialists.filter(s => s.isPremium);
+        const standard = specialists.filter(s => !s.isPremium);
+
+        return [...seededShuffle(premium), ...seededShuffle(standard)];
+    }, [specialists, rotationInterval]);
+
+    // Golden Rule 2: Rotation for Funding Opportunities (Standard shuffle as no Premium field yet)
+    const shuffledFunding = useMemo(() => {
+        const intervalMilliseconds = (rotationInterval || 1) * 60 * 60 * 1000;
+        const timeSeed = Math.floor(Date.now() / intervalMilliseconds);
+        
+        const seededShuffle = (array: any[]) => {
+            let seed = timeSeed;
+            const seededRandom = () => {
+                const x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            };
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        return seededShuffle(fundingOpportunities);
+    }, [fundingOpportunities, rotationInterval]);
 
     const [isPressReleaseModalOpen, setIsPressReleaseModalOpen] = useState(false);
     const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
@@ -679,30 +706,15 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
     // Handling uploads safely with login check
     const handleUploadClick = () => {
-        if (currentUser) {
-            onNavigate('dashboard', 'comunicado');
-        } else {
-            setLoginGuardRedirect('comunicado');
-            setIsLoginGuardOpen(true);
-        }
+        onNavigate('dashboard', 'comunicado');
     };
     
     const handleEntrepreneurUploadClick = () => {
-        if (currentUser) {
-            onNavigate('dashboard', 'pyme');
-        } else {
-            setLoginGuardRedirect('pyme');
-            setIsLoginGuardOpen(true);
-        }
+        onNavigate('dashboard', 'pyme');
     };
 
     const handleSourceUploadClick = () => {
-        if (currentUser) {
-            onNavigate('dashboard', 'talent');
-        } else {
-            setLoginGuardRedirect('talent');
-            setIsLoginGuardOpen(true);
-        }
+        onNavigate('dashboard', 'specialist');
     };
 
     const handlePressReleaseSubmit = (pr: Omit<PressRelease, 'id'>) => {
@@ -736,13 +748,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-3xl text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
                 {currentUser ? (
-                    <>
-                        <h3 id="modal-title-press" className="text-2xl font-bold font-serif text-secondary">Sube tu Comunicado</h3>
-                        <p className="mt-4 text-text-secondary">Completa el formulario para publicar tu comunicado en CiPress.</p>
-                        <div className="mt-6 text-left">
-                            <PressReleaseForm pressRelease={null} onSave={handlePressReleaseSubmit} onClose={onClose} />
-                        </div>
-                    </>
+                    <div className="text-left">
+                        <UserPressReleaseForm onSave={handlePressReleaseSubmit} onClose={onClose} />
+                    </div>
                 ) : (
                     <>
                         <h3 id="modal-title-pr" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
@@ -765,16 +773,24 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50 p-4 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title-source">
             <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center relative" onClick={e => e.stopPropagation()}>
                 <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-3xl font-bold" aria-label="Cerrar modal">&times;</button>
-                <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
-                <p className="mt-4 text-text-secondary">Para publicar una fuente experta en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
-                        Registrarme
-                    </button>
-                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-                        Ingresar
-                    </a>
-                </div>
+                {currentUser ? (
+                    <div className="text-left">
+                        <UserSpecialistForm onSave={onAddSpecialist || (() => {})} onClose={onClose} />
+                    </div>
+                ) : (
+                    <>
+                        <h3 id="modal-title-source" className="text-2xl font-bold font-serif text-secondary">Beneficio para Suscriptores Gratuitos</h3>
+                        <p className="mt-4 text-text-secondary">Para publicar una fuente experta en nuestro repositorio, necesitas una suscripción gratuita activa en CiPress.</p>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onClick={() => onNavigate('register')} className="px-6 py-3 text-base font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors">
+                                Registrarme
+                            </button>
+                            <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login'); }} className="px-6 py-3 text-base font-bold text-secondary bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                                Ingresar
+                            </a>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -1103,11 +1119,16 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                         {/* Courses Section */}
                         <section>
                             <div className="flex justify-between items-center border-b-2 border-primary pb-2 mb-6">
-                                <h2 className="text-3xl font-bold font-serif text-text-primary">Capacitación</h2>
-                                <button onClick={() => onNavigate('courses')} className="font-semibold text-primary hover:underline">Ver todo &rarr;</button>
+                                <h2 
+                                    onClick={() => onNavigate('courses')} 
+                                    className="text-3xl font-bold font-serif text-text-primary cursor-pointer hover:text-primary transition-colors"
+                                >
+                                    Capacitación
+                                </h2>
+                                <button onClick={() => onNavigate('courses')} className="font-semibold text-primary hover:underline">Ver repositorio completo &rarr;</button>
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'courses')} />}
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {courses.slice(0, 4).map(course => <CourseCard key={course.id} course={course} onSelect={() => onSelectCourse(course)} />)}
                             </div>
                         </section>
@@ -1275,9 +1296,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                               <button
                                 onClick={() => {
                                     if (currentUser) {
-                                        onNavigate('dashboard', 'comunicados');
+                                        onNavigate('dashboard', 'urgentes');
                                     } else {
-                                        setLoginGuardRedirect('comunicados');
+                                        setLoginGuardRedirect('urgentes');
                                         setIsLoginGuardOpen(true);
                                     }
                                 }}
@@ -1298,8 +1319,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 <button onClick={() => onNavigate('specialists')} className="font-semibold text-secondary hover:underline text-sm">Ver todas</button>
                             </div>
                             <div className="space-y-4">
-                                {specialists.slice(0, 3).map(specialist => (
-                                    <FeaturedSourceCard key={specialist.id} specialist={specialist} />
+                                {shuffledSpecialists.slice(0, 3).map(specialist => (
+                                    <FeaturedSourceCard key={specialist.id} specialist={specialist} onSelect={() => onSelectSpecialist(specialist)} />
                                 ))}
                             </div>
                             <div className="bg-secondary/10 p-4 rounded-lg text-center mt-2 border border-secondary/20">
@@ -1325,7 +1346,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                                 {isAdminMode && <AdminButton onClick={() => onNavigate('admin', 'funding')} />}
                             </div>
                             <div className="space-y-4">
-                                {fundingOpportunities.slice(0, 2).map(item => <FundingCard key={item.id} item={item} />)}
+                                {shuffledFunding.slice(0, 4).map(item => (
+                                    <FundingCard 
+                                        key={item.id} 
+                                        item={item} 
+                                        onSelect={() => onSelectFunding(item)} 
+                                    />
+                                ))}
                             </div>
                         </section>
 
@@ -1464,7 +1491,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <button 
                                 onClick={() => {
                                     if (currentUser) {
-                                        onNavigate('freelanceServices');
+                                        onNavigate('opportunities', 'freelance');
                                     } else {
                                         setLoginGuardRedirect('freelance-services');
                                         setIsLoginGuardOpen(true);
@@ -1519,7 +1546,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
                             <button
                                 onClick={() => {
                                     setIsLoginGuardOpen(false);
-                                    onNavigate('registration');
+                                    onNavigate('register');
                                 }}
                                 className="w-full py-3 text-base font-bold text-white bg-primary rounded-lg hover:bg-orange-600 transition-colors shadow-md shadow-primary/20"
                             >

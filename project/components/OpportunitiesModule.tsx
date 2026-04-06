@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { Page, User, Job, TalentProfile, FreelanceService } from '../types';
 import { BriefcaseIcon, MapPinIcon, LightBulbIcon, StarIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { LinkedInIcon } from './icons';
+import { LinkedInIcon, EnvelopeIcon } from './icons';
 import { getTalentProfiles, getFreelanceServices } from '../utils/db';
 import FreelanceServicesModule from './FreelanceServicesModule';
 
@@ -12,6 +12,7 @@ interface OpportunitiesModuleProps {
     currentUser: User | null;
     onNavigate: (page: Page, subPage?: string) => void;
     rotationInterval: number;
+    onSelectTalent: (profile: TalentProfile) => void;
     onBack: () => void;
 }
 
@@ -74,63 +75,76 @@ const JobCard: React.FC<{ job: Job; onSelect: () => void }> = ({ job, onSelect }
     </button>
 );
 
-const TalentProfileCard: React.FC<{ profile: TalentProfile }> = ({ profile }) => (
-    <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 p-5 flex flex-col text-center items-center relative group">
-        {profile.isPremium && (
-            <div className="absolute top-2 right-2">
-                <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center">
-                    <StarIcon className="h-3 w-3 mr-1" />
-                    PREMIUM
-                </span>
+const TalentProfileCard: React.FC<{ profile: TalentProfile; onSelect: () => void }> = ({ profile, onSelect }) => (
+    <div className="bg-surface rounded-lg shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 flex flex-col items-center relative group hover:border-primary/30 overflow-hidden">
+        {/* Clickable Area for Detail */}
+        <div 
+            onClick={onSelect}
+            className="w-full p-5 flex flex-col items-center text-center cursor-pointer"
+        >
+            {profile.isPremium && (
+                <div className="absolute top-2 right-2">
+                    <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center">
+                        <StarIcon className="h-3 w-3 mr-1" />
+                        PREMIUM
+                    </span>
+                </div>
+            )}
+            <img src={profile.avatarUrl} alt={profile.name} className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" />
+            <h3 className="font-bold text-lg text-text-primary mt-3">{profile.name}</h3>
+            <p className="text-sm text-primary font-semibold text-center h-10">{profile.title}</p>
+            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+                {(Array.isArray(profile.skills) 
+                    ? profile.skills 
+                    : (typeof profile.skills === 'string' ? JSON.parse(profile.skills) : [])
+                ).map((skill: string, index: number) => (
+                    <span key={index} className="text-[10px] font-bold bg-secondary/5 text-secondary border border-secondary/10 px-2 py-0.5 rounded-md">{skill}</span>
+                ))}
             </div>
-        )}
-        <img src={profile.avatarUrl} alt={profile.name} className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" />
-        <h3 className="font-bold text-lg text-text-primary mt-3">{profile.name}</h3>
-        <p className="text-sm text-primary font-semibold text-center h-10">{profile.title}</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-            {(Array.isArray(profile.skills) 
-                ? profile.skills 
-                : (typeof profile.skills === 'string' ? JSON.parse(profile.skills) : [])
-            ).map((skill: string, index: number) => (
-                <span key={index} className="text-[10px] font-bold bg-secondary/5 text-secondary border border-secondary/10 px-2 py-0.5 rounded-md">{skill}</span>
-            ))}
-        </div>
-        
-        <div className="mt-4 pt-3 border-t border-gray-100 w-full text-xs text-text-secondary space-y-1">
-            <div className="flex justify-between px-1">
-                <span>Disponibilidad:</span>
-                <span className="font-semibold text-text-primary">{profile.availability}</span>
-            </div>
-            {profile.isPremium ? (
-                <>
+            
+            <div className="mt-4 pt-3 border-t border-gray-100 w-full text-xs text-text-secondary space-y-1">
+                <div className="flex justify-between px-1">
+                    <span>Disponibilidad:</span>
+                    <span className="font-semibold text-text-primary">{profile.availability}</span>
+                </div>
+                {profile.isPremium ? (
                     <div className="flex justify-between px-1">
                         <span>Experiencia:</span>
                         <span className="font-semibold text-text-primary">{profile.experienceYears} años</span>
                     </div>
-                </>
-            ) : (
-                <div className="text-center py-1 bg-gray-50 rounded mt-2 text-[10px] italic text-gray-400">
-                    Info. adicional solo para Premium
-                </div>
-            )}
+                ) : (
+                    <div className="text-center py-1 bg-gray-50 rounded mt-2 text-[10px] italic text-gray-400">
+                        Info. adicional solo para Premium
+                    </div>
+                )}
+            </div>
         </div>
 
-        {profile.linkedinUrl && (
+        {/* Buttons Area (Separate from Detail Click) */}
+        <div className="w-full px-5 pb-5 flex flex-col space-y-2">
             <a 
-                href={profile.linkedinUrl} 
+                href={profile.linkedinUrl || "https://www.linkedin.com"} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-full mt-4 px-4 py-2 text-xs font-bold text-white bg-[#0077B5] rounded-md hover:bg-[#005E92] transition-colors flex items-center justify-center space-x-2"
+                className="w-full px-4 py-2 text-xs font-bold text-white bg-[#0077B5] rounded-md hover:bg-[#005E92] transition-colors flex items-center justify-center space-x-2 shadow-sm z-10"
             >
                 <LinkedInIcon className="h-4 w-4" />
-                <span>Contactar en LinkedIn</span>
+                <span>LinkedIn</span>
             </a>
-        )}
+            
+            <a 
+                href={`mailto:${profile.email || 'contacto@cipress.cl'}`} 
+                className="w-full px-4 py-2 text-xs font-bold text-white bg-primary rounded-md hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 shadow-sm z-10"
+            >
+                <EnvelopeIcon className="h-4 w-4" />
+                <span>Email</span>
+            </a>
+        </div>
     </div>
 );
 
 const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({ 
-    jobs, onSelectJob, initialTab, currentUser, onNavigate, rotationInterval, onBack 
+    jobs, onSelectJob, initialTab, currentUser, onNavigate, rotationInterval, onSelectTalent, onBack 
 }) => {
     const [activeTab, setActiveTab] = useState<Tab>((initialTab as Tab) || 'jobs');
     const [isLoginGuardOpen, setIsLoginGuardOpen] = useState(false);
@@ -158,33 +172,38 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({
 
     // Talent Pagination
     const [talentCurrentPage, setTalentCurrentPage] = useState(1);
-    const TALENTS_PER_PAGE = 15;
+    const TALENTS_PER_PAGE = 12;
 
     const shuffledTalentProfiles = useMemo(() => {
-        // Create a seed based on the current time divided by the rotation interval.
-        // This ensures the order is the same for all users within the same time window.
         const intervalMilliseconds = (rotationInterval || 1) * 60 * 60 * 1000;
         const timeSeed = Math.floor(Date.now() / intervalMilliseconds);
 
-        // Simple pseudo-random number generator using the seed
-        let seed = timeSeed;
-        const seededRandom = () => {
-            const x = Math.sin(seed++) * 10000;
-            return x - Math.floor(x);
+        const seededShuffle = (array: TalentProfile[], currentSeed: number) => {
+            let s = currentSeed;
+            const seededRandom = () => {
+                const x = Math.sin(s++) * 10000;
+                return x - Math.floor(x);
+            };
+
+            const shuffled = [...array];
+            let currentIndex = shuffled.length;
+            let randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(seededRandom() * currentIndex);
+                currentIndex--;
+                [shuffled[currentIndex], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[currentIndex]];
+            }
+            return shuffled;
         };
 
-        // Fisher-Yates shuffle algorithm with our seeded random function
-        const array = [...talentProfiles];
-        let currentIndex = array.length;
-        let randomIndex;
+        const premiumProfiles = talentProfiles.filter(p => p.isPremium);
+        const standardProfiles = talentProfiles.filter(p => !p.isPremium);
 
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(seededRandom() * currentIndex);
-            currentIndex--;
-            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-        }
-
-        return array;
+        return [
+            ...seededShuffle(premiumProfiles, timeSeed),
+            ...seededShuffle(standardProfiles, timeSeed)
+        ];
     }, [talentProfiles, rotationInterval]);
 
     const totalTalentPages = Math.ceil(shuffledTalentProfiles.length / TALENTS_PER_PAGE);
@@ -221,9 +240,16 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({
                             <h2 className="text-2xl font-bold font-serif text-text-primary">Oportunidades Laborales</h2>
                             <p className="text-text-secondary mt-1">Encuentra tu próximo desafío profesional en el sector.</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-lg text-center border border-gray-200">
-                            <p className="text-base text-text-secondary">
-                                Para publicar, envía tu aviso de trabajo a <a href="mailto:contacto@cipress.cl" className="font-semibold text-primary hover:underline">contacto@cipress.cl</a>
+                        <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 p-6 rounded-2xl text-center border-2 border-primary/20 shadow-inner group">
+                            <p className="text-lg text-text-primary flex flex-col sm:flex-row items-center justify-center gap-2">
+                                <span className="font-medium">¿Quieres publicar una vacante?</span>
+                                <span>Envía tu aviso a </span>
+                                <a 
+                                    href="mailto:contacto@cipress.cl" 
+                                    className="font-black text-primary hover:text-orange-600 transition-colors underline decoration-2 underline-offset-4 decoration-primary/30"
+                                >
+                                    contacto@cipress.cl
+                                </a>
                             </p>
                         </div>
                         {jobs.map(job => <JobCard key={job.id} job={job} onSelect={() => onSelectJob(job)} />)}
@@ -265,7 +291,13 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({
                             <p className="text-center py-12 text-gray-500 italic">No hay perfiles disponibles en el banco de talentos.</p>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {currentTalentProfiles.map(profile => <TalentProfileCard key={profile.id} profile={profile} />)}
+                            {currentTalentProfiles.map(profile => (
+                                <TalentProfileCard 
+                                    key={profile.id} 
+                                    profile={profile} 
+                                    onSelect={() => onSelectTalent(profile)} 
+                                />
+                            ))}
                         </div>
                         {totalTalentPages > 1 && (
                             <div className="flex justify-center items-center space-x-4 mt-12">
@@ -292,8 +324,8 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({
                 );
             case 'freelance':
                 return (
-                    <div className="mt-[-3rem]">
-                        <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} />
+                    <div>
+                        <FreelanceServicesModule freelanceServices={freelanceServices} rotationInterval={rotationInterval} onBack={onBack} isTabMode={true} />
                     </div>
                 );
         }
@@ -319,7 +351,7 @@ const OpportunitiesModule: React.FC<OpportunitiesModuleProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="text-center mb-10">

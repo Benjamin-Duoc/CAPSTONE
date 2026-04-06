@@ -167,6 +167,26 @@ const deserializeReportContent = (item: any) => {
   return item;
 };
 
+const serializeCourse = (item: any) => {
+  if (item.topics && Array.isArray(item.topics)) {
+    return { ...item, topics: JSON.stringify(item.topics) };
+  }
+  return item;
+};
+
+const deserializeCourse = (item: any) => {
+  if (item.topics && typeof item.topics === 'string') {
+    try {
+      return { ...item, topics: JSON.parse(item.topics) };
+    } catch (e) {
+      return { ...item, topics: [] };
+    }
+  }
+  // Ensure it's at least an empty array if missing
+  if (!item.topics) return { ...item, topics: [] };
+  return item;
+};
+
 export const transformList = <T>(list: any[]): T[] => {
   return list.map(item => deserializeReportContent(item));
 };
@@ -248,9 +268,22 @@ export const deleteUser = async (id: number): Promise<{ success: boolean; messag
 };
 
 // --- Courses ---
-export const getAllCourses = async () => fetchList<Course>('/courses', initialData.courses);
-export const createCourse = async (item: Omit<Course, 'id'>) => createItem<Course>('/courses', item);
-export const updateCourse = async (item: Course) => updateItem<Course>('/courses', item);
+export const getAllCourses = async () => {
+  const apiData = await fetchList<Course>('/courses', initialData.courses);
+  
+  // Merge API data with Mock data to ensure all new courses are visible for testing/demo
+  // We deduplicate by ID, prioritizing API data if IDs overlap
+  const merged = [...apiData];
+  initialData.courses.forEach(mockItem => {
+    if (!merged.find(item => item.id === mockItem.id)) {
+      merged.push(mockItem);
+    }
+  });
+
+  return merged.map(deserializeCourse);
+};
+export const createCourse = async (item: Omit<Course, 'id'>) => deserializeCourse(await createItem<Course>('/courses', serializeCourse(item)));
+export const updateCourse = async (item: Course) => deserializeCourse(await updateItem<Course>('/courses', serializeCourse(item)));
 export const deleteCourse = async (id: number) => deleteItem('/courses', id);
 export const saveCourses = async (data: Course[]) => { console.warn('saveCourses deprecated'); };
 

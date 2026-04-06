@@ -5,6 +5,7 @@ import { SearchIcon, LinkedInIcon } from './icons';
 interface FreelanceServicesModuleProps {
     freelanceServices: FreelanceService[];
     rotationInterval?: number;
+    isTabMode?: boolean;
     onBack: () => void;
 }
 
@@ -44,10 +45,10 @@ const ServiceCard: React.FC<{ service: FreelanceService }> = ({ service }) => {
     );
 };
 
-const FreelanceServicesModule: React.FC<FreelanceServicesModuleProps> = ({ freelanceServices, rotationInterval, onBack }) => {
+const FreelanceServicesModule: React.FC<FreelanceServicesModuleProps> = ({ freelanceServices, rotationInterval, onBack, isTabMode }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [serviceCurrentPage, setServiceCurrentPage] = useState(1);
-    const SERVICES_PER_PAGE = 15;
+    const SERVICES_PER_PAGE = 12;
 
     const shuffledFreelanceServices = useMemo(() => {
         const intervalMilliseconds = (rotationInterval || 1) * 60 * 60 * 1000;
@@ -91,22 +92,26 @@ const FreelanceServicesModule: React.FC<FreelanceServicesModuleProps> = ({ freel
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <button 
-                    onClick={onBack} 
-                    className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    volver
-                </button>
+        <div className={`${isTabMode ? '' : 'bg-gray-50 min-h-screen'}`}>
+            <div className={`${isTabMode ? '' : 'container mx-auto px-4 sm:px-6 lg:px-8 py-12'}`}>
+                {!isTabMode && (
+                    <>
+                        <button 
+                            onClick={onBack} 
+                            className="flex items-center text-primary font-bold mb-6 hover:translate-x-[-4px] transition-transform group"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Volver
+                        </button>
 
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                    <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Directorio de Profesionales</h1>
-                    <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Conecta con los mejores freelancers del rubro y potencia tus proyectos.</p>
-                </div>
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                            <h1 className="text-4xl lg:text-5xl font-extrabold font-serif text-text-primary">Directorio de Profesionales</h1>
+                            <p className="mt-4 text-lg text-text-secondary max-w-3xl mx-auto">Conecta con los mejores freelancers del rubro y potencia tus proyectos.</p>
+                        </div>
+                    </>
+                )}
 
                 <div className="mb-8 relative max-w-3xl mx-auto">
                     <input

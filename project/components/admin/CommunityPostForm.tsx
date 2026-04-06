@@ -51,7 +51,8 @@ const CommunityPostForm: React.FC<CommunityPostFormProps> = ({ post, onSave, onC
                     </div>
                      <div>
                         <label className="block text-sm font-medium text-gray-700">Comentario</label>
-                        <textarea name="comment" value={formData.comment} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <textarea name="comment" value={formData.comment} onChange={handleChange} maxLength={80} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
+                        <p className="text-xs text-gray-500 mt-1">{formData.comment?.length || 0}/80 caracteres</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

@@ -5,10 +5,14 @@ import { TrophyIcon } from './icons';
 interface FundingModuleProps {
     fundingOpportunities: FundingOpportunity[];
     onBack: () => void;
+    onSelectFunding: (funding: FundingOpportunity) => void;
 }
 
-const FundingCard: React.FC<{ item: FundingOpportunity }> = ({ item }) => (
-    <div className="bg-surface p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 border border-gray-200">
+const FundingCard: React.FC<{ item: FundingOpportunity; onSelect: () => void }> = ({ item, onSelect }) => (
+    <div 
+        onClick={onSelect}
+        className="bg-surface p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 border border-gray-200 cursor-pointer group hover:border-primary/30"
+    >
         <div className="flex-shrink-0 bg-primary/10 p-4 rounded-full">
             <TrophyIcon className="h-8 w-8 text-primary" />
         </div>
@@ -29,7 +33,7 @@ const FundingCard: React.FC<{ item: FundingOpportunity }> = ({ item }) => (
 );
 
 
-const FundingModule: React.FC<FundingModuleProps> = ({ fundingOpportunities, onBack }) => {
+const FundingModule: React.FC<FundingModuleProps> = ({ fundingOpportunities, onBack, onSelectFunding }) => {
     return (
         <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -40,7 +44,7 @@ const FundingModule: React.FC<FundingModuleProps> = ({ fundingOpportunities, onB
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="text-center mb-12">
@@ -59,7 +63,13 @@ const FundingModule: React.FC<FundingModuleProps> = ({ fundingOpportunities, onB
                 </div>
 
                 <div className="space-y-6">
-                    {fundingOpportunities.map(item => <FundingCard key={item.id} item={item} />)}
+                    {fundingOpportunities.map(item => (
+                        <FundingCard 
+                            key={item.id} 
+                            item={item} 
+                            onSelect={() => onSelectFunding(item)} 
+                        />
+                    ))}
                 </div>
             </div>
         </div>

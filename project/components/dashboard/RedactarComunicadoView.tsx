@@ -60,12 +60,15 @@ const RedactarComunicadoView: React.FC<RedactarComunicadoViewProps> = ({
     
     let countToday = 0;
     if (!isPremium) {
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
+        const todayStr = new Date().toISOString().split('T')[0];
         countToday = userPressReleases.filter(pr => {
-            if (!pr.createdAt) return false;
-            const prDate = new Date(pr.createdAt);
-            return prDate >= todayStart;
+            // Check if createdAt exists and matches today's date prefix
+            if (pr.createdAt && pr.createdAt.startsWith(todayStr)) return true;
+            // Fallback to checking the date field
+            if (pr.date && pr.date.includes(todayStr)) return true;
+            // Also consider newly created ones that might just have a recent sequential ID
+            // but relying on date is better.
+            return false;
         }).length;
     }
     const limitReached = !isPremium && countToday >= 3;

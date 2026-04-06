@@ -43,7 +43,7 @@ const NewsCard: React.FC<{ article: NewsArticle; isFeatured?: boolean; onClick: 
 
 const NewsModule: React.FC<NewsModuleProps> = ({ newsArticles, onSelectNewsArticle, onBack }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 7; // 1 noticia en grande + 6 normales
+    const ITEMS_PER_PAGE = 12;
     
     // Sort articles by ID descending (newest first)
     const sortedArticles = useMemo(() => {
@@ -73,7 +73,7 @@ const NewsModule: React.FC<NewsModuleProps> = ({ newsArticles, onSelectNewsArtic
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 group-hover:text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    volver
+                    Volver
                 </button>
 
                 <div className="text-center mb-12">
