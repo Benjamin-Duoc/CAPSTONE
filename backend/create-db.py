@@ -1,3 +1,4 @@
+import os
 import json
 from datetime import datetime, date
 from app import create_app
@@ -15,6 +16,7 @@ from app.models.all_models import (
 )
 
 def create_db():
+    os.makedirs(os.path.join(os.path.dirname(__file__), 'instance'), exist_ok=True)
     app = create_app()
     with app.app_context():
         print("WARNING: Se eliminaran todas las tablas y datos existentes.")

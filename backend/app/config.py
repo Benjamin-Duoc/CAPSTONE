@@ -59,12 +59,14 @@ class Config:
     @staticmethod
     def init_app(app):
         """Initialize application with config"""
-        # Ensure media folders exist
+        # Ensure media and instance folders exist
         media_path = os.path.join(os.path.dirname(__file__), '..', Config.MEDIA_FOLDER)
         upload_path = os.path.join(os.path.dirname(__file__), '..', Config.UPLOAD_FOLDER)
+        instance_path = os.path.join(os.path.dirname(__file__), '..', 'instance')
         
         os.makedirs(media_path, exist_ok=True)
         os.makedirs(upload_path, exist_ok=True)
+        os.makedirs(instance_path, exist_ok=True)
         
         # Log configuration
         if Config.DEBUG:
