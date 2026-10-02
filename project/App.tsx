@@ -662,7 +662,6 @@ const App: React.FC = () => {
       case 'photo-gallery': return <PhotoGalleryModule shareablePhotos={shareablePhotos} onBack={() => handleNavigate('home')} />;
       case 'photojournalism': return <PhotojournalismModule posts={photojournalismPosts} onSelectPost={handleSelectPhotoPost} currentUser={currentUser} onPostUpdated={refreshPhotoPosts} onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />;
       case 'resources': return <ResourcesModule resources={resources} onBack={() => handleNavigate('home')} />;
-      case 'funding': return <FundingModule fundingOpportunities={fundingOpportunities} onSelectFunding={handleSelectFunding} onBack={() => handleNavigate('home')} />;
       case 'events': return <EventsModule events={events} onBack={() => handleNavigate('home')} />;
       case 'legal': return <LegalModule onBack={() => handleNavigate('home')} />;
       case 'press-releases': return <PressReleasesModule pressReleases={pressReleases} onSelectPressRelease={handleSelectPressRelease} onBack={() => handleNavigate('home')} />;

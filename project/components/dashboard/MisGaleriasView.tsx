@@ -2,8 +2,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { User, PhotojournalismPost, ShareablePhoto } from '../../types';
 import { 
     PhotoIcon, XMarkIcon, MagnifyingGlassIcon, CalendarIcon, 
-    ArrowUpTrayIcon, CurrencyDollarIcon, TagIcon, TrashIcon
+    ArrowUpTrayIcon, CurrencyDollarIcon, TagIcon, TrashIcon, SparklesIcon
 } from '@heroicons/react/24/outline';
+import AIWritingAssistant from '../ai/AIWritingAssistant';
 import { ENV } from '../../src/config/env';
 
 const API_BASE = ENV.isDevelopment ? '/api' : ENV.apiUrl;
@@ -387,12 +388,48 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
 
                     {/* Formulario de Metadatos del Lote */}
                     <div className="space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                        <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-4">Metadatos del Lote</h4>
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-2">
+                            <h4 className="text-sm font-bold text-gray-900">Metadatos del Lote</h4>
+                            <span className="flex items-center text-xs font-semibold text-primary bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full">
+                                <SparklesIcon className="w-3.5 h-3.5 mr-1 text-primary" />
+                                Asistido por IA CiPress
+                            </span>
+                        </div>
+
+                        {/* Banner Asistente IA y Preview Fase Visual */}
+                        <div className="p-3.5 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50/50 rounded-xl border border-orange-200/80 text-xs">
+                            <div className="flex items-center justify-between mb-1.5">
+                                <div className="flex items-center space-x-1.5 font-bold text-orange-950">
+                                    <SparklesIcon className="w-4 h-4 text-primary animate-pulse" />
+                                    <span>Asistente de Redacción Fotoperiodística</span>
+                                </div>
+                                <span className="px-2 py-0.5 bg-orange-200/70 text-orange-900 rounded-full font-bold text-[10px] uppercase tracking-wider">
+                                    Fase 1: Redacción
+                                </span>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed mb-2">
+                                Apóyate en la IA para redactar pies de fotos informativos, titular tus reportajes, ajustar el tono periodístico o traducir descripciones.
+                            </p>
+                            <div className="flex items-center space-x-2 text-[11px] text-gray-500 pt-1.5 border-t border-orange-200/60">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/90 border border-orange-200 text-primary font-bold text-[10px] uppercase">
+                                    Próximamente
+                                </span>
+                                <span className="text-gray-600">Análisis visual directo de fotos y sugerencia de etiquetas temáticas automáticas.</span>
+                            </div>
+                        </div>
                         
                         <div>
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
-                                {activeTab === 'periodismo' ? 'Título del Reportaje' : 'Colección / Tema'}
-                            </label>
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                                    {activeTab === 'periodismo' ? 'Título del Reportaje' : 'Colección / Tema'}
+                                </label>
+                                <AIWritingAssistant
+                                    currentText={batchTitle}
+                                    context="title"
+                                    buttonLabel="Sugerir Título"
+                                    onApplyText={(newText) => setBatchTitle(newText)}
+                                />
+                            </div>
                             <input 
                                 type="text" value={batchTitle} onChange={e => setBatchTitle(e.target.value)} disabled={isUploading}
                                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg py-2 px-3 focus:bg-white focus:ring-2 focus:ring-primary/50 transition-all text-sm"
@@ -401,13 +438,21 @@ export const MisGaleriasView: React.FC<MisGaleriasViewProps> = ({ user, onGaller
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
-                                Descripción Común
-                            </label>
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                                    Descripción Común / Pie de Foto
+                                </label>
+                                <AIWritingAssistant
+                                    currentText={batchCaption}
+                                    context="caption"
+                                    buttonLabel="Asistir Pie de Foto"
+                                    onApplyText={(newText) => setBatchCaption(newText)}
+                                />
+                            </div>
                             <textarea 
-                                value={batchCaption} onChange={e => setBatchCaption(e.target.value)} disabled={isUploading} rows={2}
+                                value={batchCaption} onChange={e => setBatchCaption(e.target.value)} disabled={isUploading} rows={3}
                                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg py-2 px-3 focus:bg-white focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-                                placeholder="Texto que acompañará a todas las fotos de esta subida"
+                                placeholder="Texto o pie de foto descriptivo que acompañará a las fotos de esta subida..."
                             />
                         </div>
 

@@ -270,7 +270,7 @@ export const deleteUser = async (id: number): Promise<{ success: boolean; messag
 // --- Courses ---
 export const getAllCourses = async () => {
   const apiData = await fetchList<Course>('/courses', initialData.courses);
-  
+
   // Merge API data with Mock data to ensure all new courses are visible for testing/demo
   // We deduplicate by ID, prioritizing API data if IDs overlap
   const merged = [...apiData];

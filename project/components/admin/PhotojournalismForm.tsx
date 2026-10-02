@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { PhotojournalismPost } from '../../types';
+import AIWritingAssistant from '../ai/AIWritingAssistant';
 
 interface PhotojournalismFormProps {
     post: PhotojournalismPost | null;
@@ -67,7 +68,15 @@ const PhotojournalismForm: React.FC<PhotojournalismFormProps> = ({ post, onSave,
                         <input type="text" name="photographerName" value={formData.photographerName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
                     </div>
                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Título de la Fotografía</label>
+                        <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-gray-700">Título de la Fotografía</label>
+                            <AIWritingAssistant
+                                currentText={formData.title}
+                                context="title"
+                                buttonLabel="Sugerir Título"
+                                onApplyText={(newText) => setFormData(prev => ({ ...prev, title: newText }))}
+                            />
+                        </div>
                         <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
                     </div>
                     
@@ -128,7 +137,15 @@ const PhotojournalismForm: React.FC<PhotojournalismFormProps> = ({ post, onSave,
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Descripción (Caption)</label>
+                        <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-gray-700">Descripción (Caption)</label>
+                            <AIWritingAssistant
+                                currentText={formData.caption}
+                                context="caption"
+                                buttonLabel="Asistir Epígrafe"
+                                onApplyText={(newText) => setFormData(prev => ({ ...prev, caption: newText }))}
+                            />
+                        </div>
                         <textarea name="caption" value={formData.caption} onChange={handleChange} rows={4} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
                     </div>
                     <div>

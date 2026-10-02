@@ -95,6 +95,9 @@ def create_app(config_class=None):
     from .routes.payment_routes import payment_bp
     app.register_blueprint(payment_bp)
 
+    from .routes.ai_routes import ai_bp
+    app.register_blueprint(ai_bp)
+
     from .routes.route_factory import create_crud_blueprint
     from app.models.all_models import (
         User, Role, AppConfig, SiteStat, HeroHeading,

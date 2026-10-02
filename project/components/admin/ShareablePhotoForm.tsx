@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { ShareablePhoto } from '../../types';
+import AIWritingAssistant from '../ai/AIWritingAssistant';
 
 interface ShareablePhotoFormProps {
     photo: ShareablePhoto | null;
@@ -132,7 +133,15 @@ const ShareablePhotoForm: React.FC<ShareablePhotoFormProps> = ({ photo, onSave, 
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Descripción (Caption)</label>
+                        <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-gray-700">Descripción (Caption)</label>
+                            <AIWritingAssistant
+                                currentText={formData.caption}
+                                context="caption"
+                                buttonLabel="Asistir Epígrafe"
+                                onApplyText={(newText) => setFormData(prev => ({ ...prev, caption: newText }))}
+                            />
+                        </div>
                         <textarea name="caption" value={formData.caption} onChange={handleChange} rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3" required />
                     </div>
                     <div>
